@@ -1,0 +1,29 @@
+{
+  "Inventory": {
+    "BlurScreen": true,
+    "EnableKeys": [249],
+    "ImagePath": "images",
+    "ItemNotifications": true
+  },
+  "Player": {
+    "MaxWeight": 50000,
+    "Dimensions": [20, 20],
+    "UseTargeting": true
+  },
+  "Drop": {
+    "MaxWeight": 50000,
+    "Dimensions": [20, 20],
+    "Model": "prop_med_bag_01b",
+    "UseTargeting": true
+  },
+  "Weapon": {
+    "Enabled": true,
+    "AutoReload": false,
+    "AimedFiring": false,
+    "CheckModelMismatch": true,
+    "IgnoreWeapons": ["WEAPON_UNARMED", "WEAPON_HANDCUFFS", "WEAPON_GARBAGEBAG", "OBJECT", "WEAPON_HOSE"],
+    "DisarmNotification": true
+  },
+  "SuppressPickups": true,
+  "LogLevel": "error"
+}
