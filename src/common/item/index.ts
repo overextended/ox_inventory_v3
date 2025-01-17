@@ -34,8 +34,15 @@ export function GetRawItem(name: string) {
   return Items[name];
 }
 
+function clamp(max: number = 4294967295, n: number = max) {
+  return Math.min(Math.max(n, 0), max);
+}
+
 export function ItemFactory(name: string, item?: ItemProperties) {
   if (!item) throw new Error(`Attempted to create invalid item '${name}'`);
+
+  item.itemLimit = clamp(4294967295, item.itemLimit);
+  item.stackSize = clamp(65535, item.stackSize);
 
   const Item = class implements ItemProperties {
     /** A unique name to identify the item type and inherit data. */
@@ -58,11 +65,11 @@ export function ItemFactory(name: string, item?: ItemProperties) {
     }
 
     get itemLimit() {
-      return item.itemLimit ?? 4294967295;
+      return item.itemLimit;
     }
 
     get stackSize() {
-      return item.stackSize ?? 65535;
+      return item.stackSize;
     }
 
     get category() {
@@ -106,11 +113,11 @@ export function ItemFactory(name: string, item?: ItemProperties) {
     }
 
     get width() {
-      return item.width ?? 3;
+      return item.width ?? 1;
     }
 
     get height() {
-      return item.height ?? 2;
+      return item.height ?? 1;
     }
   };
 

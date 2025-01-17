@@ -1,4 +1,4 @@
-import { GetRawItem, ItemFactory, ItemMetadata } from '@common/itemFactory';
+import { GetRawItem, ItemFactory, ItemMetadata } from '@common/item';
 import { oxmysql } from '@overextended/oxmysql';
 
 export async function CreateItem(name: string, metadata?: ItemMetadata) {
