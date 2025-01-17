@@ -20,6 +20,7 @@ export default tseslint.config(
   {
     rules: {
       'no-unused-labels': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
     },
   }
 );

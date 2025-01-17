@@ -1,4 +1,4 @@
-import { InventoryItem } from '@common/itemFactory';
+import { InventoryItem } from '@common/item';
 import { Vector3 } from '@nativewrappers/fivem';
 
 export class BaseInventory {
