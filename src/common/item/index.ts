@@ -29,9 +29,14 @@ export interface Item extends ReturnType<typeof ItemFactory> {}
 export interface InventoryItem extends InstanceType<Item> {}
 
 const Items: Record<string, Item> = {};
+const InventoryItems: Record<string, InventoryItem> = {};
 
 export function GetRawItem(name: string) {
   return Items[name];
+}
+
+export function GetInventoryItem(uniqueId: string) {
+  return InventoryItems[uniqueId];
 }
 
 function clamp(max: number = 4294967295, n: number = max) {
@@ -56,6 +61,9 @@ export function ItemFactory(name: string, item?: ItemProperties) {
 
     /** The inventoryId of the inventory which holds this item. */
     public inventoryId?: string;
+
+    /** The slotId for the top-left of the item. */
+    public anchorSlot?: number;
 
     [key: string]: unknown;
 
