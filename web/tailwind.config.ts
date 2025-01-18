@@ -7,6 +7,9 @@ const config: Config = {
 	content: ["./src/**/*.{html,js,svelte,ts}"],
 	safelist: ["dark"],
 	theme: {
+    fontFamily: {
+
+    },
 		container: {
 			center: true,
 			padding: "2rem",
