@@ -1,37 +1,20 @@
+import { sleep } from '@overextended/ox_lib';
+import { GetDbInventoryData } from './db';
 import { Inventory } from './inventory/class';
-import { CreateItem } from './item';
 
 setTimeout(async () => {
-  const inventory = new Inventory({
-    inventoryId: 'test',
-    type: 'player',
-    label: 'Player inventory',
-    width: 20,
-    height: 20,
-    weight: 0,
-    maxWeight: 10000,
-    items: {},
-  });
+  const invData = await GetDbInventoryData('test');
+  const inventory = new Inventory(invData);
 
-  const item = await CreateItem('water');
-  const item2 = await CreateItem('water');
-  console.log(item);
+  await sleep(100);
 
-  const canMove = item.canMove(inventory, 0);
-  console.log('canMove', canMove);
+  // const newItem = await CreateItem('water', { inventoryId: 'test' });
+  // console.log(newItem);
 
-  if (canMove) {
-    const moved = item.move(inventory, 0);
-    console.log('moved', moved)
-  }
+  // const moved = newItem.move(inventory, 4);
+  // console.log('moved', moved);
 
-  const canMove2 = item2.canMove(inventory, 23);
-  console.log('canMove2', canMove2);
-
-  if (canMove2) {
-    const moved = item2.move(inventory, 23);
-    console.log('moved2', moved)
-  }
+  await sleep(100);
 
   console.log(inventory);
 }, 500);

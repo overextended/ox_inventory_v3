@@ -1,7 +1,6 @@
 import config from '@common/config';
 import { ResourceName } from '@common/index';
 import { BaseInventory } from '@common/inventory/class';
-import { randomUUID } from 'crypto';
 
 export interface ItemMetadata {
   label?: string;
@@ -24,6 +23,7 @@ export interface ItemProperties extends ItemMetadata {
   itemLimit?: number;
   stackSize?: number;
   description?: string;
+  inventoryId?: string;
 }
 
 export interface Item extends ReturnType<typeof ItemFactory> {}
@@ -68,9 +68,13 @@ export function ItemFactory(name: string, item?: ItemProperties) {
 
     [key: string]: unknown;
 
-    constructor(metadata: ItemMetadata = {}) {
-      Object.assign(this, metadata);
-      this.uniqueId = randomUUID();
+    constructor(metadata?: ItemMetadata) {
+      if (metadata) {
+        if ('name' in metadata) delete metadata.name;
+        if ('metadata' in metadata) delete metadata.metadata;
+
+        Object.assign(this, metadata, 'metadata' in metadata ? metadata.metadata : null);
+      }
     }
 
     get itemLimit() {
@@ -136,10 +140,10 @@ export function ItemFactory(name: string, item?: ItemProperties) {
     private getSlots(inventory: BaseInventory, startSlot: number) {
       const slots: number[] = [];
 
-      for (let y = 0; y < item.height; y++) {
+      for (let y = 0; y < this.height; y++) {
         const offset = startSlot + y * inventory.width;
 
-        for (let x = 0; x < item.width; x++) {
+        for (let x = 0; x < this.width; x++) {
           const slotId = offset + x;
           const doesItemOverlap = inventory.items[slotId] && inventory.items[slotId] !== this.uniqueId;
           const doesItemOverflow = Math.floor(slotId / inventory.width) !== Math.floor(offset / inventory.width);
@@ -176,12 +180,13 @@ export function ItemFactory(name: string, item?: ItemProperties) {
         const fromInventory = BaseInventory.fromId(this.inventoryId);
         const oldSlots = this.getSlots(fromInventory, this.anchorSlot);
 
-        if (oldSlots) oldSlots.forEach((slotId) => delete inventory.items[slotId]);
+        if (oldSlots) inventory.setSlotRefs(oldSlots);
       }
 
-      slots.forEach((slotId) => (inventory.items[slotId] = this.uniqueId));
+      inventory.setSlotRefs(slots, this.uniqueId);
 
       this.anchorSlot = startSlot;
+      this.inventoryId = inventory.inventoryId;
 
       return true;
     }
