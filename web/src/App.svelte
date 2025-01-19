@@ -1,40 +1,74 @@
 <script lang="ts">
   import { isEnvBrowser } from '$lib/utils/misc';
   import { cn } from '$lib/utils';
+  import type { InventoryItem } from '~/src/common/item';
+  import { BaseInventory } from '~/src/common/inventory/class';
 
   let visible = $state(isEnvBrowser());
 
   const SLOT_SIZE = 48;
   const SLOT_GAP = 1;
 
-  type SlotData = {
-    name: string;
-    image: string;
-    width: number;
-    height: number;
-  };
-
-  let inventory = $state<{ width: number; height: number; items: Record<number, SlotData | null> }>({
-    width: 12,
-    height: 12,
-    items: {
-      31: {
-        name: 'Ammo-9',
-        image: 'ammo-9.png',
-        width: 1,
-        height: 1,
-      },
-
-      36: {
-        name: 'WEAPON_HEAVYPISTOL',
-        image: 'WEAPON_HEAVYPISTOL.png',
-        width: 2,
-        height: 2,
-      },
+  const items = $state<Record<string, InventoryItem>>({
+    '123': {
+      quantity: 3,
+      itemLimit: 3,
+      stackSize: 2,
+      name: 'ammo-9',
+      category: '',
+      decay: false,
+      rarity: 'rare',
+      degrade: 1,
+      uniqueId: '123',
+      label: '9mm bullet',
+      weight: 2,
+      description: '',
+      icon: 'ammo-9.png',
+      tradeable: false,
+      value: 300,
+      width: 1,
+      height: 1,
+      anchorSlot: 3,
+    },
+    '1233': {
+      quantity: 3,
+      itemLimit: 3,
+      stackSize: 2,
+      name: 'WEAPON_HEAVYPISTOL',
+      category: '',
+      decay: false,
+      rarity: 'rare',
+      degrade: 1,
+      uniqueId: '1233',
+      label: 'Heavy Pistol',
+      weight: 2,
+      description: '',
+      icon: 'WEAPON_HEAVYPISTOL.png',
+      tradeable: false,
+      value: 300,
+      width: 2,
+      height: 2,
+      anchorSlot: 14,
     },
   });
 
+  let inventory = $state(
+    new BaseInventory({
+      label: 'inventory',
+      items: {
+        3: '123',
+        14: '1233',
+      },
+      width: 12,
+      height: 12,
+    })
+  );
+
+  $effect(() => console.log(inventory));
+
   let slots = inventory.width * inventory.height;
+
+  const getInventoryItemAtSlot = (slot: number) => items[inventory.items[slot]];
 
   if (isEnvBrowser()) {
     const root = document.getElementById('app');
@@ -47,23 +81,22 @@
   }
 
   let isDragging = $state(false);
-  let dragItem = $state<number | null>(null);
+  let dragSlot = $state<number | null>(null);
   let dragImg: HTMLElement;
 
   function onMouseDown(event: MouseEvent) {
     isDragging = true;
     let target = event.currentTarget as HTMLElement;
-    let slot = target.dataset.slot ? +target.dataset.slot : null;
+    const slot = +target.dataset.slot!;
 
     if (slot === null) return;
-
-    const item = inventory.items[slot];
+    const item = getInventoryItemAtSlot(slot);
 
     if (!item) return;
 
-    dragItem = slot;
+    dragSlot = slot;
 
-    dragImg.style.backgroundImage = `url(${item.image})`;
+    dragImg.style.backgroundImage = `url(${item.icon})`;
     dragImg.style.display = 'block';
     dragImg.style.transform = `translate(${event.clientX - dragImg.clientWidth / 2}px, ${event.clientY - dragImg.clientHeight / 2}px)`;
     dragImg.style.width = `${item.width * SLOT_SIZE}px`;
@@ -71,23 +104,19 @@
   }
 
   function onMouseMove(event: MouseEvent) {
-    if (!isDragging || !dragItem) return;
+    if (!isDragging || dragSlot === null) return;
 
     dragImg.style.transform = `translate(${event.clientX - dragImg.clientWidth / 2}px, ${event.clientY - dragImg.clientHeight / 2}px)`;
   }
 
   function onStopDrag(event: MouseEvent) {
+    if (dragSlot === null) return;
+
     isDragging = false;
     dragImg.style.backgroundImage = '';
     dragImg.style.display = 'none';
 
-    const target = event.currentTarget as HTMLElement;
-
-    let slot = target.dataset.slot ? +target.dataset.slot : null;
-
-    if (slot === null || !dragItem) return;
-
-    const item = inventory.items[dragItem];
+    const item = getInventoryItemAtSlot(dragSlot);
 
     if (!item) return;
 
@@ -96,20 +125,22 @@
       event.clientY - (item.height * SLOT_SIZE) / 2
     ) as HTMLElement;
 
-    slot = +elm.dataset.slot!;
+    const slot: number | null = +elm.dataset.slot!;
 
-    delete inventory.items[dragItem];
-    dragItem = slot;
-    inventory.items[slot] = item;
+    if (slot === null || slot === dragSlot) return;
 
-    dragItem = null;
+    inventory.moveItem(slot, item);
+    inventory = new BaseInventory({ ...inventory, items: { ...inventory.items } });
+    console.log(inventory.items);
+
+    dragSlot = null;
   }
 
   function cancelDrag() {
     isDragging = false;
     dragImg.style.backgroundImage = '';
     dragImg.style.display = 'none';
-    dragItem = null;
+    dragSlot = null;
   }
 </script>
 
@@ -137,10 +168,11 @@
           onmousedown={onMouseDown}
           onmouseup={onStopDrag}
         >
-          {#if inventory.items[index]}
+          {#if getInventoryItemAtSlot(index)}
             <span
+              data-slot={index}
               class="w-full h-full bg-no-repeat bg-contain bg-center absolute top-0 left-0 z-50 bg-black/50"
-              style={`background-image: url('${inventory.items[index].image}');width: ${SLOT_SIZE * inventory.items[index].width - 1}px;height: ${SLOT_SIZE * inventory.items[index].height - SLOT_GAP}px;')`}
+              style={`background-image: url('${index === getInventoryItemAtSlot(index).anchorSlot && getInventoryItemAtSlot(index).icon}');width: ${SLOT_SIZE * getInventoryItemAtSlot(index).width - 1}px;height: ${SLOT_SIZE * getInventoryItemAtSlot(index).height - SLOT_GAP}px;')`}
             >
             </span>
           {/if}
