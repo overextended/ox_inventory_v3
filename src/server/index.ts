@@ -17,19 +17,19 @@ setTimeout(async () => {
   const item2 = await CreateItem('water');
   console.log(item);
 
-  const canMove = inventory.canMoveItem(0, item);
+  const canMove = item.canMove(inventory, 0);
   console.log('canMove', canMove);
 
   if (canMove) {
-    const moved = inventory.moveItem(0, item);
+    const moved = item.move(inventory, 0);
     console.log('moved', moved)
   }
 
-  const canMove2 = inventory.canMoveItem(23, item2);
+  const canMove2 = item2.canMove(inventory, 23);
   console.log('canMove2', canMove2);
 
   if (canMove2) {
-    const moved = inventory.moveItem(23, item2);
+    const moved = item2.move(inventory, 23);
     console.log('moved2', moved)
   }
 

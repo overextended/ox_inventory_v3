@@ -1,5 +1,6 @@
 import config from '@common/config';
 import { ResourceName } from '@common/index';
+import { BaseInventory } from '@common/inventory/class';
 import { randomUUID } from 'crypto';
 
 export interface ItemMetadata {
@@ -31,7 +32,7 @@ export interface InventoryItem extends InstanceType<Item> {}
 const Items: Record<string, Item> = {};
 const InventoryItems: Record<string, InventoryItem> = {};
 
-export function GetRawItem(name: string) {
+export function GetItemData(name: string) {
   return Items[name];
 }
 
@@ -126,6 +127,63 @@ export function ItemFactory(name: string, item?: ItemProperties) {
 
     get height() {
       return item.height ?? 1;
+    }
+
+    /**
+     * Determines the slotIds that will be occupied by an item, starting from startSlot.
+     * @returns An array containing the slotIds that hold the item.
+     */
+    private getSlots(inventory: BaseInventory, startSlot: number) {
+      const slots: number[] = [];
+
+      for (let y = 0; y < item.height; y++) {
+        const offset = startSlot + y * inventory.width;
+
+        for (let x = 0; x < item.width; x++) {
+          const slotId = offset + x;
+          const doesItemOverlap = inventory.items[slotId] && inventory.items[slotId] !== this.uniqueId;
+          const doesItemOverflow = Math.floor(slotId / inventory.width) !== Math.floor(offset / inventory.width);
+
+          if (doesItemOverlap || doesItemOverflow) return false;
+
+          slots.push(slotId);
+        }
+      }
+
+      return slots;
+    }
+
+    /**
+     * Determines if item placement is valid based on size, inventory dimensions, weight, etc.
+     * @todo: weight checks and other validation methods
+     */
+    public canMove(inventory: BaseInventory, startSlot: number) {
+      const doesItemFit =
+        (startSlot % inventory.width) + this.width <= inventory.width &&
+        Math.floor(startSlot / inventory.width) + this.height <= inventory.height;
+
+      if (!doesItemFit) return false;
+
+      return this.getSlots(inventory, startSlot);
+    }
+
+    public move(inventory: BaseInventory, startSlot: number) {
+      const slots = this.canMove(inventory, startSlot);
+
+      if (!slots) return false;
+
+      if (this.anchorSlot) {
+        const fromInventory = BaseInventory.fromId(this.inventoryId);
+        const oldSlots = this.getSlots(fromInventory, this.anchorSlot);
+
+        if (oldSlots) oldSlots.forEach((slotId) => delete inventory.items[slotId]);
+      }
+
+      slots.forEach((slotId) => (inventory.items[slotId] = this.uniqueId));
+
+      this.anchorSlot = startSlot;
+
+      return true;
     }
   };
 

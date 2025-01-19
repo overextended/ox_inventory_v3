@@ -1,7 +1,7 @@
-import { InventoryItem } from '@common/item';
 import { Vector3 } from '@nativewrappers/fivem';
 
 export class BaseInventory {
+  private static instances: Record<string, BaseInventory> = {};
   /** A unique identifier used to reference the inventory and save it in the database. */
   readonly inventoryId: string;
 
@@ -22,56 +22,10 @@ export class BaseInventory {
 
   constructor(data: any) {
     Object.assign(this, data);
+    BaseInventory.instances[this.inventoryId] = this;
   }
 
-  private iterateSlots(startSlot: number, item: InventoryItem, callback?: (slotId: number) => boolean) {
-    // check if item dimensions exceed inventory boundaries
-    if (
-      (startSlot % this.width) + item.width > this.width ||
-      Math.floor(startSlot / this.width) + item.height > this.height
-    )
-      return false;
-
-    for (let y = 0; y < item.height; y++) {
-      const offset = startSlot + y * this.width;
-
-      for (let x = 0; x < item.width; x++) {
-        const slotId = offset + x;
-
-        if (
-          slotId >= this.width * this.height || // slotId is out of range
-          (this.items[slotId] && this.items[slotId] !== item.uniqueId) || // slots overlap another item
-          Math.floor(slotId / this.width) !== Math.floor(offset / this.width) || // slots overflow into new row
-          (callback && !callback(slotId))
-        ) {
-          return false;
-        }
-      }
-    }
-
-    return true;
-  }
-
-  public canMoveItem(startSlot: number, item: InventoryItem) {
-    // todo: weight checks and such
-    return this.iterateSlots(startSlot, item);
-  }
-
-  public moveItem(startSlot: number, item: InventoryItem) {
-    if (!this.canMoveItem(startSlot, item)) return false;
-
-    const currentSlot = item.anchorSlot;
-    item.anchorSlot = startSlot;
-
-    if (currentSlot)
-      this.iterateSlots(currentSlot, item, (slotId) => {
-        delete this.items[slotId];
-        return true;
-      });
-
-    return this.iterateSlots(startSlot, item, (slotId) => {
-      this.items[slotId] = item.uniqueId;
-      return true;
-    });
+  static fromId<T extends BaseInventory>(this: new (...args: any[]) => T, inventoryId: string) {
+    return BaseInventory.instances[inventoryId] as T;
   }
 }
