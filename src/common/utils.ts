@@ -1,9 +1,20 @@
-import { cache } from '@overextended/ox_lib';
+import { isBrowser, ResourceName } from './';
 
-export function LoadFile(path: string) {
-  return LoadResourceFile(cache.resource, path);
+export async function LoadFile(path: string) {
+  if (isBrowser) {
+    const resp = await fetch(`nui://${ResourceName}/${path}`, {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    });
+
+    return await resp.json();
+  }
+
+  return LoadResourceFile(ResourceName, path);
 }
 
-export function LoadJsonFile<T = unknown>(path: string): T {
-  return JSON.parse(LoadFile(path)) as T;
+export async function LoadJsonFile<T = unknown>(path: string) {
+  return JSON.parse(await LoadFile(path)) as T;
 }
