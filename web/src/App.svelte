@@ -75,6 +75,7 @@
   let isDragging = $state(false);
   let dragSlot = $state<number | null>(null);
   let dragImg: HTMLElement;
+  let dropIndicator: HTMLElement;
 
   function onMouseDown(event: MouseEvent) {
     isDragging = true;
@@ -94,6 +95,10 @@
     dragImg.style.width = `${item.width * SLOT_SIZE}px`;
     dragImg.style.height = `${item.height * SLOT_SIZE}px`;
 
+    dropIndicator.style.width = `${item.width * SLOT_SIZE}px`;
+    dropIndicator.style.height = `${item.height * SLOT_SIZE}px`;
+    dropIndicator.style.display = 'block';
+
     document.body.style.cursor = 'none';
   }
 
@@ -101,6 +106,32 @@
     if (!isDragging || dragSlot === null) return;
 
     dragImg.style.transform = `translate(${event.clientX - dragImg.clientWidth / 2}px, ${event.clientY - dragImg.clientHeight / 2}px)`;
+
+    const item = getInventoryItemAtSlot(dragSlot);
+
+    if (!item) return;
+
+    const invGrid = document.querySelector('#inv-grid')!;
+    const bodyRect = invGrid.getBoundingClientRect();
+    const mouseX = event.clientX - bodyRect.left;
+    const mouseY = event.clientY - bodyRect.top;
+
+    const adjustedX = mouseX - (item.width * SLOT_SIZE) / 2 + SLOT_SIZE / 2;
+    const adjustedY = mouseY - (item.height * SLOT_SIZE) / 2 + SLOT_SIZE / 2;
+
+    const slotX = Math.max(
+      0,
+      Math.min(Math.floor(adjustedX / SLOT_SIZE), Math.floor(bodyRect.width / SLOT_SIZE) - item.width)
+    );
+
+    const slotY = Math.max(
+      0,
+      Math.min(Math.floor(adjustedY / SLOT_SIZE), Math.floor(bodyRect.height / SLOT_SIZE) - item.height)
+    );
+
+    dropIndicator.style.width = `${item.width * SLOT_SIZE}px`;
+    dropIndicator.style.height = `${item.height * SLOT_SIZE}px`;
+    dropIndicator.style.transform = `translate(${slotX * SLOT_SIZE}px, ${slotY * SLOT_SIZE}px)`;
   }
 
   function onStopDrag(event: MouseEvent) {
@@ -109,6 +140,7 @@
     isDragging = false;
     dragImg.style.backgroundImage = '';
     dragImg.style.display = 'none';
+    dropIndicator.style.display = 'none';
 
     const item = getInventoryItemAtSlot(dragSlot);
 
@@ -148,15 +180,19 @@
   bind:this={dragImg}
   class="pointer-events-none fixed left-0 top-0 z-[51] bg-none bg-center bg-no-repeat bg-contain border-white/10 border"
 ></div>
+
 <div class={cn('flex items-center h-full justify-center bg-black/80', !visible && 'hidden')}>
   <div class="flex flex-col">
     <div class="w-full bg-background p-2 text-foreground">
       <p>Inventory</p>
     </div>
     <div
+      id="inv-grid"
       class="grid border-t border-l border-white/10"
       style={`grid-template-rows:repeat(${inventory.height}, 1fr);grid-template-columns: repeat(${inventory.width}, 1fr);`}
     >
+      <div class="fixed bg-green-500 opacity-30 pointer-events-none z-[51]" bind:this={dropIndicator}></div>
+
       {#each inventoryItems as item, index (item ? `${item.anchorSlot}-${index}` : `empty-${index}`)}
         <!-- svelte-ignore a11y_no_static_element_interactions -->
         <div
