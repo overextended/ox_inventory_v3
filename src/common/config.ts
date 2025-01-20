@@ -1,5 +1,5 @@
 import type StaticConfig from '~/static/config.json';
-import { LoadJsonFile } from 'utils';
+import { LoadJsonFile } from './utils';
 
 // https://www.raygesualdo.com/posts/flattening-object-keys-with-typescript-types/
 type FlattenObjectKeys<T extends Record<string, any>, Key = keyof T> = Key extends string

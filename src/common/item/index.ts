@@ -54,8 +54,9 @@ export function ItemFactory(name: string, item?: ItemProperties) {
     /** A unique name to identify the item type and inherit data. */
     readonly name = item.name;
 
+    // TODO: ONLY CHANGED TO PUBLIC FOR TESTING WEB (need a way to assign it maybe?)
     /** A unique identifier used to reference the item and save it in the database. */
-    readonly uniqueId: string;
+    public uniqueId: string;
 
     /** The number of items stored in the stack. */
     public quantity: number = 1;

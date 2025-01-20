@@ -1,7 +1,7 @@
 <script lang="ts">
   import { isEnvBrowser } from '$lib/utils/misc';
   import { cn } from '$lib/utils';
-  import type { InventoryItem } from '~/src/common/item';
+  import { type InventoryItem, ItemFactory } from '~/src/common/item';
   import { BaseInventory } from '~/src/common/inventory/class';
 
   let visible = $state(isEnvBrowser());
@@ -9,51 +9,39 @@
   const SLOT_SIZE = 48;
   const SLOT_GAP = 1;
 
+  const ammo9Item = ItemFactory('ammo-9', {
+    label: 'ammo-9',
+    name: 'ammo-9',
+    icon: 'ammo-9.png',
+  });
+
+  const heavyPistolItem = ItemFactory('WEAPON_HEAVYPISTOL', {
+    label: 'Heavy Pistol',
+    name: 'WEAPON_HEAVYPISTOL',
+    icon: 'WEAPON_HEAVYPISTOL.png',
+    width: 2,
+    height: 2,
+    inventoryId: 'player',
+  });
+
+  const ammo = new ammo9Item();
+  ammo.inventoryId = 'player';
+  ammo.anchorSlot = 3;
+  ammo.uniqueId = '123';
+
+  const pistol = new heavyPistolItem();
+  pistol.inventoryId = 'player';
+  pistol.anchorSlot = 14;
+  pistol.uniqueId = '1233';
+
   const items = $state<Record<string, InventoryItem>>({
-    '123': {
-      quantity: 3,
-      itemLimit: 3,
-      stackSize: 2,
-      name: 'ammo-9',
-      category: '',
-      decay: false,
-      rarity: 'rare',
-      degrade: 1,
-      uniqueId: '123',
-      label: '9mm bullet',
-      weight: 2,
-      description: '',
-      icon: 'ammo-9.png',
-      tradeable: false,
-      value: 300,
-      width: 1,
-      height: 1,
-      anchorSlot: 3,
-    },
-    '1233': {
-      quantity: 3,
-      itemLimit: 3,
-      stackSize: 2,
-      name: 'WEAPON_HEAVYPISTOL',
-      category: '',
-      decay: false,
-      rarity: 'rare',
-      degrade: 1,
-      uniqueId: '1233',
-      label: 'Heavy Pistol',
-      weight: 2,
-      description: '',
-      icon: 'WEAPON_HEAVYPISTOL.png',
-      tradeable: false,
-      value: 300,
-      width: 2,
-      height: 2,
-      anchorSlot: 14,
-    },
+    '123': ammo,
+    '1233': pistol,
   });
 
   let inventory = $state(
     new BaseInventory({
+      inventoryId: 'player',
       label: 'inventory',
       items: {
         3: '123',
@@ -64,9 +52,8 @@
     })
   );
 
-  $effect(() => console.log(inventory));
-
   let slots = inventory.width * inventory.height;
+  let inventoryItems = $derived(Array.from({ length: slots }).map((_, index) => getInventoryItemAtSlot(index)));
 
   const getInventoryItemAtSlot = (slot: number) => items[inventory.items[slot]];
 
@@ -121,17 +108,16 @@
     if (!item) return;
 
     const elm = document.elementFromPoint(
-      event.clientX - (item.width * SLOT_SIZE) / 2,
-      event.clientY - (item.height * SLOT_SIZE) / 2
+      event.clientX - (item.width * SLOT_SIZE) / 2 + SLOT_SIZE / 2,
+      event.clientY - (item.height * SLOT_SIZE) / 2 + SLOT_SIZE / 2
     ) as HTMLElement;
 
     const slot: number | null = +elm.dataset.slot!;
 
     if (slot === null || slot === dragSlot) return;
 
-    inventory.moveItem(slot, item);
-    inventory = new BaseInventory({ ...inventory, items: { ...inventory.items } });
-    console.log(inventory.items);
+    item.move(inventory, slot);
+    inventory = new BaseInventory({ ...inventory, items: inventory.items });
 
     dragSlot = null;
   }
@@ -159,7 +145,7 @@
       class="grid border-t border-l border-white/10"
       style={`grid-template-rows:repeat(${inventory.height}, 1fr);grid-template-columns: repeat(${inventory.width}, 1fr);`}
     >
-      {#each Array.from({ length: slots }) as item, index}
+      {#each inventoryItems as item, index (item ? `${item.anchorSlot}-${index}` : `empty-${index}`)}
         <!-- svelte-ignore a11y_no_static_element_interactions -->
         <div
           class={'bg-gradient-to-b from-black/20 to-black/50 flex text-primary-foreground items-center justify-center relative border-r border-b border-white/10'}
@@ -168,11 +154,12 @@
           onmousedown={onMouseDown}
           onmouseup={onStopDrag}
         >
-          {#if getInventoryItemAtSlot(index)}
+          {#if item && item.anchorSlot === index}
             <span
               data-slot={index}
-              class="w-full h-full bg-no-repeat bg-contain bg-center absolute top-0 left-0 z-50 bg-black/50"
-              style={`background-image: url('${index === getInventoryItemAtSlot(index).anchorSlot && getInventoryItemAtSlot(index).icon}');width: ${SLOT_SIZE * getInventoryItemAtSlot(index).width - 1}px;height: ${SLOT_SIZE * getInventoryItemAtSlot(index).height - SLOT_GAP}px;')`}
+              data-anchorSlot={item.anchorSlot === index}
+              class={cn('w-full h-full bg-no-repeat bg-contain bg-center absolute top-0 left-0 z-50 bg-black/50')}
+              style={`background-image: url('${item.icon}');width: ${SLOT_SIZE * item.width - 1}px;height: ${SLOT_SIZE * item.height - SLOT_GAP}px;')`}
             >
             </span>
           {/if}

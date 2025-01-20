@@ -2,7 +2,10 @@ import { isBrowser, ResourceName } from './';
 
 export async function LoadFile(path: string) {
   if (isBrowser) {
-    const resp = await fetch(`nui://${ResourceName}/${path}`, {
+    // todo: fix unable to load in browser
+    return;
+
+    const resp = await fetch(`https://${ResourceName}/${path}`, {
       method: 'post',
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
