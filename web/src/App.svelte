@@ -6,6 +6,10 @@
 
   let visible = $state(isEnvBrowser());
 
+  class InventoryState extends BaseInventory {
+    itemState = $state(this.items);
+  }
+
   const SLOT_SIZE = 48;
   const SLOT_GAP = 1;
 
@@ -39,23 +43,24 @@
     '1233': pistol,
   });
 
-  let inventory = $state(
-    new BaseInventory({
-      inventoryId: 'player',
-      label: 'inventory',
-      items: {
-        3: '123',
-        14: '1233',
-      },
-      width: 12,
-      height: 12,
-    })
-  );
+  let inventory = new InventoryState({
+    inventoryId: 'player',
+    label: 'inventory',
+    items: {
+      3: '123',
+      14: '1233',
+      15: '1233',
+      26: '1233',
+      27: '1233',
+    },
+    width: 12,
+    height: 12,
+  });
 
   let slots = inventory.width * inventory.height;
   let inventoryItems = $derived(Array.from({ length: slots }).map((_, index) => getInventoryItemAtSlot(index)));
 
-  const getInventoryItemAtSlot = (slot: number) => items[inventory.items[slot]];
+  const getInventoryItemAtSlot = (slot: number) => items[inventory.itemState[slot]];
 
   if (isEnvBrowser()) {
     const root = document.getElementById('app');
@@ -117,7 +122,7 @@
     if (slot === null || slot === dragSlot) return;
 
     item.move(inventory, slot);
-    inventory = new BaseInventory({ ...inventory, items: inventory.items });
+    inventory.itemState = inventory.items;
 
     dragSlot = null;
   }
