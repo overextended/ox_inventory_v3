@@ -93,6 +93,8 @@
     dragImg.style.transform = `translate(${event.clientX - dragImg.clientWidth / 2}px, ${event.clientY - dragImg.clientHeight / 2}px)`;
     dragImg.style.width = `${item.width * SLOT_SIZE}px`;
     dragImg.style.height = `${item.height * SLOT_SIZE}px`;
+
+    document.body.style.cursor = 'none';
   }
 
   function onMouseMove(event: MouseEvent) {
@@ -125,13 +127,18 @@
     inventory.itemState = inventory.items;
 
     dragSlot = null;
+    document.body.style.cursor = 'auto';
   }
 
   function cancelDrag() {
     isDragging = false;
+
     dragImg.style.backgroundImage = '';
     dragImg.style.display = 'none';
+
     dragSlot = null;
+
+    document.body.style.cursor = 'auto';
   }
 </script>
 
