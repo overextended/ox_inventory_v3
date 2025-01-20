@@ -163,7 +163,10 @@
             <span
               data-slot={index}
               data-anchorSlot={item.anchorSlot === index}
-              class={cn('w-full h-full bg-no-repeat bg-contain bg-center absolute top-0 left-0 z-50 bg-black/50')}
+              class={cn(
+                'w-full h-full bg-no-repeat bg-contain bg-center absolute top-0 left-0 z-50 bg-black/50',
+                isDragging && 'pointer-events-none'
+              )}
               style={`background-image: url('${item.icon}');width: ${SLOT_SIZE * item.width - 1}px;height: ${SLOT_SIZE * item.height - SLOT_GAP}px;')`}
             >
             </span>
