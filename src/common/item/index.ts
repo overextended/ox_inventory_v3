@@ -52,7 +52,7 @@ export function ItemFactory(name: string, item?: ItemProperties) {
 
   const Item = class implements ItemProperties {
     /** A unique name to identify the item type and inherit data. */
-    readonly name = item.name;
+    readonly name = name;
 
     // TODO: ONLY CHANGED TO PUBLIC FOR TESTING WEB (need a way to assign it maybe?)
     /** A unique identifier used to reference the item and save it in the database. */
@@ -75,6 +75,7 @@ export function ItemFactory(name: string, item?: ItemProperties) {
         if ('metadata' in metadata) delete metadata.metadata;
 
         Object.assign(this, metadata, 'metadata' in metadata ? metadata.metadata : null);
+        InventoryItems[this.uniqueId] = this;
       }
     }
 
