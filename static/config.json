@@ -2,7 +2,7 @@
   "Inventory": {
     "BlurScreen": true,
     "EnableKeys": [249],
-    "ImagePath": "images",
+    "ImagePath": "https://items.overextended.dev",
     "ItemNotifications": true
   },
   "Player": {

@@ -116,7 +116,7 @@ export function ItemFactory(name: string, item?: ItemProperties) {
     }
 
     get icon() {
-      return item.icon ?? `${ResourceName}/${config.Inventory_ImagePath}/${item.name}.webp`;
+      return item.icon ?? `${config.Inventory_ImagePath}/${this.category}/${this.name}.webp`;
     }
 
     get tradeable() {
