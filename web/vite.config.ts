@@ -14,5 +14,16 @@ export default defineConfig(({ mode }) => {
       },
     },
     ...(mode === 'development' && { publicDir: '../' }),
+    build: {
+      outDir: '../dist/web',
+      emptyOutDir: true,
+      rollupOptions: {
+        output: {
+          assetFileNames: `assets/[name][extname]`,
+          entryFileNames: `assets/[name].js`,
+          chunkFileNames: `assets/[name].js`,
+        },
+      },
+    },
   };
 });
