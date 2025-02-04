@@ -1,4 +1,4 @@
-import config from '@common/config';
+import Config from '@common/config';
 import { ResourceName } from '@common/index';
 import { BaseInventory } from '@common/inventory/class';
 
@@ -56,7 +56,7 @@ export function ItemFactory(name: string, item?: ItemProperties) {
 
     // TODO: ONLY CHANGED TO PUBLIC FOR TESTING WEB (need a way to assign it maybe?)
     /** A unique identifier used to reference the item and save it in the database. */
-    public uniqueId: string;
+    public uniqueId: number;
 
     /** The number of items stored in the stack. */
     public quantity: number = 1;
@@ -116,7 +116,7 @@ export function ItemFactory(name: string, item?: ItemProperties) {
     }
 
     get icon() {
-      return item.icon ?? `${config.Inventory_ImagePath}/${this.category}/${this.name}.webp`;
+      return item.icon ?? `${Config.Inventory_ImagePath}/${this.category}/${this.name}.webp`;
     }
 
     get tradeable() {

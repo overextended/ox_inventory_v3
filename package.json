@@ -55,6 +55,7 @@
     "@nativewrappers/server": "^0.0.45",
     "@overextended/ox_lib": "latest",
     "@overextended/oxmysql": "^1.4.2",
-    "prettier-plugin-svelte": "^3.3.3"
+    "prettier-plugin-svelte": "^3.3.3",
+    "sync-fetch": "0.6.0-2"
   }
 }

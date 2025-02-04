@@ -3,6 +3,7 @@
   import { cn } from '$lib/utils';
   import { type InventoryItem, ItemFactory } from '~/src/common/item';
   import { BaseInventory } from '~/src/common/inventory/class';
+  import Config from '~/src/common/config';
 
   let visible = $state(isEnvBrowser());
 
@@ -10,7 +11,7 @@
     itemState = $state(this.items);
   }
 
-  const SLOT_SIZE = 48;
+  const SLOT_SIZE = Config.Inventory_SlotSize;
   const SLOT_GAP = 1;
 
   const ammo9Item = ItemFactory('ammo-9', {
@@ -19,42 +20,49 @@
     icon: 'ammo-9.png',
   });
 
-  const heavyPistolItem = ItemFactory('WEAPON_HEAVYPISTOL', {
+  const HeavyPistol = ItemFactory('HeavyPistol', {
     label: 'Heavy Pistol',
-    name: 'WEAPON_HEAVYPISTOL',
-    icon: 'WEAPON_HEAVYPISTOL.png',
+    name: 'HeavyPistol',
+    category: 'weapon',
     width: 2,
     height: 2,
     inventoryId: 'player',
   });
 
-  const ammo = new ammo9Item();
-  ammo.inventoryId = 'player';
-  ammo.anchorSlot = 3;
-  ammo.uniqueId = '123';
-
-  const pistol = new heavyPistolItem();
-  pistol.inventoryId = 'player';
-  pistol.anchorSlot = 14;
-  pistol.uniqueId = '1233';
-
-  const items = $state<Record<string, InventoryItem>>({
-    '123': ammo,
-    '1233': pistol,
+  const HeavyRifle = ItemFactory('HeavyRifle', {
+    label: 'Heavy Rifle',
+    name: 'HeavyRifle',
+    category: 'weapon',
+    width: 7,
+    height: 3,
+    inventoryId: 'player',
   });
 
   let inventory = new InventoryState({
     inventoryId: 'player',
     label: 'inventory',
-    items: {
-      3: '123',
-      14: '1233',
-      15: '1233',
-      26: '1233',
-      27: '1233',
-    },
-    width: 12,
-    height: 12,
+    items: {},
+    width: Config.Player_Width,
+    height: Config.Player_Height,
+  });
+
+  const ammo = new ammo9Item();
+  ammo.uniqueId = 1;
+
+  const pistol = new HeavyPistol();
+  pistol.uniqueId = 2;
+
+  const rifle = new HeavyRifle();
+  rifle.uniqueId = 3;
+
+  ammo.move(inventory, 3)
+  pistol.move(inventory, 14)
+  rifle.move(inventory, 5)
+
+  const items = $state<Record<string, InventoryItem>>({
+    '1': ammo,
+    '2': pistol,
+    '3': rifle,
   });
 
   let slots = inventory.width * inventory.height;

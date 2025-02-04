@@ -1,5 +1,6 @@
 {
   "Inventory": {
+    "SlotSize": 48,
     "BlurScreen": true,
     "EnableKeys": [249],
     "ImagePath": "https://items.overextended.dev",
@@ -7,12 +8,14 @@
   },
   "Player": {
     "MaxWeight": 50000,
-    "Dimensions": [20, 20],
+    "Width": 12,
+    "Height": 8,
     "UseTargeting": true
   },
   "Drop": {
     "MaxWeight": 50000,
-    "Dimensions": [20, 20],
+    "Width": 8,
+    "Height": 4,
     "Model": "prop_med_bag_01b",
     "UseTargeting": true
   },
