@@ -14,15 +14,13 @@
   const SLOT_SIZE = Config.Inventory_SlotSize;
   const SLOT_GAP = 1;
 
-  const ammo9Item = ItemFactory('ammo-9', {
-    label: 'ammo-9',
-    name: 'ammo-9',
-    icon: 'ammo-9.png',
+  const Ammo9 = ItemFactory('ammo_9', {
+    label: '9mm',
+    category: 'ammo'
   });
 
   const HeavyPistol = ItemFactory('HeavyPistol', {
     label: 'Heavy Pistol',
-    name: 'HeavyPistol',
     category: 'weapon',
     width: 2,
     height: 2,
@@ -31,7 +29,6 @@
 
   const HeavyRifle = ItemFactory('HeavyRifle', {
     label: 'Heavy Rifle',
-    name: 'HeavyRifle',
     category: 'weapon',
     width: 7,
     height: 3,
@@ -46,13 +43,12 @@
     height: Config.Player_Height,
   });
 
-  const ammo = new ammo9Item();
-  ammo.uniqueId = 1;
-
+  const ammo = new Ammo9();
   const pistol = new HeavyPistol();
-  pistol.uniqueId = 2;
-
   const rifle = new HeavyRifle();
+
+  ammo.uniqueId = 1;
+  pistol.uniqueId = 2;
   rifle.uniqueId = 3;
 
   ammo.move(inventory, 3)

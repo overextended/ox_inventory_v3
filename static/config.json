@@ -3,8 +3,8 @@
     "SlotSize": 48,
     "BlurScreen": true,
     "EnableKeys": [249],
-    "ImagePath": "https://items.overextended.dev",
-    "ItemNotifications": true
+    "ImagePath": "./images",
+    "ItemNotifications": true,
   },
   "Player": {
     "MaxWeight": 50000,

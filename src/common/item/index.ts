@@ -1,5 +1,6 @@
 import Config from '@common/config';
 import { BaseInventory } from '@common/inventory/class';
+import fetch from 'sync-fetch';
 
 export interface ItemMetadata {
   label?: string;
@@ -46,8 +47,14 @@ function clamp(max: number = 4294967295, n: number = max) {
 export function ItemFactory(name: string, item?: ItemProperties) {
   if (!item) throw new Error(`Attempted to create invalid item '${name}'`);
 
+  item.name = name;
   item.itemLimit = clamp(4294967295, item.itemLimit);
   item.stackSize = clamp(65535, item.stackSize);
+  
+  const iconPath = `${item.category}/${item.name}.webp`;
+  let hasIcon = false;
+
+  item.icon = item.icon ?? `${Config.Inventory_ImagePath}/${iconPath}`;
 
   const Item = class implements ItemProperties {
     /** A unique name to identify the item type and inherit data. */
@@ -115,7 +122,16 @@ export function ItemFactory(name: string, item?: ItemProperties) {
     }
 
     get icon() {
-      return item.icon ?? `${Config.Inventory_ImagePath}/${this.category}/${this.name}.webp`;
+      if (!hasIcon) {
+        // Use resource configured image path; fallback to ox cdn
+        const iconUrl = item.icon ?? `${Config.Inventory_ImagePath}/${iconPath}`;
+        const iconType = (fetch(iconUrl)?.blob() as any)?.type;
+
+        item.icon = iconType === 'image/webp' ? iconUrl : `https://items.overextended.dev/${iconPath}`;
+        hasIcon = true;
+      }
+
+      return item.icon;
     }
 
     get tradeable() {
