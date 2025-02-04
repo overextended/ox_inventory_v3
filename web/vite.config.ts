@@ -11,7 +11,7 @@ export default defineConfig(({ mode }) => {
       alias: {
         $lib: path.resolve('./src/lib'),
         '~': path.resolve('../'),
-        '@common': path.resolve('../src/common'),
+        '@common': path.resolve('../src/common/'),
       },
     },
     ...(mode === 'development' && { publicDir: '../' }),

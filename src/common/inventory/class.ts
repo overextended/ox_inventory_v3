@@ -9,7 +9,7 @@ export class BaseInventory {
   readonly type: string;
 
   /** An object where each key-value refers to the grid position and an item's uniqueid in that slot. */
-  readonly items: Record<number, string> = {};
+  readonly items: Record<number, number> = {};
 
   public label: string;
   public width: number;
@@ -29,7 +29,7 @@ export class BaseInventory {
     return BaseInventory.instances[inventoryId] as T;
   }
 
-  public setSlotRefs(slots: number[], uniqueId?: string) {
+  public setSlotRefs(slots: number[], uniqueId?: number) {
     slots.forEach((slotId) => (uniqueId ? (this.items[slotId] = uniqueId) : delete this.items[slotId]));
   }
 }

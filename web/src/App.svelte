@@ -1,9 +1,9 @@
 <script lang="ts">
   import { isEnvBrowser } from '$lib/utils/misc';
   import { cn } from '$lib/utils';
-  import { type InventoryItem, ItemFactory } from '~/src/common/item';
-  import { BaseInventory } from '~/src/common/inventory/class';
-  import Config from '~/src/common/config';
+  import { type InventoryItem, ItemFactory } from '@common/item';
+  import { BaseInventory } from '@common/inventory/class';
+  import Config from '@common/config';
 
   let visible = $state(isEnvBrowser());
 

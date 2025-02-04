@@ -1,5 +1,4 @@
 import Config from '@common/config';
-import { ResourceName } from '@common/index';
 import { BaseInventory } from '@common/inventory/class';
 
 export interface ItemMetadata {
