@@ -4,19 +4,19 @@
   import { type InventoryItem, ItemFactory } from '@common/item';
   import { BaseInventory } from '@common/inventory/class';
   import Config from '@common/config';
+  import { useNuiEvent } from '$lib/hooks/useNuiEvents';
+  import { debugData } from '$lib/utils/debugData';
+  import { fetchNui } from '$lib/utils/fetchNui';
 
-  let visible = $state(isEnvBrowser());
+  let visible = $state(false);
 
   class InventoryState extends BaseInventory {
     itemState = $state(this.items);
   }
 
-  const SLOT_SIZE = Config.Inventory_SlotSize;
-  const SLOT_GAP = 1;
-
   const Ammo9 = ItemFactory('ammo_9', {
     label: '9mm',
-    category: 'ammo'
+    category: 'ammo',
   });
 
   const HeavyPistol = ItemFactory('HeavyPistol', {
@@ -37,10 +37,10 @@
 
   let inventory = new InventoryState({
     inventoryId: 'player',
-    label: 'inventory',
+    label: '',
     items: {},
-    width: Config.Player_Width,
-    height: Config.Player_Height,
+    width: 2,
+    height: 2,
   });
 
   const ammo = new Ammo9();
@@ -51,20 +51,61 @@
   pistol.uniqueId = 2;
   rifle.uniqueId = 3;
 
-  ammo.move(inventory, 3)
-  pistol.move(inventory, 14)
-  rifle.move(inventory, 5)
-
-  const items = $state<Record<string, InventoryItem>>({
-    '1': ammo,
-    '2': pistol,
-    '3': rifle,
+  const items = $state<Record<number, InventoryItem>>({
+    1: ammo,
+    2: pistol,
+    3: rifle,
   });
 
-  let slots = inventory.width * inventory.height;
-  let inventoryItems = $derived(Array.from({ length: slots }).map((_, index) => getInventoryItemAtSlot(index)));
+  const SLOT_SIZE = Config.Inventory_SlotSize;
+  const SLOT_GAP = 1;
 
-  const getInventoryItemAtSlot = (slot: number) => items[inventory.itemState[slot]];
+  debugData<{ inventory: BaseInventory }>(
+    [
+      {
+        action: 'openInventory',
+        data: {
+          inventory: {
+            inventoryId: 'player',
+            label: 'Inventory',
+            items: {
+              1: 3,
+            },
+            width: 12,
+            height: 6,
+          },
+        },
+      },
+    ],
+    1000
+  );
+
+  let inventoryItems = $state();
+  let getInventoryItemAtSlot = (slot: number) => {
+    const item = items[inventory.itemState[slot]];
+
+    return item;
+  };
+
+  function refreshSlots() {
+    inventoryItems = Array.from({ length: inventory.width * inventory.height }).map((_, index) =>
+      getInventoryItemAtSlot(index)
+    );
+  }
+
+  useNuiEvent('openInventory', (data: { inventory: ReturnType<BaseInventory> }) => {
+    inventory = new InventoryState(data.inventory);
+
+    // TODO: somehow set passed in items into slots to also contain anchorSlot
+    ammo.move(inventory, 3);
+    pistol.move(inventory, 14);
+    rifle.move(inventory, 5);
+
+    inventory.itemState = data.inventory.items;
+    refreshSlots();
+
+    visible = true;
+  });
 
   if (isEnvBrowser()) {
     const root = document.getElementById('app');
@@ -161,6 +202,12 @@
 
     item.move(inventory, slot);
     inventory.itemState = inventory.items;
+    refreshSlots();
+
+    fetchNui('moveItem', {
+      item,
+      slot,
+    });
 
     dragSlot = null;
     document.body.style.cursor = 'auto';
@@ -188,7 +235,7 @@
 <div class={cn('flex items-center h-full justify-center bg-black/80', !visible && 'hidden')}>
   <div class="flex flex-col">
     <div class="w-full bg-background p-2 text-foreground">
-      <p>Inventory</p>
+      <p>{inventory.label}</p>
     </div>
     <div
       id="inv-grid"
