@@ -5,6 +5,7 @@
     "EnableKeys": [249],
     "ImagePath": "./images",
     "ItemNotifications": true,
+    "MultiSlotItems": true
   },
   "Player": {
     "MaxWeight": 50000,

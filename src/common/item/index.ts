@@ -143,11 +143,11 @@ export function ItemFactory(name: string, item?: ItemProperties) {
     }
 
     get width() {
-      return item.width ?? 1;
+      return (Config.Inventory_MultiSlotItems && item.width) || 1;
     }
 
     get height() {
-      return item.height ?? 1;
+      return (Config.Inventory_MultiSlotItems && item.height) || 1;
     }
 
     /**
