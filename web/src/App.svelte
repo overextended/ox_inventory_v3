@@ -25,7 +25,7 @@
             inventoryId: 'player',
             width: 2,
             height: 2,
-            category: 'miscellaneous',
+            category: name.match('ammo_') ? 'ammo' : 'weapon',
           }
         : await fetchNui(`getStateKeyValue`, [`global`, `Item:${name}`]);
       Item = ItemFactory(name, data);
@@ -34,13 +34,15 @@
     return new Item(metadata);
   }
 
-  let inventory = new InventoryState({
-    inventoryId: 'player',
-    label: '',
-    items: {},
-    width: 2,
-    height: 2,
-  });
+  let inventory = $state(
+    new InventoryState({
+      inventoryId: 'player',
+      label: '',
+      items: {},
+      width: 2,
+      height: 2,
+    })
+  );
 
   const items = $state<Record<number, InventoryItem>>({});
   const SLOT_SIZE = Config.Inventory_SlotSize;
@@ -56,7 +58,6 @@
             label: 'Inventory',
             items: {
               0: 7,
-              1: 3,
               4: 8,
             },
             width: 12,
@@ -107,6 +108,8 @@
       items[item.anchorSlot] = item;
 
       item.move(inventory, item.anchorSlot);
+
+      console.log(item.name, item.anchorSlot, item.icon);
     }
 
     inventory.itemState = items;
