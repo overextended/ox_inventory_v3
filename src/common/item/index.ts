@@ -1,6 +1,7 @@
 import Config from '@common/config';
 import { BaseInventory } from '@common/inventory/class';
 import fetch from 'sync-fetch';
+import { ResourceContext, ResourceName } from '..';
 
 export interface ItemMetadata {
   label?: string;
@@ -36,7 +37,7 @@ export function GetItemData(name: string) {
   return Items[name];
 }
 
-export function GetInventoryItem(uniqueId: string) {
+export function GetInventoryItem(uniqueId: number) {
   return InventoryItems[uniqueId];
 }
 
@@ -44,17 +45,20 @@ function clamp(max: number = 4294967295, n: number = max) {
   return Math.min(Math.max(n, 0), max);
 }
 
-export function ItemFactory(name: string, item?: ItemProperties) {
+export function ItemFactory(name: string, item: ItemProperties) {
   if (!item) throw new Error(`Attempted to create invalid item '${name}'`);
 
   item.name = name;
+  item.category = item.category ?? 'miscellaneous';
   item.itemLimit = clamp(4294967295, item.itemLimit);
   item.stackSize = clamp(65535, item.stackSize);
-  
+
   const iconPath = `${item.category}/${item.name}.webp`;
   let hasIcon = false;
 
   item.icon = item.icon ?? `${Config.Inventory_ImagePath}/${iconPath}`;
+
+  if (typeof GlobalState !== 'undefined') GlobalState.set(`Item:${name}`, item, true);
 
   const Item = class implements ItemProperties {
     /** A unique name to identify the item type and inherit data. */
@@ -94,7 +98,7 @@ export function ItemFactory(name: string, item?: ItemProperties) {
     }
 
     get category() {
-      return item.category ?? 'miscellaneous';
+      return item.category;
     }
 
     get decay() {
@@ -125,7 +129,10 @@ export function ItemFactory(name: string, item?: ItemProperties) {
       if (!hasIcon) {
         // Use resource configured image path; fallback to ox cdn
         const iconUrl = item.icon ?? `${Config.Inventory_ImagePath}/${iconPath}`;
-        const iconType = (fetch(iconUrl)?.blob() as any)?.type;
+        const iconType =
+          ResourceContext === 'web'
+            ? (fetch(iconUrl)?.blob() as any)?.type
+            : LoadResourceFile(ResourceName, iconUrl) && 'image/webp';
 
         item.icon = iconType === 'image/webp' ? iconUrl : `https://items.overextended.dev/${iconPath}`;
         hasIcon = true;
@@ -148,6 +155,18 @@ export function ItemFactory(name: string, item?: ItemProperties) {
 
     get height() {
       return (Config.Inventory_MultiSlotItems && item.height) || 1;
+    }
+
+    /**
+     * Finds the next available slot for the item in the inventory.
+     * @returns The next available slot or -1 if no slot is available.
+     */
+    private findAvailableSlot(inventory: BaseInventory) {
+      for (let slot = 0; slot < inventory.width * inventory.height; slot++) {
+        if (this.canMove(inventory, slot)) return slot;
+      }
+
+      return -1;
     }
 
     /**
@@ -188,7 +207,9 @@ export function ItemFactory(name: string, item?: ItemProperties) {
       return this.getSlots(inventory, startSlot);
     }
 
-    public move(inventory: BaseInventory, startSlot: number) {
+    public move(inventory: BaseInventory, startSlot?: number) {
+      if (startSlot === undefined) startSlot = this.findAvailableSlot(inventory);
+
       const slots = this.canMove(inventory, startSlot);
 
       if (!slots) return false;

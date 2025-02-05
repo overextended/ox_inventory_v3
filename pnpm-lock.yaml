@@ -17,6 +17,9 @@ importers:
       '@nativewrappers/server':
         specifier: ^0.0.45
         version: 0.0.45
+      '@overextended/ox_core':
+        specifier: ^1.3.2
+        version: 1.3.2
       '@overextended/ox_lib':
         specifier: latest
         version: 3.27.0
@@ -608,11 +611,20 @@ packages:
   '@nativewrappers/common@0.0.45':
     resolution: {integrity: sha512-R1/d5CZX3DIT6s2K19Ncf3RcsOQfpod+rIRY+q2jRkaBNyYlPhgX1EEdyfkj1pg7IUwlvI4drZZZUS/B1vlflQ==}
 
+  '@nativewrappers/common@0.0.50':
+    resolution: {integrity: sha512-miTop92sO3xo3mxIPL0R0fc/BJjCPIP5c6zwpx2v3rhD7cHMRWPpoHs41fFaVx+LgAzgLBISe49i0jQnL6BY6g==}
+
   '@nativewrappers/fivem@0.0.41':
     resolution: {integrity: sha512-GUX3N+nlKHj8xT76xtvWUYaQE58UjG18PvjyxMAp6fHAVCP7dktPvX4RwQxg8oQFP9qu4RHZ2DoknVYfrBOGMw==}
 
+  '@nativewrappers/fivem@0.0.50':
+    resolution: {integrity: sha512-126dhTi2JUv+tWyHj8wGlKLKWNy2/cvnPkFXFxFZzV6Ldx8RrOkpUdvYDIQHbyscseO7kmI1y9wMORjFBNRPfw==}
+
   '@nativewrappers/server@0.0.45':
     resolution: {integrity: sha512-S08ZefhAbSN1eO2nNpzPlhTOhr/qKfFu3iO1qifiI+ljQRaEphW3Y22VV7dDvM6sa/hv1RE4mX2i/1VMwXWJWQ==}
+
+  '@nativewrappers/server@0.0.50':
+    resolution: {integrity: sha512-+3At8cHQ7cAkhfo8/V30KW2eIk9n6dRDp4Mt84O8BxhVSu78V/r73r5smqoTxtyw7ERcDQbl/LaeCHd9Rmn2Ng==}
 
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -630,8 +642,15 @@ packages:
     resolution: {integrity: sha512-8cv3lO6WbipBhUmMtY9xpYscq73xMrte1okgkMdU5SkadU8z6qeqMsXWSCZz/8rM1cmMXYAYyv6OpiVIzt02iw==}
     hasBin: true
 
+  '@overextended/ox_core@1.3.2':
+    resolution: {integrity: sha512-tw1FGDQ1JjejU+8tSG/P1rCUHyVBYNzkn/IZCgmrcIGnFwVjYcIrRJ5LCAmthjzjONWLOrEzIOxk5A2EdbjzvQ==}
+    engines: {node: '>=16.9.1'}
+
   '@overextended/ox_lib@3.27.0':
     resolution: {integrity: sha512-VbiyTzaZRanJ7F7i0tps/8ObjSFerm7oB++zQQmDUrs2Vo2le/xyAvBqMpTGixx1qw86Ly0sl3CQtyJaYNGZPQ==}
+
+  '@overextended/ox_lib@3.29.0':
+    resolution: {integrity: sha512-nB0OQn5cwzI3VnmY51bQHQG99TYTRiAinzfITh73EDeSKuCOZ3FyVyrEfO10wiqg9heVKAieC7flC6hj355u+w==}
 
   '@overextended/oxmysql@1.4.2':
     resolution: {integrity: sha512-icYbwzi1e65SX9hmbsoDrG+ZV/ks19GWwyJ45xGdkqDrh3gLqc8vlA2olTEOiw54U1RHkYbC70yCVFaCKNY+5A==}
@@ -777,6 +796,9 @@ packages:
   '@types/estree@1.0.6':
     resolution: {integrity: sha512-AYnb1nQyY49te+VRAVgmzfcgjYS91mY5P0TKUDCLEM+gNnA+3T6rWITXRLYCpahpqSQbN5cE+gHpnPyXjHWxcw==}
 
+  '@types/geojson@7946.0.16':
+    resolution: {integrity: sha512-6C8nqWur3j98U6+lXDfTUWIfgvZU+EumvpHKcYjujKH7woYyLj2sUmff0tRhrqM7BohUw7Pz3ZB1jj2gW9Fvmg==}
+
   '@types/json-schema@7.0.15':
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
 
@@ -785,6 +807,9 @@ packages:
 
   '@types/node@20.17.12':
     resolution: {integrity: sha512-vo/wmBgMIiEA23A/knMfn/cf37VnuF52nZh5ZoW0GWt4e4sxNquibrMRJ7UQsA06+MBx9r/H1jsI9grYjQCQlw==}
+
+  '@types/node@22.13.1':
+    resolution: {integrity: sha512-jK8uzQlrvXqEU91UxiK5J7pKHyzgnI1Qnl0QDHIgVGuolJhRb9EEl28Cj9b3rGR8B2lhFCtvIm5os8lFnO/1Ew==}
 
   '@types/sync-fetch@0.4.3':
     resolution: {integrity: sha512-RfwkmWFd7yi6tRaDcR7KNrxyp6LpO2oXrT6tYkXBLNfp4xf4EKRX7IlLexbtd5X26g34+G6HDD2pMhOZ5srUmQ==}
@@ -1027,6 +1052,10 @@ packages:
     resolution: {integrity: sha512-ZySD7Nf91aLB0RxL4KGrKHBXl7Eds1DAmEdcoVawXnLD7SDhpNgtuII2aAkg7a7QS41jxPSZ17p4VdGnMHk3MQ==}
     engines: {node: '>=0.4.0'}
 
+  denque@2.1.0:
+    resolution: {integrity: sha512-HVQE3AAb/pxF8fQAoiqpvg9i3evqug3hoiwakOyZAwJm+6vZehbkYXZ0l4JxS+I3QxM97v5aaRNhj8v5oBhekw==}
+    engines: {node: '>=0.10'}
+
   didyoumean@1.2.2:
     resolution: {integrity: sha512-gxtyfqMg7GKyhQmb056K7M3xszy/myH8w+B4RT+QXBQsvAOdc3XymqDDPHx1BgPgsdAA5SIifona89YtRATDzw==}
 
@@ -1228,6 +1257,10 @@ packages:
     resolution: {integrity: sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==}
     engines: {node: '>= 0.4'}
 
+  iconv-lite@0.6.3:
+    resolution: {integrity: sha512-4fCk79wshMdzMp2rH06qWrJE4iolqLhCUH+OiuIgU++RB0+94NlDL81atO7GX55uUKueo0txHNtvEyI6D7WdMw==}
+    engines: {node: '>=0.10.0'}
+
   ignore@5.3.2:
     resolution: {integrity: sha512-hsBTNUqQTDwkWtcdYI2i06Y/nUBEsNEDJKjWdigLvegy8kDuJAS8uRlpkkcQpyEXL0Z/pjDy5HBmMjRCJ2gq+g==}
     engines: {node: '>= 4'}
@@ -1342,6 +1375,10 @@ packages:
 
   magic-string@0.30.17:
     resolution: {integrity: sha512-sNPKHvyjVf7gyjwS4xGTaW/mCnF8wnjtifKBEhxfZ7E/S8tQ0rssrwGNn6q8JH/ohItJfSQp9mBtQYuTlH5QnA==}
+
+  mariadb@3.4.0:
+    resolution: {integrity: sha512-hdRPcAzs+MTxK5VG1thBW18gGTlw6yWBe9YnLB65GLo7q0fO5DWsgomIevV/pXSaWRmD3qi6ka4oSFRTExRiEQ==}
+    engines: {node: '>= 14'}
 
   merge2@1.4.1:
     resolution: {integrity: sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==}
@@ -1648,6 +1685,9 @@ packages:
     resolution: {integrity: sha512-xal3CZX1Xlo/k4ApwCFrHVACi9fBqJ7V+mwhBsuf/1IOKbBy098Fex+Wa/5QMubw09pSZ/u8EY8PWgevJsXp1A==}
     engines: {node: '>=6'}
 
+  safer-buffer@2.1.2:
+    resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==}
+
   semver@6.3.1:
     resolution: {integrity: sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==}
     hasBin: true
@@ -1803,6 +1843,9 @@ packages:
 
   undici-types@6.19.8:
     resolution: {integrity: sha512-ve2KP6f/JnbPBFyobGHuerC9g1FYGn/F8n1LWTwNxCEzd6IfqTwUQcNXgEtmmQ6DlRrC1hrSrBnCZPokRrDHjw==}
+
+  undici-types@6.20.0:
+    resolution: {integrity: sha512-Ny6QZ2Nju20vw1SRHe3d9jVu6gJ+4e3+MMpqu7pqE5HT6WsTSlce++GQmK5UXS8mzV8DSYHrQH+Xrf2jVcuKNg==}
 
   update-browserslist-db@1.1.2:
     resolution: {integrity: sha512-PPypAm5qvlD7XMZC3BujecnaOxwhrtoFR+Dqkk5Aa/6DssiH0ibKoketaj9w8LP7Bont1rYeoV5plxD7RTEPRg==}
@@ -2279,11 +2322,21 @@ snapshots:
 
   '@nativewrappers/common@0.0.45': {}
 
+  '@nativewrappers/common@0.0.50': {}
+
   '@nativewrappers/fivem@0.0.41': {}
+
+  '@nativewrappers/fivem@0.0.50':
+    dependencies:
+      '@nativewrappers/common': 0.0.50
 
   '@nativewrappers/server@0.0.45':
     dependencies:
       '@nativewrappers/common': 0.0.45
+
+  '@nativewrappers/server@0.0.50':
+    dependencies:
+      '@nativewrappers/common': 0.0.50
 
   '@nodelib/fs.scandir@2.1.5':
     dependencies:
@@ -2302,7 +2355,21 @@ snapshots:
       esbuild: 0.23.1
       tsc-alias: 1.8.10
 
+  '@overextended/ox_core@1.3.2':
+    dependencies:
+      '@nativewrappers/fivem': 0.0.50
+      '@nativewrappers/server': 0.0.50
+      '@overextended/ox_lib': 3.29.0
+      mariadb: 3.4.0
+
   '@overextended/ox_lib@3.27.0':
+    dependencies:
+      '@nativewrappers/client': 1.7.33
+      csstype: 3.1.3
+      fast-printf: 1.6.10
+      typescript: 5.7.3
+
+  '@overextended/ox_lib@3.29.0':
     dependencies:
       '@nativewrappers/client': 1.7.33
       csstype: 3.1.3
@@ -2431,6 +2498,8 @@ snapshots:
 
   '@types/estree@1.0.6': {}
 
+  '@types/geojson@7946.0.16': {}
+
   '@types/json-schema@7.0.15': {}
 
   '@types/node-fetch@2.6.12':
@@ -2441,6 +2510,10 @@ snapshots:
   '@types/node@20.17.12':
     dependencies:
       undici-types: 6.19.8
+
+  '@types/node@22.13.1':
+    dependencies:
+      undici-types: 6.20.0
 
   '@types/sync-fetch@0.4.3':
     dependencies:
@@ -2692,6 +2765,8 @@ snapshots:
   deepmerge@4.3.1: {}
 
   delayed-stream@1.0.0: {}
+
+  denque@2.1.0: {}
 
   didyoumean@1.2.2: {}
 
@@ -2951,6 +3026,10 @@ snapshots:
     dependencies:
       function-bind: 1.1.2
 
+  iconv-lite@0.6.3:
+    dependencies:
+      safer-buffer: 2.1.2
+
   ignore@5.3.2: {}
 
   import-fresh@3.3.0:
@@ -3042,6 +3121,14 @@ snapshots:
   magic-string@0.30.17:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.5.0
+
+  mariadb@3.4.0:
+    dependencies:
+      '@types/geojson': 7946.0.16
+      '@types/node': 22.13.1
+      denque: 2.1.0
+      iconv-lite: 0.6.3
+      lru-cache: 10.4.3
 
   merge2@1.4.1: {}
 
@@ -3271,6 +3358,8 @@ snapshots:
     dependencies:
       mri: 1.2.0
 
+  safer-buffer@2.1.2: {}
+
   semver@6.3.1: {}
 
   semver@7.6.3: {}
@@ -3457,6 +3546,8 @@ snapshots:
   typescript@5.7.3: {}
 
   undici-types@6.19.8: {}
+
+  undici-types@6.20.0: {}
 
   update-browserslist-db@1.1.2(browserslist@4.24.4):
     dependencies:

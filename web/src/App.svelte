@@ -1,7 +1,7 @@
 <script lang="ts">
   import { isEnvBrowser } from '$lib/utils/misc';
   import { cn } from '$lib/utils';
-  import { type InventoryItem, ItemFactory } from '@common/item';
+  import { type InventoryItem, ItemFactory, GetItemData, GetInventoryItem } from '@common/item';
   import { BaseInventory } from '@common/inventory/class';
   import Config from '@common/config';
   import { useNuiEvent } from '$lib/hooks/useNuiEvents';
@@ -14,26 +14,25 @@
     itemState = $state(this.items);
   }
 
-  const Ammo9 = ItemFactory('ammo_9', {
-    label: '9mm',
-    category: 'ammo',
-  });
+  async function CreateItem(name: string, metadata: Partial<ItemProperties> = {}) {
+    let Item = GetItemData(name);
 
-  const HeavyPistol = ItemFactory('HeavyPistol', {
-    label: 'Heavy Pistol',
-    category: 'weapon',
-    width: 2,
-    height: 2,
-    inventoryId: 'player',
-  });
+    if (!Item) {
+      const data = isEnvBrowser()
+        ? {
+            name,
+            quantity: 1,
+            inventoryId: 'player',
+            width: 2,
+            height: 2,
+            category: 'miscellaneous',
+          }
+        : await fetchNui(`getStateKeyValue`, [`global`, `Item:${name}`]);
+      Item = ItemFactory(name, data);
+    }
 
-  const HeavyRifle = ItemFactory('HeavyRifle', {
-    label: 'Heavy Rifle',
-    category: 'weapon',
-    width: 7,
-    height: 3,
-    inventoryId: 'player',
-  });
+    return new Item(metadata);
+  }
 
   let inventory = new InventoryState({
     inventoryId: 'player',
@@ -43,20 +42,7 @@
     height: 2,
   });
 
-  const ammo = new Ammo9();
-  const pistol = new HeavyPistol();
-  const rifle = new HeavyRifle();
-
-  ammo.uniqueId = 1;
-  pistol.uniqueId = 2;
-  rifle.uniqueId = 3;
-
-  const items = $state<Record<number, InventoryItem>>({
-    1: ammo,
-    2: pistol,
-    3: rifle,
-  });
-
+  const items = $state<Record<number, InventoryItem>>({});
   const SLOT_SIZE = Config.Inventory_SlotSize;
   const SLOT_GAP = 1;
 
@@ -69,11 +55,30 @@
             inventoryId: 'player',
             label: 'Inventory',
             items: {
+              0: 7,
               1: 3,
+              4: 8,
             },
             width: 12,
             height: 6,
           },
+          items: [
+            {
+              name: 'ammo_9',
+              quantity: 1,
+              inventoryId: 'player',
+              uniqueId: 7,
+              anchorSlot: 0,
+            },
+
+            {
+              name: 'HeavyPistol',
+              quantity: 1,
+              inventoryId: 'player',
+              uniqueId: 8,
+              anchorSlot: 4,
+            },
+          ],
         },
       },
     ],
@@ -81,6 +86,7 @@
   );
 
   let inventoryItems = $state();
+
   let getInventoryItemAtSlot = (slot: number) => {
     const item = items[inventory.itemState[slot]];
 
@@ -93,19 +99,26 @@
     );
   }
 
-  useNuiEvent('openInventory', (data: { inventory: ReturnType<BaseInventory> }) => {
+  useNuiEvent('openInventory', async (data: { inventory: BaseInventory; items: InventoryItem[] }) => {
     inventory = new InventoryState(data.inventory);
 
-    // TODO: somehow set passed in items into slots to also contain anchorSlot
-    ammo.move(inventory, 3);
-    pistol.move(inventory, 14);
-    rifle.move(inventory, 5);
+    for (const value of data.items) {
+      const item: InventoryItem = (await GetInventoryItem(value)) ?? (await CreateItem(value.name, value));
+      items[item.anchorSlot] = item;
 
-    inventory.itemState = data.inventory.items;
+      item.move(inventory, item.anchorSlot);
+    }
+
+    inventory.itemState = items;
+
+    console.log(JSON.stringify(inventory, '', 2));
+    console.log(JSON.stringify(items, '', 2));
     refreshSlots();
 
     visible = true;
   });
+
+  useNuiEvent('closeInventory', () => (visible = false));
 
   if (isEnvBrowser()) {
     const root = document.getElementById('app');

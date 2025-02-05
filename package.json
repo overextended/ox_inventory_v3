@@ -54,6 +54,7 @@
     "@jgoz/esbuild-plugin-typecheck": "^4.0.2",
     "@nativewrappers/fivem": "^0.0.41",
     "@nativewrappers/server": "^0.0.45",
+    "@overextended/ox_core": "^1.3.2",
     "@overextended/ox_lib": "latest",
     "@overextended/oxmysql": "^1.4.2",
     "prettier-plugin-svelte": "^3.3.3",
