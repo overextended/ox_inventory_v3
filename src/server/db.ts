@@ -41,3 +41,10 @@ export function AddDbInventoryItem(name: string, data: ItemMetadata & { inventor
     JSON.stringify(metadata),
   ]);
 }
+
+export function UpdateDbInventoryItem(uniqueId: number, data: ItemMetadata) {
+  return oxmysql.prepare(`UPDATE ox_inventory_items SET metadata = ? WHERE uniqueId = ?`, [
+    JSON.stringify(data),
+    uniqueId,
+  ]);
+}

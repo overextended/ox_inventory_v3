@@ -1,6 +1,7 @@
 import { GetInventoryItem } from '@common/item';
 import { GetInventory } from './inventory';
 import { CreateItem } from './item';
+import { UpdateDbInventoryItem } from './db';
 
 onNet(`ox_inventory:requestOpenInventory`, async () => {
   const playerId = source;
@@ -15,11 +16,13 @@ onNet(`ox_inventory:requestMoveItem`, async (data: any) => {
   const from = await GetInventory(data.fromId, data.fromType);
   const item = GetInventoryItem(from?.items[data.fromSlot]);
 
-  console.log(data)
+  console.log(data);
 
   if (!item || !from) return;
 
   item.move(from, data.toSlot);
+
+  UpdateDbInventoryItem(item.uniqueId, item);
 });
 
 RegisterCommand(
