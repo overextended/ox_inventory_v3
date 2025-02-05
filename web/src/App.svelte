@@ -12,6 +12,22 @@
 
   class InventoryState extends BaseInventory {
     itemState = $state(this.items);
+
+    constructor(data: Partial<BaseInventory>) {
+      super(data);
+
+      this.items = data.items;
+    }
+
+    getItemAtSlot(slot: number) {
+      return items[this.items[slot]];
+    }
+
+    refreshSlots() {
+      this.itemState = Array.from({ length: inventory.width * inventory.height }).map((_, index) =>
+        this.getItemAtSlot(index)
+      );
+    }
   }
 
   async function CreateItem(name: string, metadata: Partial<ItemProperties> = {}) {
@@ -86,37 +102,19 @@
     1000
   );
 
-  let inventoryItems = $state();
-
-  let getInventoryItemAtSlot = (slot: number) => {
-    const item = items[inventory.itemState[slot]];
-
-    return item;
-  };
-
-  function refreshSlots() {
-    inventoryItems = Array.from({ length: inventory.width * inventory.height }).map((_, index) =>
-      getInventoryItemAtSlot(index)
-    );
-  }
-
   useNuiEvent('openInventory', async (data: { inventory: BaseInventory; items: InventoryItem[] }) => {
     inventory = new InventoryState(data.inventory);
 
     for (const value of data.items) {
       const item: InventoryItem = (await GetInventoryItem(value)) ?? (await CreateItem(value.name, value));
-      items[item.anchorSlot] = item;
+      items[item.uniqueId] = item;
 
       item.move(inventory, item.anchorSlot);
 
       console.log(item.name, item.anchorSlot, item.icon);
     }
 
-    inventory.itemState = items;
-
-    console.log(JSON.stringify(inventory, '', 2));
-    console.log(JSON.stringify(items, '', 2));
-    refreshSlots();
+    inventory.refreshSlots();
 
     visible = true;
   });
@@ -144,7 +142,8 @@
     const slot = +target.dataset.slot!;
 
     if (slot === null) return;
-    const item = getInventoryItemAtSlot(slot);
+    const item = inventory.getItemAtSlot(slot);
+    console.log('item?', item, target)
 
     if (!item) return;
 
@@ -168,7 +167,7 @@
 
     dragImg.style.transform = `translate(${event.clientX - dragImg.clientWidth / 2}px, ${event.clientY - dragImg.clientHeight / 2}px)`;
 
-    const item = getInventoryItemAtSlot(dragSlot);
+    const item = inventory.getItemAtSlot(dragSlot);
 
     if (!item) return;
 
@@ -203,7 +202,7 @@
     dragImg.style.display = 'none';
     dropIndicator.style.display = 'none';
 
-    const item = getInventoryItemAtSlot(dragSlot);
+    const item = inventory.getItemAtSlot(dragSlot);
 
     if (!item) return;
 
@@ -217,8 +216,7 @@
     if (slot === null || slot === dragSlot) return;
 
     item.move(inventory, slot);
-    inventory.itemState = inventory.items;
-    refreshSlots();
+    inventory.refreshSlots();
 
     fetchNui('moveItem', {
       item,
@@ -260,7 +258,7 @@
     >
       <div class="fixed bg-green-500 opacity-30 pointer-events-none z-[51]" bind:this={dropIndicator}></div>
 
-      {#each inventoryItems as item, index (item ? `${item.anchorSlot}-${index}` : `empty-${index}`)}
+      {#each inventory.itemState as item, index (item ? `${item.anchorSlot}-${index}` : `empty-${index}`)}
         <!-- svelte-ignore a11y_no_static_element_interactions -->
         <div
           class={'bg-gradient-to-b from-black/20 to-black/50 flex text-primary-foreground items-center justify-center relative border-r border-b border-white/10'}
