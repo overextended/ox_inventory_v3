@@ -1,3 +1,5 @@
+import Config from '@common/config';
+import { GetInventoryItem } from '@common/item';
 import { Vector3 } from '@nativewrappers/fivem';
 
 export class BaseInventory {
@@ -21,7 +23,18 @@ export class BaseInventory {
   public coords?: Vector3;
 
   constructor(data: any) {
-    Object.assign(this, data);
+    this.inventoryId = data.inventoryId;
+    this.type = data.type ?? 'player';
+    this.items = data.items ?? {};
+    this.label = data.label ?? 'Player inventory';
+    this.width = data.width ?? Config.Player_Width;
+    this.height = data.height ?? Config.Player_Height;
+    this.weight = data.weight ?? 0;
+    this.maxWeight = data.maxWeight ?? Config.Player_MaxWeight;
+    this.netId = data.netId;
+    this.ownerId = data.ownerId;
+    this.coords = data.coords;
+
     BaseInventory.instances[this.inventoryId] = this;
   }
 
@@ -31,5 +44,13 @@ export class BaseInventory {
 
   public setSlotRefs(slots: number[], uniqueId?: number) {
     slots.forEach((slotId) => (uniqueId ? (this.items[slotId] = uniqueId) : delete this.items[slotId]));
+  }
+
+  public mapItems() {
+    const values = [...new Set(Object.values(this.items))];
+
+    return values.map((uniqueId) => {
+      return GetInventoryItem(uniqueId);
+    });
   }
 }
