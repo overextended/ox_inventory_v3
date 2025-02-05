@@ -20,6 +20,11 @@ RegisterNuiCallback(`getStateKeyValue`, ([state, key]: [state: string, key: stri
   cb(value);
 });
 
+RegisterNuiCallback(`moveItem`, (data: any, cb: (status: number) => void) => {
+  emitNet(`ox_inventory:requestMoveItem`, data);
+  cb(1);
+});
+
 onNet(`ox_inventory:openInventory`, async (data: { inventory: BaseInventory; items: InventoryItem[] }) => {
   SetNuiFocus(true, true);
   SendNUIMessage({

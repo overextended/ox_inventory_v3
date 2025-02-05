@@ -41,7 +41,7 @@
             inventoryId: 'player',
             width: 2,
             height: 2,
-            category: name.match('ammo_') ? 'ammo' : 'weapon',
+            category: name.includes('ammo_') ? 'ammo' : 'weapon',
           }
         : await fetchNui(`getStateKeyValue`, [`global`, `Item:${name}`]);
       Item = ItemFactory(name, data);
@@ -143,7 +143,7 @@
 
     if (slot === null) return;
     const item = inventory.getItemAtSlot(slot);
-    console.log('item?', item, target)
+    console.log('item?', item, target);
 
     if (!item) return;
 
@@ -194,7 +194,7 @@
     dropIndicator.style.transform = `translate(${slotX * SLOT_SIZE}px, ${slotY * SLOT_SIZE}px)`;
   }
 
-  function onStopDrag(event: MouseEvent) {
+  async function onStopDrag(event: MouseEvent) {
     if (dragSlot === null) return;
 
     isDragging = false;
@@ -215,13 +215,18 @@
 
     if (slot === null || slot === dragSlot) return;
 
+    const success = await fetchNui('moveItem', {
+      fromType: inventory.type,
+      toType: inventory.type,
+      fromId: inventory.inventoryId,
+      toId: inventory.inventoryId,
+      fromSlot: item.anchorSlot,
+      toSlot: slot,
+      quantity: item.quantity,
+    });
+
     item.move(inventory, slot);
     inventory.refreshSlots();
-
-    fetchNui('moveItem', {
-      item,
-      slot,
-    });
 
     dragSlot = null;
     document.body.style.cursor = 'auto';

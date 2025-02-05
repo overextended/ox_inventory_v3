@@ -24,7 +24,7 @@ async function GetDefaultInventoryData(inventoryId: string, type: string) {
 }
 
 export async function GetInventory(inventoryId: string, type: string) {
-  if (type === 'player') {
+  if (type === 'player' && !inventoryId.includes(`player`)) {
     const player = GetPlayer(inventoryId);
     inventoryId = `player:${player.charId.toString()}`;
   }
