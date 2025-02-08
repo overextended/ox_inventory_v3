@@ -134,40 +134,7 @@
   let dragImg: HTMLElement;
   let dropIndicator: HTMLElement;
 
-  function onMouseDown(event: MouseEvent) {
-    isDragging = true;
-    let target = event.currentTarget as HTMLElement;
-    const slot = +target.dataset.slot!;
-
-    if (slot === null) return;
-    const item = inventory.getItemAtSlot(slot);
-
-    if (!item) return;
-
-    dragSlot = slot;
-
-    dragImg.style.backgroundImage = `url(${item.icon})`;
-    dragImg.style.display = 'block';
-    dragImg.style.transform = `translate(${event.clientX - dragImg.clientWidth / 2}px, ${event.clientY - dragImg.clientHeight / 2}px)`;
-    dragImg.style.width = `${item.width * SLOT_SIZE}px`;
-    dragImg.style.height = `${item.height * SLOT_SIZE}px`;
-
-    dropIndicator.style.width = `${item.width * SLOT_SIZE}px`;
-    dropIndicator.style.height = `${item.height * SLOT_SIZE}px`;
-    dropIndicator.style.display = 'block';
-
-    document.body.style.cursor = 'none';
-  }
-
-  function onMouseMove(event: MouseEvent) {
-    if (!isDragging || dragSlot === null) return;
-
-    dragImg.style.transform = `translate(${event.clientX - dragImg.clientWidth / 2}px, ${event.clientY - dragImg.clientHeight / 2}px)`;
-
-    const item = inventory.getItemAtSlot(dragSlot);
-
-    if (!item) return;
-
+  function updateDropIndicatorPosition(event: MouseEvent, item: InventoryItem) {
     const invGrid = document.querySelector('#inv-grid')!;
     const bodyRect = invGrid.getBoundingClientRect();
     const mouseX = event.clientX - bodyRect.left;
@@ -189,6 +156,42 @@
     dropIndicator.style.width = `${item.width * SLOT_SIZE}px`;
     dropIndicator.style.height = `${item.height * SLOT_SIZE}px`;
     dropIndicator.style.transform = `translate(${slotX * SLOT_SIZE}px, ${slotY * SLOT_SIZE}px)`;
+  }
+
+  function onMouseDown(event: MouseEvent) {
+    isDragging = true;
+    let target = event.currentTarget as HTMLElement;
+    const slot = +target.dataset.slot!;
+
+    if (slot === null) return;
+    const item = inventory.getItemAtSlot(slot);
+
+    if (!item) return;
+
+    dragSlot = slot;
+
+    dragImg.style.backgroundImage = `url(${item.icon})`;
+    dragImg.style.display = 'block';
+    dragImg.style.transform = `translate(${event.clientX - dragImg.clientWidth / 2}px, ${event.clientY - dragImg.clientHeight / 2}px)`;
+    dragImg.style.width = `${item.width * SLOT_SIZE}px`;
+    dragImg.style.height = `${item.height * SLOT_SIZE}px`;
+
+    updateDropIndicatorPosition(event, item);
+    dropIndicator.style.display = 'block';
+
+    document.body.style.cursor = 'none';
+  }
+
+  function onMouseMove(event: MouseEvent) {
+    if (!isDragging || dragSlot === null) return;
+
+    dragImg.style.transform = `translate(${event.clientX - dragImg.clientWidth / 2}px, ${event.clientY - dragImg.clientHeight / 2}px)`;
+
+    const item = inventory.getItemAtSlot(dragSlot);
+
+    if (!item) return;
+
+    updateDropIndicatorPosition(event, item);
   }
 
   async function onStopDrag(event: MouseEvent) {
