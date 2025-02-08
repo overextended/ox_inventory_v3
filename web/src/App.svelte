@@ -158,6 +158,19 @@
     dropIndicator.style.transform = `translate(${slotX * SLOT_SIZE}px, ${slotY * SLOT_SIZE}px)`;
   }
 
+  function resetDragImage() {
+    dragImg.style.backgroundImage = '';
+    dragImg.style.display = 'none';
+  }
+
+  function setDragImage(event: MouseEvent, item: InventoryItem) {
+    dragImg.style.backgroundImage = `url(${item.icon})`;
+    dragImg.style.display = 'block';
+    dragImg.style.transform = `translate(${event.clientX - dragImg.clientWidth / 2}px, ${event.clientY - dragImg.clientHeight / 2}px)`;
+    dragImg.style.width = `${item.width * SLOT_SIZE}px`;
+    dragImg.style.height = `${item.height * SLOT_SIZE}px`;
+  }
+
   function onMouseDown(event: MouseEvent) {
     isDragging = true;
     let target = event.currentTarget as HTMLElement;
@@ -170,12 +183,7 @@
 
     dragSlot = slot;
 
-    dragImg.style.backgroundImage = `url(${item.icon})`;
-    dragImg.style.display = 'block';
-    dragImg.style.transform = `translate(${event.clientX - dragImg.clientWidth / 2}px, ${event.clientY - dragImg.clientHeight / 2}px)`;
-    dragImg.style.width = `${item.width * SLOT_SIZE}px`;
-    dragImg.style.height = `${item.height * SLOT_SIZE}px`;
-
+    setDragImage(event, item);
     updateDropIndicatorPosition(event, item);
     dropIndicator.style.display = 'block';
 
@@ -198,8 +206,9 @@
     if (dragSlot === null) return;
 
     isDragging = false;
-    dragImg.style.backgroundImage = '';
-    dragImg.style.display = 'none';
+
+    resetDragImage();
+
     dropIndicator.style.display = 'none';
 
     const item = inventory.getItemAtSlot(dragSlot);
@@ -241,8 +250,7 @@
   function cancelDrag() {
     isDragging = false;
 
-    dragImg.style.backgroundImage = '';
-    dragImg.style.display = 'none';
+    resetDragImage();
 
     dragSlot = null;
 
