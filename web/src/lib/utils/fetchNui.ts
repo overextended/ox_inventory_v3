@@ -1,27 +1,25 @@
-/**
- * @param eventName - The endpoint eventname to target
- * @param data - Data you wish to send in the NUI Callback
- *
- * @return returnData - A promise for the data sent back by the NuiCallbacks CB argument
- */
+import { isEnvBrowser } from './misc';
 
-export async function fetchNui<T = unknown>(
-  eventName: string,
-  data: unknown = {},
-): Promise<T> {
+export async function fetchNui<T = any>(eventName: string, data?: any, mock?: { data: T; delay?: number }): Promise<T> {
+  if (isEnvBrowser()) {
+    if (!mock) return await new Promise((resolve) => resolve);
+    await new Promise((resolve) => setTimeout(resolve, mock.delay));
+    return mock.data;
+  }
+
   const options = {
-    method: "post",
+    method: 'post',
     headers: {
-      "Content-Type": "application/json; charset=UTF-8",
+      'Content-Type': 'application/json; charset=UTF-8',
     },
     body: JSON.stringify(data),
   };
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
   const resourceName = (window as any).GetParentResourceName
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call
-    ? (window as any).GetParentResourceName()
-    : "nui-frame-app";
+    ? // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-call
+      (window as any).GetParentResourceName()
+    : 'nui-frame-app';
 
   const resp = await fetch(`https://${resourceName}/${eventName}`, options);
 

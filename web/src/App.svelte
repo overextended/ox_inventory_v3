@@ -110,8 +110,6 @@
       items[item.uniqueId] = item;
 
       item.move(inventory, item.anchorSlot);
-
-      console.log(item.name, item.anchorSlot, item.icon);
     }
 
     inventory.refreshSlots();
@@ -143,7 +141,6 @@
 
     if (slot === null) return;
     const item = inventory.getItemAtSlot(slot);
-    console.log('item?', item, target);
 
     if (!item) return;
 
@@ -215,15 +212,21 @@
 
     if (slot === null || slot === dragSlot) return;
 
-    const success = await fetchNui('moveItem', {
-      fromType: inventory.type,
-      toType: inventory.type,
-      fromId: inventory.inventoryId,
-      toId: inventory.inventoryId,
-      fromSlot: item.anchorSlot,
-      toSlot: slot,
-      quantity: item.quantity,
-    });
+    const success = await fetchNui(
+      'moveItem',
+      {
+        fromType: inventory.type,
+        toType: inventory.type,
+        fromId: inventory.inventoryId,
+        toId: inventory.inventoryId,
+        fromSlot: item.anchorSlot,
+        toSlot: slot,
+        quantity: item.quantity,
+      },
+      {
+        data: true,
+      }
+    );
 
     item.move(inventory, slot);
     inventory.refreshSlots();
