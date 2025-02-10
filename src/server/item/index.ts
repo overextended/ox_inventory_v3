@@ -19,10 +19,12 @@ export async function CreateItem(name: string, data = {} as Partial<InventoryIte
         UpdateInventoryItem(this.uniqueId, this);
 
         kvp.setJson(`inventory_items.${currentInventory.inventoryId}`, currentInventory.itemIds(), true);
+        currentInventory.emit(`ox_inventory:moveItem`);
 
         // todo: optimise
         if (currentInventory !== targetInventory) {
           kvp.setJson(`inventory_items.${targetInventory.inventoryId}`, targetInventory.itemIds(), true);
+          targetInventory.emit(`ox_inventory:moveItem`);
         }
 
         kvp.flush();
