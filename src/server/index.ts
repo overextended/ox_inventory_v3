@@ -9,7 +9,7 @@ onNet(`ox_inventory:requestOpenInventory`, async () => {
 
   if (!inventory) return;
 
-  emitNet(`ox_inventory:openInventory`, playerId, { inventory, items: inventory.mapItems() });
+  inventory.open(playerId);
 });
 
 onNet(`ox_inventory:requestMoveItem`, async (data: any) => {
