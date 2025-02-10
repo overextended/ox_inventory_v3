@@ -58,9 +58,8 @@ export function ItemFactory(name: string, item: ItemProperties) {
 
   item.icon = item.icon ?? `${Config.Inventory_ImagePath}/${iconPath}`;
 
-  if (typeof GlobalState !== 'undefined') GlobalState.set(`Item:${name}`, item, true);
-
   const Item = class implements ItemProperties {
+    static properties = item;
     /** A unique name to identify the item type and inherit data. */
     readonly name = name;
 
@@ -216,9 +215,9 @@ export function ItemFactory(name: string, item: ItemProperties) {
 
       if (this.anchorSlot) {
         const fromInventory = BaseInventory.fromId(this.inventoryId);
-        const oldSlots = this.getSlots(fromInventory, this.anchorSlot);
+        const oldSlots = fromInventory && this.getSlots(fromInventory, this.anchorSlot);
 
-        if (oldSlots) inventory.setSlotRefs(oldSlots);
+        if (oldSlots) fromInventory.setSlotRefs(oldSlots);
       }
 
       inventory.setSlotRefs(slots, this.uniqueId);
