@@ -46,11 +46,11 @@ export class BaseInventory {
     slots.forEach((slotId) => (uniqueId ? (this.items[slotId] = uniqueId) : delete this.items[slotId]));
   }
 
-  public mapItems() {
-    const values = [...new Set(Object.values(this.items))];
+  public itemIds() {
+    return [...new Set(Object.values(this.items))];
+  }
 
-    return values.map((uniqueId) => {
-      return GetInventoryItem(uniqueId);
-    });
+  public mapItems() {
+    return this.itemIds().map((uniqueId) => GetInventoryItem(uniqueId));
   }
 }
