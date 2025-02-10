@@ -1,8 +1,9 @@
 import { BaseInventory } from '@common/inventory/class';
-import { GetDbInventoryData, GetDbInventoryItems, InsertDbInventoryData } from '../db';
+import { GetDbInventoryData, InsertDbInventoryData } from '../db';
 import { Inventory } from './class';
 import { CreateItem } from '../item';
 import { GetPlayer } from '@overextended/ox_core/server';
+import { GetInventoryItems } from '../kvp';
 
 async function GetDefaultInventoryData(inventoryId: string, type: string) {
   const inventory: Partial<BaseInventory> = {
@@ -33,20 +34,17 @@ export async function GetInventory(inventoryId: string, type: string) {
 
   if (!inventory) {
     const data = (await GetDbInventoryData(inventoryId)) || (await GetDefaultInventoryData(inventoryId, type));
+    const items = GetInventoryItems(inventoryId);
 
     inventory = new Inventory(data);
-
-    const items = await GetDbInventoryItems(inventoryId);
 
     for (const data of items) {
       const name = data.name;
       const metadata = typeof data.metadata === 'string' ? JSON.parse(data.metadata) : data.metadata;
       delete data.metadata;
-      delete data.name;
+      delete (data as any).name; // todo: fix typing :(
 
-      const item = await CreateItem(name, Object.assign(data, metadata));
-
-      item.move(inventory, item.anchorSlot ?? 0);
+      await CreateItem(name, Object.assign(data, metadata));
     }
   }
 

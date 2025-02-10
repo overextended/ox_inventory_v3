@@ -1,7 +1,7 @@
 import { GetInventoryItem } from '@common/item';
 import { GetInventory } from './inventory';
 import { CreateItem } from './item';
-import { UpdateDbInventoryItem } from './db';
+import './kvp';
 
 onNet(`ox_inventory:requestOpenInventory`, async () => {
   const playerId = source;
@@ -21,8 +21,6 @@ onNet(`ox_inventory:requestMoveItem`, async (data: any) => {
   if (!item || !from) return;
 
   item.move(from, data.toSlot);
-
-  UpdateDbInventoryItem(item.uniqueId, item);
 });
 
 RegisterCommand(
@@ -32,8 +30,7 @@ RegisterCommand(
 
     if (!inventory) return;
 
-    const item = await CreateItem(args[0]);
-    item.move(inventory);
+    await CreateItem(args[0], { inventoryId: inventory.inventoryId });
   },
   false
 );
