@@ -1,18 +1,15 @@
 import { BaseInventory } from '@common/inventory/class';
 import { InventoryItem } from '@common/item';
 
-RegisterCommand('openInventory', () => emitNet(`ox_inventory:requestOpenInventory`), false);
+function CloseInventory() {
+  SetNuiFocus(false, false);
+  SendNUIMessage({
+    action: 'closeInventory',
+  });
+}
 
-RegisterCommand(
-  'closeInventory',
-  () => {
-    SetNuiFocus(false, false);
-    SendNUIMessage({
-      action: 'closeInventory',
-    });
-  },
-  false
-);
+RegisterCommand('openInventory', () => emitNet(`ox_inventory:requestOpenInventory`), false);
+RegisterCommand('closeInventory', CloseInventory, false);
 
 RegisterNuiCallback(`getStateKeyValue`, ([state, key]: [state: string, key: string], cb: (value: unknown) => void) => {
   const value = state === 'global' ? GlobalState[key] : LocalPlayer.state[key];
@@ -31,4 +28,11 @@ onNet(`ox_inventory:openInventory`, async (data: { inventory: BaseInventory; ite
     action: 'openInventory',
     data: data,
   });
+});
+
+onNet(`ox_inventory:closeInventory`, CloseInventory);
+
+onNet(`ox_inventory:moveItem`, () => {
+  // todo: refresh only updated slots. for now, re-open inventory to force a refresh
+  ExecuteCommand('openInventory');
 });
