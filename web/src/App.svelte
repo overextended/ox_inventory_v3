@@ -256,9 +256,17 @@
 
     document.body.style.cursor = 'auto';
   }
+
+  function onKeyDown(event: KeyboardEvent) {
+    switch (event.key) {
+      case 'Escape':
+      case 'Tab':
+        fetchNui(`closeInventory`);
+    }
+  }
 </script>
 
-<svelte:window onmousemove={onMouseMove} onmouseup={cancelDrag} />
+<svelte:window onmousemove={onMouseMove} onmouseup={cancelDrag} onkeydown={onKeyDown} />
 
 <div
   bind:this={dragImg}
