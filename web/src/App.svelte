@@ -161,6 +161,7 @@
   function resetDragImage() {
     dragImg.style.backgroundImage = '';
     dragImg.style.display = 'none';
+    dropIndicator.style.display = 'none';
   }
 
   function setDragImage(event: MouseEvent, item: InventoryItem) {
@@ -169,25 +170,23 @@
     dragImg.style.transform = `translate(${event.clientX - dragImg.clientWidth / 2}px, ${event.clientY - dragImg.clientHeight / 2}px)`;
     dragImg.style.width = `${item.width * SLOT_SIZE}px`;
     dragImg.style.height = `${item.height * SLOT_SIZE}px`;
+    dropIndicator.style.display = 'block';
+    document.body.style.cursor = 'none';
   }
 
-  function onMouseDown(event: MouseEvent) {
-    isDragging = true;
-    let target = event.currentTarget as HTMLElement;
-    const slot = +target.dataset.slot!;
+  function onMouseDown({ button, target }: MouseEvent) {
+    if (isDragging || event.button !== 0 || !target.dataset.slot) return;
 
-    if (slot === null) return;
-    const item = inventory.getItemAtSlot(slot);
+    const slot = +target.dataset.slot!;
+    const item = slot !== null && inventory.getItemAtSlot(slot);
 
     if (!item) return;
 
+    isDragging = true;
     dragSlot = slot;
 
     setDragImage(event, item);
     updateDropIndicatorPosition(event, item);
-    dropIndicator.style.display = 'block';
-
-    document.body.style.cursor = 'none';
   }
 
   function onMouseMove(event: MouseEvent) {
@@ -202,58 +201,45 @@
     updateDropIndicatorPosition(event, item);
   }
 
-  async function onStopDrag(event: MouseEvent) {
-    if (dragSlot === null) return;
-
-    isDragging = false;
+  async function onStopDrag({ clientX, clientY, button }: MouseEvent) {
+    if (!isDragging || button !== 0) return;
 
     resetDragImage();
-
-    dropIndicator.style.display = 'none';
 
     const item = inventory.getItemAtSlot(dragSlot);
+    const element: HTMLElement =
+      item &&
+      document.elementFromPoint(
+        clientX - (item.width * SLOT_SIZE) / 2 + SLOT_SIZE / 2,
+        clientY - (item.height * SLOT_SIZE) / 2 + SLOT_SIZE / 2
+      );
+    const slot = element.dataset.slot ? +element.dataset.slot : null;
 
-    if (!item) return;
+    if (slot !== null && slot !== dragSlot) {
+      const success = await fetchNui(
+        'moveItem',
+        {
+          fromType: inventory.type,
+          toType: inventory.type,
+          fromId: inventory.inventoryId,
+          toId: inventory.inventoryId,
+          fromSlot: item.anchorSlot,
+          toSlot: slot,
+          quantity: item.quantity,
+        },
+        {
+          data: true,
+        }
+      );
 
-    const elm = document.elementFromPoint(
-      event.clientX - (item.width * SLOT_SIZE) / 2 + SLOT_SIZE / 2,
-      event.clientY - (item.height * SLOT_SIZE) / 2 + SLOT_SIZE / 2
-    ) as HTMLElement;
-
-    const slot: number | null = +elm.dataset.slot!;
-
-    if (slot === null || slot === dragSlot) return;
-
-    const success = await fetchNui(
-      'moveItem',
-      {
-        fromType: inventory.type,
-        toType: inventory.type,
-        fromId: inventory.inventoryId,
-        toId: inventory.inventoryId,
-        fromSlot: item.anchorSlot,
-        toSlot: slot,
-        quantity: item.quantity,
-      },
-      {
-        data: true,
+      if (success) {
+        item.move(inventory, slot);
+        inventory.refreshSlots();
       }
-    );
+    }
 
-    item.move(inventory, slot);
-    inventory.refreshSlots();
-
-    dragSlot = null;
-    document.body.style.cursor = 'auto';
-  }
-
-  function cancelDrag() {
     isDragging = false;
-
-    resetDragImage();
-
     dragSlot = null;
-
     document.body.style.cursor = 'auto';
   }
 
@@ -266,7 +252,7 @@
   }
 </script>
 
-<svelte:window onmousemove={onMouseMove} onmouseup={cancelDrag} onkeydown={onKeyDown} />
+<svelte:window onmousemove={onMouseMove} onmouseup={onStopDrag} onkeydown={onKeyDown} />
 
 <div
   bind:this={dragImg}
@@ -292,7 +278,6 @@
           style={`width: ${SLOT_SIZE}px;height: ${SLOT_SIZE}px;`}
           data-slot={index}
           onmousedown={onMouseDown}
-          onmouseup={onStopDrag}
         >
           {#if item && item.anchorSlot === index}
             <span
