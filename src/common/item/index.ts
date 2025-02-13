@@ -213,7 +213,7 @@ export function ItemFactory(name: string, item: ItemProperties) {
 
       if (!slots) return false;
 
-      if (this.anchorSlot) {
+      if (this.anchorSlot !== null) {
         const fromInventory = BaseInventory.fromId(this.inventoryId);
         const oldSlots = fromInventory && this.getSlots(fromInventory, this.anchorSlot);
 
