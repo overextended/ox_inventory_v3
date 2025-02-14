@@ -156,76 +156,35 @@ export function ItemFactory(name: string, item: ItemProperties) {
       return (Config.Inventory_MultiSlotItems && item.height) || 1;
     }
 
-    /**
-     * Finds the next available slot for the item in the inventory.
-     * @returns The next available slot or -1 if no slot is available.
-     */
-    private findAvailableSlot(inventory: BaseInventory) {
-      for (let slot = 0; slot < inventory.width * inventory.height; slot++) {
-        if (this.canMove(inventory, slot)) return slot;
-      }
-
-      return -1;
-    }
-
-    /**
-     * Determines the slotIds that will be occupied by an item, starting from startSlot.
-     * @returns An array containing the slotIds that hold the item.
-     */
-    private getSlots(inventory: BaseInventory, startSlot: number) {
-      const slots: number[] = [];
-
-      for (let y = 0; y < this.height; y++) {
-        const offset = startSlot + y * inventory.width;
-
-        for (let x = 0; x < this.width; x++) {
-          const slotId = offset + x;
-          const doesItemOverlap = inventory.items[slotId] && inventory.items[slotId] !== this.uniqueId;
-          const doesItemOverflow = Math.floor(slotId / inventory.width) !== Math.floor(offset / inventory.width);
-
-          if (doesItemOverlap || doesItemOverflow) return false;
-
-          slots.push(slotId);
-        }
-      }
-
-      return slots;
-    }
-
-    /**
-     * Determines if item placement is valid based on size, inventory dimensions, weight, etc.
-     * @todo: weight checks and other validation methods
-     */
-    public canMove(inventory: BaseInventory, startSlot: number) {
-      const doesItemFit =
-        (startSlot % inventory.width) + this.width <= inventory.width &&
-        Math.floor(startSlot / inventory.width) + this.height <= inventory.height;
-
-      if (!doesItemFit) return false;
-
-      return this.getSlots(inventory, startSlot);
-    }
-
-    public move(inventory: BaseInventory, startSlot?: number) {
-      if (startSlot === undefined) startSlot = this.findAvailableSlot(inventory);
-
-      const slots = this.canMove(inventory, startSlot);
-
-      if (!slots) return false;
-
-      if (this.anchorSlot !== null) {
-        const fromInventory = BaseInventory.fromId(this.inventoryId);
-        const oldSlots = fromInventory && this.getSlots(fromInventory, this.anchorSlot);
-
-        if (oldSlots) fromInventory.setSlotRefs(oldSlots);
-      }
-
+    private addToInventory(inventory: BaseInventory, slots: number[]) {
       inventory.setSlotRefs(slots, this.uniqueId);
 
-      this.anchorSlot = startSlot;
+      this.anchorSlot = slots[0];
       this.inventoryId = inventory.inventoryId;
 
       return true;
+    }
+
+    private removeFromInventory(inventory: BaseInventory) {
+      if (!inventory || this.inventoryId !== inventory.inventoryId) return false;
+
+      const slots = inventory.getItemSlots(this, this.anchorSlot);
+      delete this.anchorSlot;
+      delete this.inventoryId;
+
+      return slots ? inventory.setSlotRefs(slots) : false;
+    }
+
+    public move(inventory: BaseInventory, startSlot?: number) {
+      if (startSlot === undefined) startSlot = inventory.findAvailableSlot(this);
+
+      const slots = inventory.canHoldItem(this, startSlot);
+
+      if (!slots) return false;
+
+      this.removeFromInventory(BaseInventory.fromId(this.inventoryId));
+
+      return this.addToInventory(inventory, slots);
     }
   };
 

@@ -1,5 +1,5 @@
 import Config from '@common/config';
-import { GetInventoryItem } from '@common/item';
+import { GetInventoryItem, InventoryItem } from '@common/item';
 import { Vector3 } from '@nativewrappers/fivem';
 
 export class BaseInventory {
@@ -38,19 +38,83 @@ export class BaseInventory {
     BaseInventory.instances[this.inventoryId] = this;
   }
 
+  /**
+   * Get a cached inventory from its unique inventory id.
+   */
   static fromId<T extends BaseInventory>(this: new (...args: any[]) => T, inventoryId: string) {
     return BaseInventory.instances[inventoryId] as T;
   }
 
+  /**
+   * Sets slot ids in the inventory to reference the unique item id of the item they are holding.
+   */
   public setSlotRefs(slots: number[], uniqueId?: number) {
     slots.forEach((slotId) => (uniqueId ? (this.items[slotId] = uniqueId) : delete this.items[slotId]));
+
+    return true;
   }
 
+  /**
+   * Get an array containing all unique item ids contained in the inventory.
+   */
   public itemIds() {
     return [...new Set(Object.values(this.items))];
   }
 
+  /**
+   * Get an array containing all InventoryItems in the inventory.
+   */
   public mapItems() {
     return this.itemIds().map((uniqueId) => GetInventoryItem(uniqueId));
+  }
+
+  /**
+   * Finds the next available slot for the item in the inventory.
+   * @returns The next available slot or -1 if no slot is available.
+   */
+  public findAvailableSlot(item: InventoryItem) {
+    for (let slot = 0; slot < this.width * this.height; slot++) {
+      if (this.canHoldItem(item, slot)) return slot;
+    }
+
+    return -1;
+  }
+
+  /**
+   * Determines the slotIds that will be occupied by an item, starting from startSlot.
+   * @returns An array containing the slotIds that hold the item.
+   */
+  public getItemSlots(item: InventoryItem, startSlot: number) {
+    const slots: number[] = [];
+
+    for (let y = 0; y < item.height; y++) {
+      const offset = startSlot + y * this.width;
+
+      for (let x = 0; x < item.width; x++) {
+        const slotId = offset + x;
+        const doesItemOverlap = this.items[slotId] && this.items[slotId] !== item.uniqueId;
+        const doesItemOverflow = Math.floor(slotId / this.width) !== Math.floor(offset / this.width);
+
+        if (doesItemOverlap || doesItemOverflow) return false;
+
+        slots.push(slotId);
+      }
+    }
+
+    return slots;
+  }
+
+  /**
+   * Determines if item placement is valid based on item size, inventory dimensions, weight, etc.
+   * @todo: weight checks and other validation methods
+   */
+  public canHoldItem(item: InventoryItem, startSlot: number) {
+    const doesItemFit =
+      (startSlot % this.width) + item.width <= this.width &&
+      Math.floor(startSlot / this.width) + item.height <= this.height;
+
+    if (!doesItemFit) return false;
+
+    return this.getItemSlots(item, startSlot);
   }
 }
