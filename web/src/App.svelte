@@ -314,14 +314,14 @@
               data-slot={index}
               data-anchorSlot={item.anchorSlot === index}
               class={cn(
-                'w-full h-full bg-no-repeat bg-contain bg-center absolute top-0 left-0 z-50 bg-black/50 text-right text-xs px-1 flex flex-col justify-between font-semibold text-muted-foreground ',
+                'w-full h-full bg-no-repeat bg-[length:75%] bg-center absolute top-0 left-0 z-50 bg-black/50 text-right text-xs px-1 flex flex-col justify-between font-semibold text-foreground ',
                 isDragging && 'pointer-events-none',
                 dragSlot === item.anchorSlot && 'opacity-50'
               )}
               style={`background-image: url('${item.icon}');width: ${SLOT_SIZE * item.width - 1}px;height: ${SLOT_SIZE * item.height - SLOT_GAP}px;')`}
             >
               <!--TODO: use item label-->
-              <p class="drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]">{item.name}</p>
+              <p class="text-[0.65rem]">{item.name}</p>
               <p>{item.quantity}</p>
             </div>
           {/if}
