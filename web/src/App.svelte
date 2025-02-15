@@ -9,6 +9,7 @@
   import { fetchNui } from '$lib/utils/fetchNui';
 
   let visible = $state(false);
+  let isHoldingShift = false;
 
   class InventoryState extends BaseInventory {
     itemState = $state(this.items);
@@ -82,7 +83,7 @@
           items: [
             {
               name: 'ammo_9',
-              quantity: 1,
+              quantity: 7,
               inventoryId: 'player',
               uniqueId: 7,
               anchorSlot: 0,
@@ -174,19 +175,23 @@
     document.body.style.cursor = 'none';
   }
 
-  function onMouseDown({ button, target }: MouseEvent) {
-    if (isDragging || event.button !== 0 || !target.dataset.slot) return;
+  function onMouseDown(event: MouseEvent) {
+    if (isDragging || !event.target.dataset.slot) return;
 
-    const slot = +target.dataset.slot!;
-    const item = slot !== null && inventory.getItemAtSlot(slot);
+    if (event.button === 0) {
+      const slot = +event.target.dataset.slot;
+      const item = slot !== null && inventory.getItemAtSlot(slot);
 
-    if (!item) return;
+      if (!item) return;
 
-    isDragging = true;
-    dragSlot = slot;
+      isDragging = true;
+      dragSlot = slot;
 
-    setDragImage(event, item);
-    updateDropIndicatorPosition(event, item);
+      setDragImage(event, item);
+      updateDropIndicatorPosition(event, item);
+    } else if (event.button === 2) {
+      // todo: context menu
+    }
   }
 
   function onMouseMove(event: MouseEvent) {
@@ -225,7 +230,7 @@
           toId: inventory.inventoryId,
           fromSlot: item.anchorSlot,
           toSlot: slot,
-          quantity: item.quantity,
+          quantity: isHoldingShift ? Math.ceil(item.quantity / 2) : item.quantity,
         },
         {
           data: true,
@@ -247,12 +252,30 @@
     switch (event.key) {
       case 'Escape':
       case 'Tab':
-        fetchNui(`closeInventory`);
+        return fetchNui(`closeInventory`);
+      case 'Shift':
+        return (isHoldingShift = true);
     }
   }
+
+  function onKeyUp(event: KeyboardEvent) {
+    switch (event.key) {
+      case 'Shift':
+        return (isHoldingShift = false);
+    }
+  }
+
+  const preventDefault = (event: KeyboardEvent | MouseEvent) => event.preventDefault();
 </script>
 
-<svelte:window onmousemove={onMouseMove} onmouseup={onStopDrag} onkeydown={onKeyDown} />
+<svelte:window
+  onmousemove={onMouseMove}
+  onmouseup={onStopDrag}
+  onkeydown={onKeyDown}
+  onkeyup={onKeyUp}
+  oncontextmenu={preventDefault}
+  ondragstart={preventDefault}
+/>
 
 <div
   bind:this={dragImg}
@@ -284,12 +307,12 @@
               data-slot={index}
               data-anchorSlot={item.anchorSlot === index}
               class={cn(
-                'w-full h-full bg-no-repeat bg-contain bg-center absolute top-0 left-0 z-50 bg-black/50',
+                'w-full h-full bg-no-repeat bg-contain bg-center absolute top-0 left-0 z-50 bg-black/50 text-right text-sm px-1 ',
                 isDragging && 'pointer-events-none',
                 dragSlot === item.anchorSlot && 'opacity-50'
               )}
               style={`background-image: url('${item.icon}');width: ${SLOT_SIZE * item.width - 1}px;height: ${SLOT_SIZE * item.height - SLOT_GAP}px;')`}
-            >
+              >{`${item.quantity}`}
             </span>
           {/if}
         </div>
