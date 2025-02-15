@@ -58,7 +58,14 @@
   );
 
   const items = $state<Record<number, InventoryItem>>({});
-  const SLOT_SIZE = Config.Inventory_SlotSize;
+  const slotSizes = {
+    extraSmall: 32,
+    small: 48,
+    medium: 64,
+    large: 72,
+    extraLarge: 96,
+  };
+  const SLOT_SIZE = slotSizes[Config.Inventory_SlotSize] || 48;
   const SLOT_GAP = 1;
 
   debugData<{ inventory: BaseInventory }>(
@@ -79,6 +86,7 @@
           items: [
             {
               name: 'ammo_9',
+              label: '9mm',
               quantity: 7,
               inventoryId: 'player',
               uniqueId: 7,
@@ -87,6 +95,7 @@
 
             {
               name: 'HeavyPistol',
+              label: 'Heavy Pistol',
               quantity: 1,
               inventoryId: 'player',
               uniqueId: 8,
@@ -316,8 +325,7 @@
               )}
               style={`background-image: url('${item.icon}');width: ${SLOT_SIZE * item.width - 1}px;height: ${SLOT_SIZE * item.height - SLOT_GAP}px;')`}
             >
-              <!--TODO: use item label-->
-              <p class="text-[0.65rem]">{item.name}</p>
+              <p class="text-[0.65rem]">{item.label}</p>
               <p>{item.quantity}</p>
             </div>
           {/if}
