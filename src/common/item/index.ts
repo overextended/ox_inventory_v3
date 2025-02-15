@@ -1,7 +1,10 @@
 import Config from '@common/config';
 import { BaseInventory } from '@common/inventory/class';
 import fetch from 'sync-fetch';
-import { ResourceContext, ResourceName } from '..';
+import { isBrowser, ResourceContext, ResourceName } from '..';
+
+// Because somehow FXServer still only supports NodeJS v16
+const structuredClone = <T extends Object>(obj: T) => JSON.parse(JSON.stringify(obj)) as T;
 
 export interface ItemMetadata {
   label?: string;
@@ -60,6 +63,11 @@ export function ItemFactory(name: string, item: ItemProperties) {
 
   const Item = class implements ItemProperties {
     static properties = item;
+
+    static CreateUniqueId(item: InventoryItem): number {
+      return (item.uniqueId = -1);
+    }
+
     /** A unique name to identify the item type and inherit data. */
     readonly name = name;
 
@@ -84,8 +92,11 @@ export function ItemFactory(name: string, item: ItemProperties) {
         if ('metadata' in metadata) delete metadata.metadata;
 
         Object.assign(this, metadata, 'metadata' in metadata ? metadata.metadata : null);
-        InventoryItems[this.uniqueId] = this;
       }
+
+      if (!this.uniqueId || this.uniqueId === -1) Item.CreateUniqueId(this);
+
+      InventoryItems[this.uniqueId] = this;
     }
 
     get itemLimit() {
@@ -185,6 +196,24 @@ export function ItemFactory(name: string, item: ItemProperties) {
       this.removeFromInventory(BaseInventory.fromId(this.inventoryId));
 
       return this.addToInventory(inventory, slots);
+    }
+
+    public split(inventory: BaseInventory, quantity: number, startSlot?: number) {
+      const clone = structuredClone(this);
+      clone.quantity = Math.max(1, Math.ceil(quantity));
+      delete clone.uniqueId;
+
+      const newItem = new Item(clone);
+
+      if (startSlot === undefined) startSlot = inventory.findAvailableSlot(this);
+
+      const slots = inventory.canHoldItem(newItem, startSlot);
+
+      if (!slots) return false;
+
+      this.quantity -= newItem.quantity;
+
+      return newItem.addToInventory(inventory, slots) && newItem;
     }
   };
 

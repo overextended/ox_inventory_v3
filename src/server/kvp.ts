@@ -192,14 +192,14 @@ export function UpdateInventoryItem(uniqueId: number, item: InventoryItem) {
 
 let lastItemId = kvp.getNumber('last_item_id');
 
-export function AddInventoryItem(name: string, data: Partial<InventoryItem>) {
+export function AddInventoryItem(name: string, data: InventoryItem) {
   data.uniqueId = ++lastItemId;
 
   kvp.setNumber('last_item_id', lastItemId, true);
   kvp.setJson(`inventory_item.${data.uniqueId}`, { name, ...data } as InventoryItem, true);
   kvp.flush();
 
-  return data;
+  return data as InventoryItem;
 }
 
 // debugging

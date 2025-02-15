@@ -12,25 +12,31 @@ onNet(`ox_inventory:requestOpenInventory`, async () => {
   inventory.open(playerId);
 });
 
-onNet(`ox_inventory:requestMoveItem`, async (data: any) => {
-  const from = await GetInventory(data.fromId, data.fromType);
-  const item = GetInventoryItem(from?.items[data.fromSlot]);
+onNet(`ox_inventory:requestMoveItem`, async (data: MoveItem) => {
+  const fromInventory = await GetInventory(data.fromId, data.fromType);
+  const toInventory = data.fromId === data.toId ? fromInventory : await GetInventory(data.toId, data.toType);
 
-  console.log(data);
+  if (!fromInventory || !toInventory) return console.error(`Invalid inventory`);
 
-  if (!item || !from) return;
+  const item = GetInventoryItem(fromInventory.items[data.fromSlot]);
 
-  item.move(from, data.toSlot);
+  data.quantity = Math.max(1, Math.min(item.quantity, data.quantity));
+
+  if (!item || data.quantity > item.quantity) return console.error(`Invalid item or item count`);
+
+  data.quantity !== item.quantity
+    ? item.split(toInventory, data.quantity, data.toSlot)
+    : item.move(toInventory, data.toSlot);
 });
 
 RegisterCommand(
   `additem`,
-  async (playerId: number, args: [string]) => {
+  async (playerId: number, args: string[]) => {
     const inventory = await GetInventory(playerId.toString(), `player`);
 
     if (!inventory) return;
 
-    await CreateItem(args[0], { inventoryId: inventory.inventoryId });
+    await CreateItem(args[0], { inventoryId: inventory.inventoryId, quantity: Number(args[1]) || 1 });
   },
   false
 );

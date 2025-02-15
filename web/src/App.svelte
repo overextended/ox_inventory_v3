@@ -221,6 +221,10 @@
     const slot = element.dataset.slot ? +element.dataset.slot : null;
 
     if (slot !== null && slot !== dragSlot) {
+      const quantity = Math.max(
+        1,
+        Math.min(item.quantity, isHoldingShift ? Math.floor(item.quantity / 2) : item.quantity)
+      );
       const success = await fetchNui(
         'moveItem',
         {
@@ -230,7 +234,7 @@
           toId: inventory.inventoryId,
           fromSlot: item.anchorSlot,
           toSlot: slot,
-          quantity: isHoldingShift ? Math.ceil(item.quantity / 2) : item.quantity,
+          quantity,
         },
         {
           data: true,
@@ -238,7 +242,10 @@
       );
 
       if (success) {
-        item.move(inventory, slot);
+        const result = quantity !== item.quantity ? item.split(inventory, quantity, slot) : item.move(inventory, slot);
+
+        if (result) items[result.uniqueId] = result;
+
         inventory.refreshSlots();
       }
     }

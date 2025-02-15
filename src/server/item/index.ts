@@ -9,6 +9,11 @@ export async function CreateItem(name: string, data = {} as Partial<InventoryIte
   if (!Item) {
     Item = ItemFactory(name, await GetDbItemData(name));
     const itemMove = Item.prototype.move;
+    const itemSplit = Item.prototype.split;
+
+    Item.CreateUniqueId = function (item: InventoryItem): number {
+      return AddInventoryItem(item.name, item).uniqueId;
+    };
 
     Item.prototype.move = function (inventory: Inventory) {
       const currentInventory = Inventory.fromId(this.inventoryId);
@@ -33,10 +38,34 @@ export async function CreateItem(name: string, data = {} as Partial<InventoryIte
       return success;
     };
 
+    Item.prototype.split = function (inventory: Inventory) {
+      const currentInventory = Inventory.fromId(this.inventoryId);
+      const targetInventory = Inventory.fromId(inventory.inventoryId);
+      const newItem = itemSplit.apply(this, arguments) as ReturnType<typeof itemSplit>;
+
+      if (newItem) {
+        UpdateInventoryItem(this.uniqueId, this);
+        UpdateInventoryItem(newItem.uniqueId, newItem);
+
+        kvp.setJson(`inventory_items.${currentInventory.inventoryId}`, currentInventory.itemIds(), true);
+        currentInventory.emit(`ox_inventory:moveItem`);
+
+        // todo: optimise
+        if (currentInventory !== targetInventory) {
+          kvp.setJson(`inventory_items.${targetInventory.inventoryId}`, targetInventory.itemIds(), true);
+          targetInventory.emit(`ox_inventory:moveItem`);
+        }
+
+        kvp.flush();
+      }
+
+      return newItem;
+    };
+
     GlobalState.set(`Item:${Item.properties.name}`, Item.properties, true);
   }
 
-  if (!data.uniqueId) data = AddInventoryItem(name, data);
+  if (!data.uniqueId) AddInventoryItem(name, data as InventoryItem);
 
   const item = new Item(data);
   const inventory = Inventory.fromId(data.inventoryId);
