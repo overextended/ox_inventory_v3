@@ -20,13 +20,9 @@
       this.items = data.items;
     }
 
-    getItemAtSlot(slot: number) {
-      return items[this.items[slot]];
-    }
-
     refreshSlots() {
       this.itemState = Array.from({ length: inventory.width * inventory.height }).map((_, index) =>
-        this.getItemAtSlot(index)
+        this.getItemInSlot(index)
       );
     }
   }
@@ -180,7 +176,7 @@
 
     if (event.button === 0) {
       const slot = +event.target.dataset.slot;
-      const item = slot !== null && inventory.getItemAtSlot(slot);
+      const item = slot !== null && inventory.getItemInSlot(slot);
 
       if (!item) return;
 
@@ -199,7 +195,7 @@
 
     dragImg.style.transform = `translate(${event.clientX - dragImg.clientWidth / 2}px, ${event.clientY - dragImg.clientHeight / 2}px)`;
 
-    const item = inventory.getItemAtSlot(dragSlot);
+    const item = inventory.getItemInSlot(dragSlot);
 
     if (!item) return;
 
@@ -211,7 +207,7 @@
 
     resetDragImage();
 
-    const item = inventory.getItemAtSlot(dragSlot);
+    const item = inventory.getItemInSlot(dragSlot);
     const element: HTMLElement =
       item &&
       document.elementFromPoint(

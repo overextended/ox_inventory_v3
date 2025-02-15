@@ -68,6 +68,10 @@ export class BaseInventory {
     return this.itemIds().map((uniqueId) => GetInventoryItem(uniqueId));
   }
 
+  public getItemInSlot(slot: number) {
+    return GetInventoryItem(this.items[slot]);
+  }
+
   /**
    * Finds the next available slot for the item in the inventory.
    * @returns The next available slot or -1 if no slot is available.
