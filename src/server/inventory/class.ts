@@ -17,8 +17,9 @@ export class Inventory extends BaseInventory {
     emitNet(`ox_inventory:openInventory`, playerId, { inventory: this, items: this.mapItems() });
   }
 
-  public close(playerId: number) {
+  public close(playerId: number, emit = true) {
     this.#openedBy.delete(playerId);
-    emitNet(`ox_inventory:closeInventory`, playerId);
+
+    if (emit) emitNet(`ox_inventory:closeInventory`, playerId);
   }
 }

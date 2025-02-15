@@ -10,6 +10,7 @@ export function OpenInventory(data: { inventory: BaseInventory; items: Inventory
 }
 
 export function CloseInventory() {
+  emitNet(`ox_inventory:closeInventory`);
   SetNuiFocus(false, false);
   SendNUIMessage({
     action: 'closeInventory',
