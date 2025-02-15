@@ -1,7 +1,7 @@
 import Config from '@common/config';
 import { BaseInventory } from '@common/inventory/class';
 import fetch from 'sync-fetch';
-import { isBrowser, ResourceContext, ResourceName } from '..';
+import { ResourceContext, ResourceName } from '..';
 
 // Because somehow FXServer still only supports NodeJS v16
 const structuredClone = <T extends Object>(obj: T) => JSON.parse(JSON.stringify(obj)) as T;
@@ -65,13 +65,13 @@ export function ItemFactory(name: string, item: ItemProperties) {
     static properties = item;
 
     static CreateUniqueId(item: InventoryItem): number {
-      return (item.uniqueId = -1);
+      // Temporary value used in the browser only.
+      return (item.uniqueId = -Math.floor(Date.now() / 1000));
     }
 
     /** A unique name to identify the item type and inherit data. */
     readonly name = name;
 
-    // TODO: ONLY CHANGED TO PUBLIC FOR TESTING WEB (need a way to assign it maybe?)
     /** A unique identifier used to reference the item and save it in the database. */
     public uniqueId: number;
 
@@ -94,7 +94,7 @@ export function ItemFactory(name: string, item: ItemProperties) {
         Object.assign(this, metadata, 'metadata' in metadata ? metadata.metadata : null);
       }
 
-      if (!this.uniqueId || this.uniqueId === -1) Item.CreateUniqueId(this);
+      if (!this.uniqueId) Item.CreateUniqueId(this);
 
       InventoryItems[this.uniqueId] = this;
     }
