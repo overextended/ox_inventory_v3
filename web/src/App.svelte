@@ -244,8 +244,7 @@
       if (success) {
         const result = quantity !== item.quantity ? item.split(inventory, quantity, slot) : item.move(inventory, slot);
 
-        //TODO fix - introduces an issue where after dragging an item clicking anywhere would go into drag state and cause an error
-        // if (result) items[result.uniqueId] = result;
+        if (isEnvBrowser && typeof result === 'object') items[result.uniqueId] = result;
 
         inventory.refreshSlots();
       }
