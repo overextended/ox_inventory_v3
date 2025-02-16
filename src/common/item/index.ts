@@ -45,7 +45,7 @@ export function GetInventoryItem(uniqueId: number) {
   return InventoryItems[uniqueId];
 }
 
-function clamp(n = 0, max = Number.MAX_SAFE_INTEGER) {
+function clamp(n = Number.MAX_SAFE_INTEGER, max = Number.MAX_SAFE_INTEGER) {
   return !n && n !== 0 ? max : Math.min(Math.max(n, 0), max);
 }
 
