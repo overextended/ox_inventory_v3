@@ -86,7 +86,6 @@
           items: [
             {
               name: 'ammo_9',
-              label: '9mm',
               quantity: 7,
               inventoryId: 'player',
               uniqueId: 7,
@@ -95,7 +94,6 @@
 
             {
               name: 'HeavyPistol',
-              label: 'Heavy Pistol',
               quantity: 1,
               inventoryId: 'player',
               uniqueId: 8,

@@ -120,7 +120,7 @@ export function ItemFactory(name: string, item: ItemProperties) {
     }
 
     get label() {
-      return item.label;
+      return item.label ?? item.name;
     }
 
     get weight() {
