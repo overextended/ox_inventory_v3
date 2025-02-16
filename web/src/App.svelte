@@ -92,8 +92,8 @@
 
   let isDragging = $state(false);
   let dragSlot = $state<number | null>(null);
-  let dragImg: HTMLElement;
-  let dropIndicator: HTMLElement;
+  let dragImg: HTMLElement = $state(null)!;
+  let dropIndicator: HTMLElement = $state(null)!;
 
   function updateDropIndicatorPosition(event: MouseEvent, item: InventoryItem) {
     const invGrid = document.querySelector('#inv-grid')!;
@@ -136,10 +136,11 @@
   }
 
   function onMouseDown(event: MouseEvent) {
-    if (isDragging || !event.target.dataset.slot) return;
+    const target = event.target as HTMLElement;
+    if (isDragging || !target?.dataset.slot) return;
 
     if (event.button === 0) {
-      const slot = +event.target.dataset.slot;
+      const slot = +target?.dataset.slot;
       const item = slot !== null && inventory.getItemInSlot(slot);
 
       if (!item) return;
@@ -171,14 +172,15 @@
 
     resetDragImage();
 
-    const item = inventory.getItemInSlot(dragSlot);
-    const element: HTMLElement =
+    const item = inventory.getItemInSlot(dragSlot as number);
+    const element: HTMLElement | null =
       item &&
-      document.elementFromPoint(
+      (document.elementFromPoint(
         clientX - (item.width * SLOT_SIZE) / 2 + SLOT_SIZE / 2,
         clientY - (item.height * SLOT_SIZE) / 2 + SLOT_SIZE / 2
-      );
-    const slot = element.dataset.slot ? +element.dataset.slot : null;
+      ) as HTMLElement | null);
+
+    const slot = element?.dataset.slot ? +element.dataset.slot : null;
 
     if (slot !== null && slot !== dragSlot) {
       const quantity = Math.max(
@@ -204,7 +206,7 @@
       if (success) {
         const result = quantity !== item.quantity ? item.split(inventory, quantity, slot) : item.move(inventory, slot);
 
-        if (isEnvBrowser && typeof result === 'object') items[result.uniqueId] = result;
+        if (isEnvBrowser() && typeof result === 'object') items[result.uniqueId] = result;
 
         inventory.refreshSlots();
       }

@@ -6,11 +6,11 @@
   interface Props {
     visible: boolean;
     isDragging: boolean;
-    dragSlot: number;
+    dragSlot: number | null;
     dropIndicator: HTMLElement;
     inventory: InventoryState;
     itemState: InventoryState['itemState'];
-    onMouseDown: () => void;
+    onMouseDown: (event: MouseEvent) => void;
   }
 
   let {
