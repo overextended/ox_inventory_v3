@@ -85,10 +85,28 @@ export class BaseInventory {
   }
 
   /**
-   * Determines the slotIds that will be occupied by an item, starting from startSlot.
+   * Determines the slotIds that are occupied by an item.
    * @returns An array containing the slotIds that hold the item.
    */
-  public getItemSlots(item: InventoryItem, startSlot: number) {
+  public getItemSlots(item: InventoryItem) {
+    const slots: number[] = [];
+
+    for (let y = 0; y < item.height; y++) {
+      const offset = item.anchorSlot + y * this.width;
+
+      for (let x = 0; x < item.width; x++) {
+        slots.push(offset + x);
+      }
+    }
+
+    return slots;
+  }
+
+  /**
+   * Determines the slotIds that will be occupied by an item, starting from startSlot.
+   * @returns An array containing the slotIds that can can hold the item.
+   */
+  public getSlotsForItem(item: InventoryItem, startSlot: number) {
     const slots: number[] = [];
 
     for (let y = 0; y < item.height; y++) {
@@ -119,6 +137,6 @@ export class BaseInventory {
 
     if (!doesItemFit) return false;
 
-    return this.getItemSlots(item, startSlot);
+    return this.getSlotsForItem(item, startSlot);
   }
 }

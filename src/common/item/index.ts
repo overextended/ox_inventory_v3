@@ -179,7 +179,7 @@ export function ItemFactory(name: string, item: ItemProperties) {
     private removeFromInventory(inventory: BaseInventory) {
       if (!inventory || this.inventoryId !== inventory.inventoryId) return false;
 
-      const slots = inventory.getItemSlots(this, this.anchorSlot);
+      const slots = inventory.getSlotsForItem(this, this.anchorSlot);
       delete this.anchorSlot;
       delete this.inventoryId;
 
