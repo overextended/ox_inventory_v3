@@ -317,14 +317,18 @@
               data-slot={index}
               data-anchorSlot={item.anchorSlot === index}
               class={cn(
-                'w-full h-full bg-no-repeat bg-[length:75%] bg-center absolute top-0 left-0 z-50 bg-black/50 text-right text-xs px-1 flex flex-col justify-between font-semibold text-foreground ',
+                'w-full h-full bg-no-repeat bg-[length:75%] bg-center absolute top-0 left-0 z-50 bg-black/50 text-right text-xs px-1 flex',
                 isDragging && 'pointer-events-none',
                 dragSlot === item.anchorSlot && 'opacity-50'
               )}
               style={`background-image: url('${item.icon}');width: ${SLOT_SIZE * item.width - 1}px;height: ${SLOT_SIZE * item.height - SLOT_GAP}px;')`}
             >
-              <p class="text-[0.65rem]">{item.label}</p>
-              <p>{item.quantity}</p>
+              <div
+                class="h-full w-full flex flex-col justify-between font-semibold text-foreground pointer-events-none"
+              >
+                <p class="text-[0.65rem]">{item.label}</p>
+                <p>{item.quantity}</p>
+              </div>
             </div>
           {/if}
         </div>
