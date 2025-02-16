@@ -128,10 +128,14 @@ export class BaseInventory {
 
   /**
    * Determines if item placement is valid based on item size, inventory dimensions, weight, etc.
-   * @todo: weight checks and other validation methods
    */
-  public canHoldItem(item: InventoryItem, startSlot: number) {
+  public canHoldItem(item: InventoryItem, startSlot: number, quantity?: number) {
     const existingItem = this.getItemInSlot(startSlot);
+    quantity = quantity ? Math.max(1, Math.ceil(quantity)) : item.quantity;
+
+    // todo: totalQuantity > itemLimit
+    // todo: weight checks
+    if (quantity > item.stackSize) return false;
 
     if (existingItem?.anchorSlot === startSlot) {
       if (!item.canMerge(existingItem)) return false;

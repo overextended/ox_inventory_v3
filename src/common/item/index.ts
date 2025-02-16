@@ -204,12 +204,11 @@ export function ItemFactory(name: string, item: ItemProperties) {
     }
 
     public move(inventory: BaseInventory, startSlot?: number) {
-      const slots = inventory.canHoldItem(this, startSlot);
       startSlot = startSlot ?? inventory.findAvailableSlot(this);
+      const existingItem = inventory.getItemInSlot(startSlot);
+      const slots = inventory.canHoldItem(this, startSlot, this.quantity + (existingItem?.quantity ?? 0));
 
       if (!slots) return false;
-
-      const existingItem = inventory.getItemInSlot(startSlot);
 
       this.removeFromInventory(BaseInventory.fromId(this.inventoryId));
 
@@ -232,6 +231,10 @@ export function ItemFactory(name: string, item: ItemProperties) {
       startSlot = startSlot ?? inventory.findAvailableSlot(this);
 
       if (existingItem?.anchorSlot === startSlot) {
+        const canHoldItem = inventory.canHoldItem(this, startSlot, this.quantity + (existingItem?.quantity ?? 0));
+
+        if (!canHoldItem) return false;
+
         existingItem.quantity += quantity;
         this.quantity -= quantity;
 
