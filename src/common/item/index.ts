@@ -55,7 +55,7 @@ export function ItemFactory(name: string, item: ItemProperties) {
   item.name = name;
   item.category = item.category ?? 'miscellaneous';
   item.itemLimit = clamp(item.itemLimit);
-  item.stackSize = clamp(item.stackSize);
+  item.stackSize = clamp(item.category === 'weapon' ? 1 : item.stackSize);
 
   const iconPath = `${item.category}/${item.name}.webp`;
   let hasIcon = false;
