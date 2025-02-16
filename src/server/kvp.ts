@@ -1,4 +1,5 @@
 import { InventoryItem } from '@common/item';
+import { Inventory } from './inventory/class';
 
 // todo: utilise kvp class from nativewrappers, once the kinks are worked out
 
@@ -187,9 +188,13 @@ export function GetInventoryItems(inventoryId: string) {
 }
 
 export function UpdateInventoryItem(uniqueId: number, item: InventoryItem) {
-  if (item.quantity < 1) return kvp.delete(`inventory_item.${uniqueId}`);
+  if (item.quantity < 1) return kvp.delete(`inventory_item.${uniqueId}`, true);
 
-  kvp.setJson(`inventory_item.${uniqueId}`, item);
+  kvp.setJson(`inventory_item.${uniqueId}`, item, true);
+}
+
+export function UpdateInventoryItems(inventory: Inventory) {
+  kvp.setJson(`inventory_items.${inventory.inventoryId}`, inventory.itemIds(), true);
 }
 
 let lastItemId = kvp.getNumber('last_item_id');

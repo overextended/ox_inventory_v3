@@ -1,6 +1,6 @@
 import { GetItemData, InventoryItem, ItemFactory } from '@common/item';
 import { GetDbItemData } from '../db';
-import kvp, { AddInventoryItem, UpdateInventoryItem } from '../kvp';
+import kvp, { AddInventoryItem, UpdateInventoryItem, UpdateInventoryItems } from '../kvp';
 import { Inventory } from '../inventory/class';
 
 export async function CreateItem(name: string, data = {} as Partial<InventoryItem>) {
@@ -22,13 +22,12 @@ export async function CreateItem(name: string, data = {} as Partial<InventoryIte
 
       if (success) {
         UpdateInventoryItem(this.uniqueId, this);
-
-        kvp.setJson(`inventory_items.${currentInventory.inventoryId}`, currentInventory.itemIds(), true);
+        UpdateInventoryItems(currentInventory);
         currentInventory.emit(`ox_inventory:moveItem`);
 
         // todo: optimise
         if (currentInventory !== targetInventory) {
-          kvp.setJson(`inventory_items.${targetInventory.inventoryId}`, targetInventory.itemIds(), true);
+          UpdateInventoryItems(targetInventory);
           targetInventory.emit(`ox_inventory:moveItem`);
         }
 
@@ -47,12 +46,12 @@ export async function CreateItem(name: string, data = {} as Partial<InventoryIte
         UpdateInventoryItem(this.uniqueId, this);
         UpdateInventoryItem(newItem.uniqueId, newItem);
 
-        kvp.setJson(`inventory_items.${currentInventory.inventoryId}`, currentInventory.itemIds(), true);
+        UpdateInventoryItems(currentInventory);
         currentInventory.emit(`ox_inventory:moveItem`);
 
         // todo: optimise
         if (currentInventory !== targetInventory) {
-          kvp.setJson(`inventory_items.${targetInventory.inventoryId}`, targetInventory.itemIds(), true);
+          UpdateInventoryItems(targetInventory);
           targetInventory.emit(`ox_inventory:moveItem`);
         }
 
