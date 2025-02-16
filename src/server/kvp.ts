@@ -187,6 +187,8 @@ export function GetInventoryItems(inventoryId: string) {
 }
 
 export function UpdateInventoryItem(uniqueId: number, item: InventoryItem) {
+  if (item.quantity < 1) return kvp.delete(`inventory_item.${uniqueId}`);
+
   kvp.setJson(`inventory_item.${uniqueId}`, item);
 }
 
