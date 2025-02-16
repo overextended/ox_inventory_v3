@@ -19,7 +19,8 @@
     "paths": {
       "$lib": ["./src/lib"],
       "$lib/*": ["./src/lib/*"],
-      "~/*": ["../*"]
+      "~/*": ["../*"],
+      "@common/*": ["../src/common/*"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.js", "src/**/*.svelte"]
