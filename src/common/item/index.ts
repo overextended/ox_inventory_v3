@@ -45,8 +45,8 @@ export function GetInventoryItem(uniqueId: number) {
   return InventoryItems[uniqueId];
 }
 
-function clamp(max: number = 4294967295, n: number = max) {
-  return Math.min(Math.max(n, 0), max);
+function clamp(n = 0, max = Number.MAX_SAFE_INTEGER) {
+  return !n && n !== 0 ? max : Math.min(Math.max(n, 0), max);
 }
 
 export function ItemFactory(name: string, item: ItemProperties) {
@@ -54,8 +54,8 @@ export function ItemFactory(name: string, item: ItemProperties) {
 
   item.name = name;
   item.category = item.category ?? 'miscellaneous';
-  item.itemLimit = clamp(4294967295, item.itemLimit);
-  item.stackSize = clamp(65535, item.stackSize);
+  item.itemLimit = clamp(item.itemLimit);
+  item.stackSize = clamp(item.stackSize);
 
   const iconPath = `${item.category}/${item.name}.webp`;
   let hasIcon = false;
