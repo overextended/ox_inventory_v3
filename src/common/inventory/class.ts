@@ -131,6 +131,14 @@ export class BaseInventory {
    * @todo: weight checks and other validation methods
    */
   public canHoldItem(item: InventoryItem, startSlot: number) {
+    const existingItem = this.getItemInSlot(startSlot);
+
+    if (existingItem?.anchorSlot === startSlot) {
+      if (!item.canMerge(existingItem)) return false;
+
+      return this.getItemSlots(existingItem);
+    }
+
     const doesItemFit =
       (startSlot % this.width) + item.width <= this.width &&
       Math.floor(startSlot / this.width) + item.height <= this.height;

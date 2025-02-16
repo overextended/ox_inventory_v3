@@ -35,6 +35,7 @@ export interface InventoryItem extends InstanceType<Item> {}
 
 const Items: Record<string, Item> = {};
 const InventoryItems: Record<string, InventoryItem> = {};
+const excludeKeysForComparison: Record<string, true> = { uniqueId: true, quantity: true, anchorSlot: true };
 
 export function GetItemData(name: string) {
   return Items[name];
@@ -186,26 +187,62 @@ export function ItemFactory(name: string, item: ItemProperties) {
       return slots ? inventory.setSlotRefs(slots) : false;
     }
 
-    public move(inventory: BaseInventory, startSlot?: number) {
-      if (startSlot === undefined) startSlot = inventory.findAvailableSlot(this);
+    /**
+     * Compares the properties of two items and returns `true` if they are similar enough to merge the stacks.
+     */
+    public canMerge(item: InventoryItem) {
+      const keysA = Object.keys(this).filter((key) => !excludeKeysForComparison[key]);
+      const keysB = Object.keys(item).filter((key) => !excludeKeysForComparison[key]);
 
+      if (keysA.length !== keysB.length) return false;
+
+      for (const key of keysA) {
+        if (this[key] !== item[key]) return false;
+      }
+
+      return true;
+    }
+
+    public move(inventory: BaseInventory, startSlot?: number) {
       const slots = inventory.canHoldItem(this, startSlot);
+      startSlot = startSlot ?? inventory.findAvailableSlot(this);
 
       if (!slots) return false;
 
+      const existingItem = inventory.getItemInSlot(startSlot);
+
       this.removeFromInventory(BaseInventory.fromId(this.inventoryId));
+
+      if (existingItem?.anchorSlot === startSlot) {
+        existingItem.quantity += this.quantity;
+        this.quantity = 0;
+
+        // todo: maybe improve this hacky method of forcing kvp sync
+        existingItem.move(inventory, existingItem.anchorSlot);
+
+        return true;
+      }
 
       return this.addToInventory(inventory, slots);
     }
 
     public split(inventory: BaseInventory, quantity: number, startSlot?: number) {
+      const existingItem = inventory.getItemInSlot(startSlot);
+      quantity = Math.max(1, Math.ceil(quantity));
+      startSlot = startSlot ?? inventory.findAvailableSlot(this);
+
+      if (existingItem?.anchorSlot === startSlot) {
+        existingItem.quantity += quantity;
+        this.quantity -= quantity;
+
+        return existingItem;
+      }
+
       const clone = structuredClone(this);
-      clone.quantity = Math.max(1, Math.ceil(quantity));
+      clone.quantity = quantity;
       delete clone.uniqueId;
 
       const newItem = new Item(clone);
-
-      if (startSlot === undefined) startSlot = inventory.findAvailableSlot(this);
 
       const slots = inventory.canHoldItem(newItem, startSlot);
 
