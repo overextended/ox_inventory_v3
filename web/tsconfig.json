@@ -1,11 +1,15 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
+    "target": "ES2022",
+    "useDefineForClassFields": true,
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
     "paths": {
       "$lib": ["./src/lib"],
       "$lib/*": ["./src/lib/*"],
       "~/*": ["../*"],
-      "@common/*": ["../src/common/*"],
+      "@common/*": ["../src/common/*"]
     }
   },
   "references": [
