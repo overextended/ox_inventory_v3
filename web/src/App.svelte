@@ -156,11 +156,14 @@
 
   function updateDropIndicatorPosition(event: MouseEvent, item: InventoryItem) {
     const target = event.target as HTMLElement;
-    const invGrid = target.parentNode as HTMLElement;
+    const parent = target.parentNode as HTMLElement;
 
-    if (!invGrid) return;
+    if (!parent?.dataset?.inventoryid) {
+      // todo: hide indicator / show outside drop?
+      return;
+    }
 
-    const invRect = invGrid.getBoundingClientRect();
+    const invRect = parent.getBoundingClientRect();
     const mouseX = event.clientX - invRect.left;
     const mouseY = event.clientY - invRect.top;
 
