@@ -13,11 +13,42 @@
   }
 
   let { inventory, visible, itemState, isDragging, dragSlot, onMouseDown }: Props = $props();
+
+  function draggableWindow(node: HTMLElement) {
+    let moving = false;
+    let left = 300;
+    let top = 100;
+
+    const container = document.getElementById(`inventory-${inventory.inventoryId}`) as HTMLElement;
+
+    container.style.position = 'absolute';
+    container.style.top = `${top}px`;
+    container.style.left = `${left}px`;
+    container.style.userSelect = 'none';
+
+    node.addEventListener('mousedown', () => {
+      moving = true;
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (moving) {
+        left += e.movementX;
+        top += e.movementY;
+        container.style.top = `${top}px`;
+        container.style.left = `${left}px`;
+      }
+    });
+
+    window.addEventListener('mouseup', () => {
+      moving = false;
+    });
+  }
 </script>
 
-<div class={cn('absolute top-1/4 left-1/4 ', !visible && 'hidden')}>
+<div class={cn('absolute top-1/4 left-1/4 z-[50]', !visible && 'hidden')} id={`inventory-${inventory.inventoryId}`}>
   <div class="flex flex-col">
-    <div class="w-full bg-background p-2 text-foreground">
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
+    <div class="w-full bg-background p-2 text-foreground hover:cursor-move" use:draggableWindow>
       <p>{inventory.label}</p>
     </div>
     <div
