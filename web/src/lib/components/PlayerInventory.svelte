@@ -7,21 +7,12 @@
     visible: boolean;
     isDragging: boolean;
     dragSlot: number | null;
-    dropIndicator: HTMLElement;
     inventory: InventoryState;
     itemState: InventoryState['itemState'];
     onMouseDown: (event: MouseEvent) => void;
   }
 
-  let {
-    inventory,
-    visible,
-    itemState,
-    dropIndicator = $bindable(),
-    isDragging,
-    dragSlot,
-    onMouseDown,
-  }: Props = $props();
+  let { inventory, visible, itemState, isDragging, dragSlot, onMouseDown }: Props = $props();
 </script>
 
 <div class={cn('flex items-center h-full justify-center bg-black/80', !visible && 'hidden')}>
@@ -35,8 +26,6 @@
       style={`grid-template-rows:repeat(${inventory.height}, 1fr);grid-template-columns: repeat(${inventory.width}, 1fr);`}
       data-inventoryid={inventory.inventoryId}
     >
-      <div class="fixed bg-green-500 opacity-30 pointer-events-none z-[51]" bind:this={dropIndicator}></div>
-
       {#each $itemState as item, index (item ? `${item.anchorSlot}-${index}` : `empty-${index}`)}
         <!-- svelte-ignore a11y_no_static_element_interactions -->
         <div

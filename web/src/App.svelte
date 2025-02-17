@@ -150,31 +150,39 @@
 
   let isDragging = $state(false);
   let dragSlot = $state<number | null>(null);
+  let dragItem: InventoryItem | null = null;
   let dragImg: HTMLElement = $state(null)!;
   let dropIndicator: HTMLElement = $state(null)!;
 
   function updateDropIndicatorPosition(event: MouseEvent, item: InventoryItem) {
-    const invGrid = document.querySelector('#inv-grid')!;
-    const bodyRect = invGrid.getBoundingClientRect();
-    const mouseX = event.clientX - bodyRect.left;
-    const mouseY = event.clientY - bodyRect.top;
+    const target = event.target as HTMLElement;
+    const invGrid = target.parentNode as HTMLElement;
+
+    if (!invGrid) return;
+
+    const invRect = invGrid.getBoundingClientRect();
+    const mouseX = event.clientX - invRect.left;
+    const mouseY = event.clientY - invRect.top;
 
     const adjustedX = mouseX - (item.width * SLOT_SIZE) / 2 + SLOT_SIZE / 2;
     const adjustedY = mouseY - (item.height * SLOT_SIZE) / 2 + SLOT_SIZE / 2;
 
     const slotX = Math.max(
       0,
-      Math.min(Math.floor(adjustedX / SLOT_SIZE), Math.floor(bodyRect.width / SLOT_SIZE) - item.width)
+      Math.min(Math.floor(adjustedX / SLOT_SIZE), Math.floor(invRect.width / SLOT_SIZE) - item.width)
     );
 
     const slotY = Math.max(
       0,
-      Math.min(Math.floor(adjustedY / SLOT_SIZE), Math.floor(bodyRect.height / SLOT_SIZE) - item.height)
+      Math.min(Math.floor(adjustedY / SLOT_SIZE), Math.floor(invRect.height / SLOT_SIZE) - item.height)
     );
+
+    const globalX = invRect.left + slotX * SLOT_SIZE;
+    const globalY = invRect.top + slotY * SLOT_SIZE;
 
     dropIndicator.style.width = `${item.width * SLOT_SIZE}px`;
     dropIndicator.style.height = `${item.height * SLOT_SIZE}px`;
-    dropIndicator.style.transform = `translate(${slotX * SLOT_SIZE}px, ${slotY * SLOT_SIZE}px)`;
+    dropIndicator.style.transform = `translate(${globalX}px, ${globalY}px)`;
   }
 
   function resetDragImage() {
@@ -217,6 +225,7 @@
 
       isDragging = true;
       dragSlot = slot;
+      dragItem = item;
 
       setDragImage(event, item);
       updateDropIndicatorPosition(event, item);
@@ -230,11 +239,9 @@
 
     dragImg.style.transform = `translate(${event.clientX - dragImg.clientWidth / 2}px, ${event.clientY - dragImg.clientHeight / 2}px)`;
 
-    const item = inventory.getItemInSlot(dragSlot);
+    if (!dragItem) return;
 
-    if (!item) return;
-
-    updateDropIndicatorPosition(event, item);
+    updateDropIndicatorPosition(event, dragItem);
   }
 
   async function onStopDrag(event: MouseEvent) {
@@ -290,6 +297,7 @@
 
     isDragging = false;
     dragSlot = null;
+    dragItem = null;
     document.body.style.cursor = 'auto';
   }
 
@@ -322,15 +330,15 @@
   ondragstart={preventDefault}
 />
 
+<div class="absolute bg-green-500 opacity-30 pointer-events-none z-[51]" bind:this={dropIndicator}></div>
 <DragPreview bind:dragImg />
-<PlayerInventory {visible} {isDragging} {itemState} {inventory} {dragSlot} bind:dropIndicator {onMouseDown} />
+<PlayerInventory {visible} {isDragging} {itemState} {inventory} {dragSlot} {onMouseDown} />
 
 {#each openInventories as openInventory}
   <InventoryWindow
     visible
     {isDragging}
     {dragSlot}
-    {dropIndicator}
     inventory={openInventory.inventory}
     itemState={openInventory.inventory.itemState}
     {onMouseDown}
