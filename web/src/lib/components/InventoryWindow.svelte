@@ -24,7 +24,7 @@
   }: Props = $props();
 </script>
 
-<div class={cn('flex items-center h-full justify-center bg-black/80', !visible && 'hidden')}>
+<div class={cn('absolute top-1/4 left-1/4 ', !visible && 'hidden')}>
   <div class="flex flex-col">
     <div class="w-full bg-background p-2 text-foreground">
       <p>{inventory.label}</p>
