@@ -247,6 +247,13 @@
     updateDropIndicatorPosition(event, dragItem);
   }
 
+  function resetDragState() {
+    isDragging = false;
+    dragSlot = null;
+    dragItem = null;
+    document.body.style.cursor = 'auto';
+  }
+
   async function onStopDrag(event: MouseEvent) {
     if (!isDragging || event.button !== 0) return;
 
@@ -255,7 +262,13 @@
     const target = event.target as HTMLElement;
     const parent = target.parentNode! as HTMLElement;
 
-    const targetInventoryId = parent.dataset.inventoryid as string;
+    const targetInventoryId = parent?.dataset?.inventoryid as string;
+
+    if (!targetInventoryId) {
+      resetDragState();
+      return;
+    }
+
     const inventory = getInventoryById(targetInventoryId);
 
     const item = inventory.getItemInSlot(dragSlot as number);
@@ -298,10 +311,7 @@
       }
     }
 
-    isDragging = false;
-    dragSlot = null;
-    dragItem = null;
-    document.body.style.cursor = 'auto';
+    resetDragState();
   }
 
   function onKeyDown(event: KeyboardEvent) {
