@@ -25,7 +25,7 @@
   let { itemState } = $derived(inventory);
   let items = $state<Record<number, InventoryItem>>({});
 
-  debugData<{ inventory: BaseInventory }>(
+  debugData<{ inventory: Partial<BaseInventory> }>(
     [
       {
         action: 'openInventory',
@@ -40,6 +40,7 @@
             width: 12,
             height: 6,
           },
+          // @ts-ignore
           items: [
             {
               name: 'ammo_9',
@@ -67,7 +68,7 @@
     inventory = new InventoryState(data.inventory);
 
     for (const value of data.items) {
-      const item: InventoryItem = (await GetInventoryItem(value)) ?? (await CreateItem(value.name, value));
+      const item: InventoryItem = GetInventoryItem(value.uniqueId) ?? (await CreateItem(value.name, value));
       items[item.uniqueId] = item;
 
       item.move(inventory, item.anchorSlot);
