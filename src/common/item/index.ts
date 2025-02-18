@@ -90,6 +90,8 @@ export function ItemFactory(name: string, item: ItemProperties) {
     /** The slotId for the top-left of the item. */
     public anchorSlot?: number;
 
+    public durability?: number;
+
     [key: string]: unknown;
 
     constructor(metadata?: ItemMetadata) {

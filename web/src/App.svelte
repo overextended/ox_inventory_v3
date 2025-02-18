@@ -58,6 +58,7 @@
               inventoryId: 'player',
               uniqueId: 8,
               anchorSlot: 4,
+              durability: 34
             },
           ],
         },
@@ -110,6 +111,7 @@
               inventoryId: 'trunk',
               uniqueId: 11,
               anchorSlot: 0,
+              durability: 80
             },
           ],
         },
