@@ -2,17 +2,18 @@
   import { cn } from '$lib/utils.js';
   import { SLOT_GAP, SLOT_SIZE } from '$lib/constants/inventory';
   import type { InventoryState } from '$lib/state/inventory';
+  import type { InventoryItem } from '~/src/common/item';
 
   interface Props {
     visible: boolean;
     isDragging: boolean;
-    dragSlot: number | null;
+    dragItem: InventoryItem | null;
     inventory: InventoryState;
     itemState: InventoryState['itemState'];
     onMouseDown: (event: MouseEvent) => void;
   }
 
-  let { inventory, visible, itemState, isDragging, dragSlot, onMouseDown }: Props = $props();
+  let { inventory, visible, itemState, isDragging, dragItem, onMouseDown }: Props = $props();
 
   function draggableWindow(node: HTMLElement) {
     let moving = false;
@@ -72,7 +73,7 @@
               class={cn(
                 'w-full h-full bg-no-repeat bg-[length:75%] bg-center absolute top-0 left-0 z-50 bg-black/50 text-right text-xs px-1 flex',
                 isDragging && 'pointer-events-none',
-                dragSlot === item.anchorSlot && 'opacity-50'
+                dragItem === item && 'opacity-50'
               )}
               style={`background-image: url('${item.icon}');width: ${SLOT_SIZE * item.width - 1}px;height: ${SLOT_SIZE * item.height - SLOT_GAP}px;')`}
             >

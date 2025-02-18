@@ -150,7 +150,7 @@
 
   let isDragging = $state(false);
   let dragSlot = $state<number | null>(null);
-  let dragItem: InventoryItem | null = null;
+  let dragItem = $state<InventoryItem | null>(null);
   let dragImg: HTMLElement = $state(null)!;
   let dropIndicator: HTMLElement = $state(null)!;
 
@@ -255,7 +255,7 @@
   }
 
   async function onStopDrag(event: MouseEvent) {
-    if (!isDragging || event.button !== 0) return;
+    if (!isDragging || !dragItem || event.button !== 0) return;
 
     resetDragImage();
 
@@ -269,15 +269,16 @@
       return;
     }
 
-    const inventory = getInventoryById(targetInventoryId);
+    const toInventory = getInventoryById(targetInventoryId);
+    const fromInventory = getInventoryById(dragItem.inventoryId!);
+    const item = fromInventory.getItemInSlot(dragSlot as number);
 
-    const item = inventory.getItemInSlot(dragSlot as number);
-    const element: HTMLElement | null =
-      item &&
-      (document.elementFromPoint(
-        event.clientX - (item.width * SLOT_SIZE) / 2 + SLOT_SIZE / 2,
-        event.clientY - (item.height * SLOT_SIZE) / 2 + SLOT_SIZE / 2
-      ) as HTMLElement | null);
+    if (!toInventory || !fromInventory || !item) return;
+
+    const element: HTMLElement = document.elementFromPoint(
+      event.clientX - (item.width * SLOT_SIZE) / 2 + SLOT_SIZE / 2,
+      event.clientY - (item.height * SLOT_SIZE) / 2 + SLOT_SIZE / 2
+    ) as HTMLElement;
 
     const slot = element?.dataset.slot ? +element.dataset.slot : null;
 
@@ -289,10 +290,10 @@
       const success = await fetchNui(
         'moveItem',
         {
-          fromType: inventory.type,
-          toType: inventory.type,
-          fromId: inventory.inventoryId,
-          toId: inventory.inventoryId,
+          fromType: fromInventory.type,
+          toType: toInventory.type,
+          fromId: fromInventory.inventoryId,
+          toId: toInventory.inventoryId,
           fromSlot: item.anchorSlot,
           toSlot: slot,
           quantity,
@@ -303,11 +304,17 @@
       );
 
       if (success) {
-        const result = quantity !== item.quantity ? item.split(inventory, quantity, slot) : item.move(inventory, slot);
+        const result =
+          quantity !== item.quantity ? item.split(toInventory, quantity, slot) : item.move(toInventory, slot);
 
-        if (isEnvBrowser() && typeof result === 'object') items[result.uniqueId] = result;
+        // Refreshes are handled differently in CEF.
+        if (!isEnvBrowser()) return;
 
-        inventory.refreshSlots();
+        if (typeof result === 'object') items[result.uniqueId] = result;
+
+        fromInventory.refreshSlots();
+
+        if (fromInventory !== toInventory) toInventory.refreshSlots();
       }
     }
 
@@ -345,13 +352,13 @@
 
 <div class="absolute bg-green-500 opacity-30 pointer-events-none z-[51]" bind:this={dropIndicator}></div>
 <DragPreview bind:dragImg />
-<PlayerInventory {visible} {isDragging} {itemState} {inventory} {dragSlot} {onMouseDown} />
+<PlayerInventory {visible} {isDragging} {itemState} {inventory} {dragItem} {onMouseDown} />
 
 {#each openInventories as openInventory}
   <InventoryWindow
     visible
     {isDragging}
-    {dragSlot}
+    {dragItem}
     inventory={openInventory.inventory}
     itemState={openInventory.inventory.itemState}
     {onMouseDown}
