@@ -240,7 +240,13 @@ export function ItemFactory(name: string, item: ItemProperties) {
       startSlot = startSlot ?? inventory.findAvailableSlot(this);
       const existingItem = inventory.getItemInSlot(startSlot);
 
-      if (existingItem && existingItem !== this && !this.canMerge(existingItem)) {
+      if (
+        existingItem &&
+        existingItem !== this &&
+        this.width === existingItem.width &&
+        this.height === existingItem.height &&
+        !this.canMerge(existingItem)
+      ) {
         return this.swapItems(BaseInventory.fromId(this.inventoryId), inventory, existingItem, startSlot);
       }
 
