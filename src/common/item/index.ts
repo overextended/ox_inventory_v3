@@ -206,7 +206,8 @@ export function ItemFactory(name: string, item: ItemProperties) {
     public move(inventory: BaseInventory, startSlot?: number) {
       startSlot = startSlot ?? inventory.findAvailableSlot(this);
       const existingItem = inventory.getItemInSlot(startSlot);
-      const slots = inventory.canHoldItem(this, startSlot, this.quantity + (existingItem?.quantity ?? 0));
+      const quantity = existingItem === this ? this.quantity : this.quantity + (existingItem?.quantity ?? 0);
+      const slots = inventory.canHoldItem(this, startSlot, quantity);
 
       if (!slots) return false;
 
