@@ -35,7 +35,12 @@ export interface InventoryItem extends InstanceType<Item> {}
 
 const Items: Record<string, Item> = {};
 const InventoryItems: Record<string, InventoryItem> = {};
-const excludeKeysForComparison: Record<string, true> = { uniqueId: true, quantity: true, anchorSlot: true };
+const excludeKeysForComparison: Record<string, true> = {
+  uniqueId: true,
+  quantity: true,
+  anchorSlot: true,
+  inventoryId: true,
+};
 
 export function GetItemData(name: string) {
   return Items[name];
@@ -187,6 +192,34 @@ export function ItemFactory(name: string, item: ItemProperties) {
       return slots ? inventory.setSlotRefs(slots) : false;
     }
 
+    private swapItems(
+      fromInventory: BaseInventory,
+      toInventory: BaseInventory,
+      toItem: InventoryItem,
+      targetSlot: number
+    ) {
+      const originalSlot = this.anchorSlot;
+      const currentSlots = fromInventory.getItemSlots(this);
+      const targetItemSlots = toInventory.getItemSlots(toItem);
+
+      this.removeFromInventory(fromInventory);
+      toItem.removeFromInventory(toInventory);
+
+      const newItemSlots = fromInventory.canHoldItem(this, originalSlot);
+      const newTargetSlots = toInventory.canHoldItem(toItem, targetSlot);
+
+      if (!newItemSlots || !newTargetSlots) {
+        this.addToInventory(fromInventory, currentSlots);
+        toItem.addToInventory(toInventory, targetItemSlots);
+        return false;
+      }
+
+      this.addToInventory(toInventory, newTargetSlots);
+      toItem.addToInventory(fromInventory, newItemSlots);
+
+      return true;
+    }
+
     /**
      * Compares the properties of two items and returns `true` if they are similar enough to merge the stacks.
      */
@@ -206,6 +239,11 @@ export function ItemFactory(name: string, item: ItemProperties) {
     public move(inventory: BaseInventory, startSlot?: number) {
       startSlot = startSlot ?? inventory.findAvailableSlot(this);
       const existingItem = inventory.getItemInSlot(startSlot);
+
+      if (existingItem && existingItem !== this && !this.canMerge(existingItem)) {
+        return this.swapItems(BaseInventory.fromId(this.inventoryId), inventory, existingItem, startSlot);
+      }
+
       const quantity = existingItem === this ? this.quantity : this.quantity + (existingItem?.quantity ?? 0);
       const slots = inventory.canHoldItem(this, startSlot, quantity);
 
