@@ -76,7 +76,7 @@
             items: {
               1: 9,
             },
-            height: 4,
+            height: 2,
             width: 4,
             label: 'Glovebox',
           },
@@ -87,6 +87,29 @@
               inventoryId: 'glovebox',
               uniqueId: 9,
               anchorSlot: 1,
+            },
+          ],
+        },
+      },
+      {
+        action: 'openInventoryWindow',
+        data: {
+          inventory: {
+            inventoryId: 'trunk',
+            items: {
+              0: 11,
+            },
+            height: 5,
+            width: 8,
+            label: 'Trunk',
+          },
+          items: [
+            {
+              name: 'HeavyRifle',
+              quantity: 1,
+              inventoryId: 'trunk',
+              uniqueId: 11,
+              anchorSlot: 0,
             },
           ],
         },
