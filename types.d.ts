@@ -6,4 +6,5 @@ declare interface MoveItem {
   fromSlot: number;
   toSlot: number;
   quantity: number;
+  rotate: boolean;
 }

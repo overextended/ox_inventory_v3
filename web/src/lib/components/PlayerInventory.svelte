@@ -40,11 +40,18 @@
               data-slot={index}
               data-anchorSlot={item.anchorSlot === index}
               class={cn(
-                'w-full h-full bg-no-repeat bg-[length:75%] bg-center absolute top-0 left-0 z-50 bg-black/50 text-right text-xs px-1 flex',
+                `w-full h-full bg-no-repeat bg-[length:75%] bg-center absolute top-0 left-0 z-50 bg-black/50 text-right text-xs px-1 flex item`,
                 isDragging && 'pointer-events-none',
                 dragItem === item && 'opacity-50'
               )}
-              style={`background-image: url('${item.icon}');width: ${SLOT_SIZE * item.width - 1}px;height: ${SLOT_SIZE * item.height - SLOT_GAP}px;')`}
+              style={`
+                --icon: url('${item.icon}');
+                --transform: rotate(${item.rotate ? '-90deg' : '0deg'}) ${item.rotate ? `translate(-${SLOT_SIZE / 2}px, -${SLOT_SIZE / 2}px)` : ''};
+                --width: ${SLOT_SIZE * (item.rotate ? item.height : item.width) - 1}px;
+                --height: ${SLOT_SIZE * (item.rotate ? item.width : item.height) - SLOT_GAP}px;
+                width: ${SLOT_SIZE * item.width - 1}px;
+                height: ${SLOT_SIZE * item.height - SLOT_GAP}px;
+              `}
             >
               <div
                 class="h-full w-full flex flex-col justify-between font-semibold text-foreground pointer-events-none"

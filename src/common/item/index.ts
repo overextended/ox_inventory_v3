@@ -105,6 +105,11 @@ export function ItemFactory(name: string, item: ItemProperties) {
 
       if (!this.uniqueId) Item.CreateUniqueId(this);
 
+      // testing only
+      if (item.category === 'weapon' && !this.durability) {
+        this.durability = Math.floor(Math.random() * 90) + 1;
+      }
+
       InventoryItems[this.uniqueId] = this;
     }
 

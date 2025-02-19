@@ -12,6 +12,7 @@
   import DragPreview from '$lib/components/DragPreview.svelte';
   import InventoryWindow from '$lib/components/InventoryWindow.svelte';
 
+  let playerInventoryId = 'player'; // temp
   let visible = $state(false);
   let isHoldingShift = false;
   let inventory = $state(
@@ -41,7 +42,7 @@
               4: 8,
             },
             width: 12,
-            height: 6,
+            height: 8,
           },
           items: [
             {
@@ -58,7 +59,7 @@
               inventoryId: 'player',
               uniqueId: 8,
               anchorSlot: 4,
-              durability: 34
+              durability: 34,
             },
           ],
         },
@@ -111,7 +112,7 @@
               inventoryId: 'trunk',
               uniqueId: 11,
               anchorSlot: 0,
-              durability: 80
+              durability: 80,
             },
           ],
         },
@@ -121,6 +122,7 @@
   );
 
   useNuiEvent('openInventory', async (data: { inventory: BaseInventory; items: InventoryItem[] }) => {
+    playerInventoryId = data.inventory.inventoryId;
     inventory = new InventoryState(data.inventory);
 
     for (const value of data.items) {
@@ -156,12 +158,10 @@
     );
   });
 
-  useNuiEvent('closeAllInventories', () => {
+  useNuiEvent('closeInventory', () => {
     visible = false;
     openInventories = [];
   });
-
-  useNuiEvent('closeInventory', () => (visible = false));
 
   if (isEnvBrowser()) {
     const root = document.getElementById('app');
@@ -178,59 +178,10 @@
   let dragItem = $state<InventoryItem | null>(null);
   let dragImg: HTMLElement = $state(null)!;
   let dropIndicator: HTMLElement = $state(null)!;
-
-  function updateDropIndicatorPosition(event: MouseEvent, item: InventoryItem) {
-    const target = event.target as HTMLElement;
-    const parent = target.parentNode as HTMLElement;
-
-    if (!parent?.dataset?.inventoryid) {
-      // todo: hide indicator / show outside drop?
-      return;
-    }
-
-    const invRect = parent.getBoundingClientRect();
-    const mouseX = event.clientX - invRect.left;
-    const mouseY = event.clientY - invRect.top;
-
-    const adjustedX = mouseX - (item.width * SLOT_SIZE) / 2 + SLOT_SIZE / 2;
-    const adjustedY = mouseY - (item.height * SLOT_SIZE) / 2 + SLOT_SIZE / 2;
-
-    const slotX = Math.max(
-      0,
-      Math.min(Math.floor(adjustedX / SLOT_SIZE), Math.floor(invRect.width / SLOT_SIZE) - item.width)
-    );
-
-    const slotY = Math.max(
-      0,
-      Math.min(Math.floor(adjustedY / SLOT_SIZE), Math.floor(invRect.height / SLOT_SIZE) - item.height)
-    );
-
-    const globalX = invRect.left + slotX * SLOT_SIZE;
-    const globalY = invRect.top + slotY * SLOT_SIZE;
-
-    dropIndicator.style.width = `${item.width * SLOT_SIZE}px`;
-    dropIndicator.style.height = `${item.height * SLOT_SIZE}px`;
-    dropIndicator.style.transform = `translate(${globalX}px, ${globalY}px)`;
-  }
-
-  function resetDragImage() {
-    dragImg.style.backgroundImage = '';
-    dragImg.style.display = 'none';
-    dropIndicator.style.display = 'none';
-  }
-
-  function setDragImage(event: MouseEvent, item: InventoryItem) {
-    dragImg.style.backgroundImage = `url(${item.icon})`;
-    dragImg.style.display = 'block';
-    dragImg.style.transform = `translate(${event.clientX - dragImg.clientWidth / 2}px, ${event.clientY - dragImg.clientHeight / 2}px)`;
-    dragImg.style.width = `${item.width * SLOT_SIZE}px`;
-    dragImg.style.height = `${item.height * SLOT_SIZE}px`;
-    dropIndicator.style.display = 'block';
-    document.body.style.cursor = 'none';
-  }
+  let itemRotation: boolean | undefined = false;
 
   function getInventoryById(inventoryId: string) {
-    if (inventoryId === 'player') return inventory;
+    if (inventoryId === playerInventoryId) return inventory;
 
     return openInventories.find((openInventory) => openInventory.inventory.inventoryId === inventoryId)!.inventory;
   }
@@ -254,25 +205,17 @@
       isDragging = true;
       dragSlot = slot;
       dragItem = item;
-
-      setDragImage(event, item);
-      updateDropIndicatorPosition(event, item);
+      itemRotation = item.rotate;
     } else if (event.button === 2) {
       // todo: context menu
     }
   }
 
-  function onMouseMove(event: MouseEvent) {
-    if (!isDragging || dragSlot === null) return;
-
-    dragImg.style.transform = `translate(${event.clientX - dragImg.clientWidth / 2}px, ${event.clientY - dragImg.clientHeight / 2}px)`;
-
+  function resetDragState() {
     if (!dragItem) return;
 
-    updateDropIndicatorPosition(event, dragItem);
-  }
-
-  function resetDragState() {
+    dragItem.rotate = itemRotation;
+    itemRotation = false;
     isDragging = false;
     dragSlot = null;
     dragItem = null;
@@ -281,8 +224,6 @@
 
   async function onStopDrag(event: MouseEvent) {
     if (!isDragging || !dragItem || event.button !== 0) return;
-
-    resetDragImage();
 
     const target = event.target as HTMLElement;
     const parent = target.parentNode! as HTMLElement;
@@ -312,6 +253,7 @@
         1,
         Math.min(item.quantity, isHoldingShift ? Math.floor(item.quantity / 2) : item.quantity)
       );
+
       const success = await fetchNui(
         'moveItem',
         {
@@ -333,13 +275,13 @@
           quantity !== item.quantity ? item.split(toInventory, quantity, slot) : item.move(toInventory, slot);
 
         // Refreshes are handled differently in CEF.
-        if (!isEnvBrowser()) return;
+        if (isEnvBrowser()) {
+          if (typeof result === 'object') items[result.uniqueId] = result;
 
-        if (typeof result === 'object') items[result.uniqueId] = result;
+          fromInventory.refreshSlots();
 
-        fromInventory.refreshSlots();
-
-        if (fromInventory !== toInventory) toInventory.refreshSlots();
+          if (fromInventory !== toInventory) toInventory.refreshSlots();
+        }
       }
     }
 
@@ -347,12 +289,16 @@
   }
 
   function onKeyDown(event: KeyboardEvent) {
-    switch (event.key) {
-      case 'Escape':
-      case 'Tab':
+    switch (event.key.toLowerCase()) {
+      case 'escape':
+      case 'tab':
         return fetchNui(`closeInventory`);
-      case 'Shift':
+      case 'shift':
         return (isHoldingShift = true);
+      case 'r':
+        // if (!dragItem || dragItem.width === dragItem.height) return;
+        // return (dragItem.rotate = !dragItem.rotate);
+        return;
     }
   }
 
@@ -367,7 +313,6 @@
 </script>
 
 <svelte:window
-  onmousemove={onMouseMove}
   onmouseup={onStopDrag}
   onkeydown={onKeyDown}
   onkeyup={onKeyUp}
@@ -375,8 +320,7 @@
   ondragstart={preventDefault}
 />
 
-<div class="absolute bg-green-500 opacity-30 pointer-events-none z-[51]" bind:this={dropIndicator}></div>
-<DragPreview bind:dragImg />
+<DragPreview bind:dragImg bind:dropIndicator {dragItem} />
 <PlayerInventory {visible} {isDragging} {itemState} {inventory} {dragItem} {onMouseDown} />
 
 {#each openInventories as openInventory}
