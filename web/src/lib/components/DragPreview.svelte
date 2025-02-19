@@ -11,6 +11,7 @@
   let { dragImg = $bindable(), dropIndicator = $bindable(), dragItem }: Props = $props();
   let dropTransform = $state(`translate(0, 0)`);
   let dragTransform = $state(`translate(0, 0)`);
+  let visible = $state(false);
 
   function updateDragIndicator(event: MouseEvent) {
     if (!dragItem) return;
@@ -34,7 +35,7 @@
     dragTransform = `rotate(${rotation}deg) translate(${dragX}px, ${dragY}px)`;
 
     if (!parent?.dataset?.inventoryid) {
-      // todo: hide indicator / show outside drop?
+      visible = false;
       return;
     }
 
@@ -58,6 +59,7 @@
     const globalY = invRect.top + slotY * SLOT_SIZE;
 
     dropTransform = `translate(${globalX}px, ${globalY}px)`;
+    visible = true;
   }
 
   window.addEventListener('mousemove', updateDragIndicator);
@@ -77,6 +79,7 @@
     width: ${dragItem.width * SLOT_SIZE}px;
     height: ${dragItem.height * SLOT_SIZE}px;
     transform: ${dropTransform};
+    visibility: ${visible ? 'block' : 'hidden'};
   `}
   ></div>
   <div
