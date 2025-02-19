@@ -8,25 +8,12 @@
   import { InventoryState } from '$lib/state/inventory';
   import { CreateItem } from '$lib/helpers/create-item';
   import { SLOT_SIZE } from '$lib/constants/inventory';
-  import PlayerInventory from '$lib/components/PlayerInventory.svelte';
   import DragPreview from '$lib/components/DragPreview.svelte';
   import InventoryWindow from '$lib/components/InventoryWindow.svelte';
 
-  let playerInventoryId = 'player'; // temp
   let visible = $state(false);
   let isHoldingShift = false;
-  let inventory = $state(
-    new InventoryState({
-      inventoryId: 'player',
-      label: '',
-      items: {},
-      width: 2,
-      height: 2,
-    })
-  );
-  let { itemState } = $derived(inventory);
   let items = $state<Record<number, InventoryItem>>({});
-
   let openInventories = $state<{ inventory: InventoryState; items: Partial<InventoryItem>[] }[]>([]);
 
   debugData<{ inventory: Partial<BaseInventory>; items: Partial<InventoryItem>[] }>(
@@ -71,7 +58,7 @@
   debugData<{ inventory: Partial<BaseInventory>; items: Partial<InventoryItem>[] }>(
     [
       {
-        action: 'openInventoryWindow',
+        action: 'openInventory',
         data: {
           inventory: {
             inventoryId: 'glovebox',
@@ -94,7 +81,7 @@
         },
       },
       {
-        action: 'openInventoryWindow',
+        action: 'openInventory',
         data: {
           inventory: {
             inventoryId: 'trunk',
@@ -121,9 +108,13 @@
     1000
   );
 
-  useNuiEvent('openInventory', async (data: { inventory: BaseInventory; items: InventoryItem[] }) => {
-    playerInventoryId = data.inventory.inventoryId;
-    inventory = new InventoryState(data.inventory);
+  useNuiEvent('openInventory', async (data: { inventory: InventoryState; items: InventoryItem[] }) => {
+    let inventory = getInventoryById(data.inventory.inventoryId);
+
+    if (!inventory) {
+      inventory = new InventoryState(data.inventory);
+      openInventories.push({ inventory, items: data.items });
+    }
 
     for (const value of data.items) {
       const item: InventoryItem = GetInventoryItem(value.uniqueId) ?? (await CreateItem(value.name, value));
@@ -133,32 +124,14 @@
     }
 
     inventory.refreshSlots();
-
-    visible = true;
   });
 
-  useNuiEvent('openInventoryWindow', async (data: { inventory: InventoryState; items: InventoryItem[] }) => {
-    let inventory = new InventoryState(data.inventory);
-
-    for (const value of data.items) {
-      const item: InventoryItem = GetInventoryItem(value.uniqueId) ?? (await CreateItem(value.name, value));
-      items[item.uniqueId] = item;
-
-      item.move(inventory, item.anchorSlot);
+  useNuiEvent('closeInventory', (inventoryId: string) => {
+    if (inventoryId) {
+      openInventories = openInventories.filter((openInventory) => openInventory.inventory.inventoryId !== inventoryId);
+      return;
     }
 
-    inventory.refreshSlots();
-
-    openInventories.push({ inventory, items: data.items });
-  });
-
-  useNuiEvent('closeInventoryWindow', async (data: { inventoryId: string }) => {
-    openInventories = openInventories.filter(
-      (openInventory) => openInventory.inventory.inventoryId !== data.inventoryId
-    );
-  });
-
-  useNuiEvent('closeInventory', () => {
     visible = false;
     openInventories = [];
   });
@@ -181,9 +154,7 @@
   let itemRotation: boolean | undefined = false;
 
   function getInventoryById(inventoryId: string) {
-    if (inventoryId === playerInventoryId) return inventory;
-
-    return openInventories.find((openInventory) => openInventory.inventory.inventoryId === inventoryId)!.inventory;
+    return openInventories.find((openInventory) => openInventory.inventory.inventoryId === inventoryId)?.inventory;
   }
 
   function onMouseDown(event: MouseEvent) {
@@ -195,6 +166,8 @@
     if (!parent.dataset.inventoryid) return;
 
     const sourceInventory = getInventoryById(parent.dataset.inventoryid as string);
+
+    if (!sourceInventory) return;
 
     if (event.button === 0) {
       const slot = +target?.dataset.slot;
@@ -237,7 +210,7 @@
 
     const toInventory = getInventoryById(targetInventoryId);
     const fromInventory = getInventoryById(dragItem.inventoryId!);
-    const item = fromInventory.getItemInSlot(dragSlot as number);
+    const item = fromInventory?.getItemInSlot(dragSlot as number);
 
     if (!toInventory || !fromInventory || !item) return;
 
@@ -321,7 +294,6 @@
 />
 
 <DragPreview bind:dragImg bind:dropIndicator {dragItem} />
-<PlayerInventory {visible} {isDragging} {itemState} {inventory} {dragItem} {onMouseDown} />
 
 {#each openInventories as openInventory}
   <InventoryWindow
