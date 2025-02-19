@@ -91,6 +91,7 @@ export function ItemFactory(name: string, item: ItemProperties) {
     public anchorSlot?: number;
 
     public durability?: number;
+    public rotate?: boolean;
 
     [key: string]: unknown;
 
@@ -168,11 +169,11 @@ export function ItemFactory(name: string, item: ItemProperties) {
     }
 
     get width() {
-      return (Config.Inventory_MultiSlotItems && item.width) || 1;
+      return (Config.Inventory_MultiSlotItems && this.rotate ? item.height : item.width) || 1;
     }
 
     get height() {
-      return (Config.Inventory_MultiSlotItems && item.height) || 1;
+      return (Config.Inventory_MultiSlotItems && this.rotate ? item.width : item.height) || 1;
     }
 
     private addToInventory(inventory: BaseInventory, slots: number[]) {
