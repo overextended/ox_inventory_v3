@@ -38,6 +38,7 @@ createBuilder(
       dependencies: ['/server:7290', '/onesync', 'oxmysql', 'ox_lib', 'ox_target'],
       metadata: {
         ui_page: 'dist/web/index.html',
+        node_version: '22',
       },
     });
   }
