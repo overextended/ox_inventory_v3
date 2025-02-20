@@ -13,7 +13,6 @@
 
   let visible = $state(false);
   let isHoldingShift = false;
-  let items = $state<Record<number, InventoryItem>>({});
   let openInventories = $state<{ inventory: InventoryState; items: Partial<InventoryItem>[] }[]>([]);
 
   debugData<{ inventory: Partial<BaseInventory>; items: Partial<InventoryItem>[] }>(
@@ -47,35 +46,6 @@
               uniqueId: 8,
               anchorSlot: 4,
               durability: 34,
-            },
-          ],
-        },
-      },
-    ],
-    1000
-  );
-
-  debugData<{ inventory: Partial<BaseInventory>; items: Partial<InventoryItem>[] }>(
-    [
-      {
-        action: 'openInventory',
-        data: {
-          inventory: {
-            inventoryId: 'glovebox',
-            items: {
-              1: 9,
-            },
-            height: 2,
-            width: 4,
-            label: 'Glovebox',
-          },
-          items: [
-            {
-              name: 'ammo_9',
-              quantity: 1,
-              inventoryId: 'glovebox',
-              uniqueId: 9,
-              anchorSlot: 1,
             },
           ],
         },
@@ -117,8 +87,21 @@
     }
 
     for (const value of data.items) {
-      const item: InventoryItem = GetInventoryItem(value.uniqueId) ?? (await CreateItem(value.name, value));
-      items[item.uniqueId] = item;
+      let item = GetInventoryItem(value.uniqueId);
+
+      if (item) {
+        // todo: figure out why this is so scuffed
+        const oldInventory =
+          item.inventoryId &&
+          item.inventoryId !== data.inventory.inventoryId &&
+          InventoryState.fromId(item.inventoryId);
+
+        item.delete();
+
+        if (oldInventory) oldInventory.refreshSlots();
+      }
+
+      item = await CreateItem(value.name, value);
 
       item.move(inventory, item.anchorSlot);
     }
@@ -195,70 +178,132 @@
     document.body.style.cursor = 'auto';
   }
 
+  function onItemMovement(
+    item: InventoryItem,
+    fromInventory: InventoryState,
+    toInventory: InventoryState,
+    quantity: number,
+    slot: number
+  ) {
+    const result = quantity !== item.quantity ? item.split(toInventory, quantity, slot) : item.move(toInventory, slot);
+
+    // Refreshes are handled differently in CEF.
+    if (isEnvBrowser()) {
+      if (typeof result === 'object') Object.assign(item, result);
+
+      fromInventory.refreshSlots();
+
+      if (fromInventory !== toInventory) toInventory.refreshSlots();
+    }
+  }
+
   async function onStopDrag(event: MouseEvent) {
     if (!isDragging || !dragItem || event.button !== 0) return;
 
-    const target = event.target as HTMLElement;
-    const parent = target.parentNode! as HTMLElement;
+    try {
+      const target = event.target as HTMLElement;
+      const parent = target.parentNode! as HTMLElement;
+      const targetInventoryId = parent?.dataset?.inventoryid as string;
+      const fromInventory = getInventoryById(dragItem.inventoryId!);
+      const item = fromInventory?.getItemInSlot(dragSlot as number);
 
-    const targetInventoryId = parent?.dataset?.inventoryid as string;
+      if (!fromInventory) throw new Error(`Cannot move item from unknown inventory (${dragItem.inventoryId})`);
+      if (!item) throw new Error(`Cannot move unknown item from ${dragItem.inventoryId}<${dragSlot}>`);
 
-    if (!targetInventoryId) {
-      resetDragState();
-      return;
-    }
-
-    const toInventory = getInventoryById(targetInventoryId);
-    const fromInventory = getInventoryById(dragItem.inventoryId!);
-    const item = fromInventory?.getItemInSlot(dragSlot as number);
-
-    if (!toInventory || !fromInventory || !item) return;
-
-    const element: HTMLElement = document.elementFromPoint(
-      event.clientX - (item.width * SLOT_SIZE) / 2 + SLOT_SIZE / 2,
-      event.clientY - (item.height * SLOT_SIZE) / 2 + SLOT_SIZE / 2
-    ) as HTMLElement;
-
-    const slot = element?.dataset.slot ? +element.dataset.slot : null;
-
-    if (slot !== null && slot !== dragSlot) {
       const quantity = Math.max(
         1,
         Math.min(item.quantity, isHoldingShift ? Math.floor(item.quantity / 2) : item.quantity)
       );
 
-      const success = await fetchNui(
-        'moveItem',
-        {
-          fromType: fromInventory.type,
-          toType: toInventory.type,
-          fromId: fromInventory.inventoryId,
-          toId: toInventory.inventoryId,
-          fromSlot: item.anchorSlot,
-          toSlot: slot,
-          quantity,
-        },
-        {
-          data: true,
+      if (!targetInventoryId) {
+        const inventoryId = isEnvBrowser() ? Date.now().toString() : undefined;
+
+        if (inventoryId) {
+          debugData<{ inventory: Partial<BaseInventory>; items: Partial<InventoryItem>[] }>(
+            [
+              {
+                action: 'openInventory',
+                data: {
+                  inventory: {
+                    inventoryId: inventoryId,
+                    label: `Drop ${inventoryId}`,
+                    width: 6,
+                    height: 4,
+                    maxWeight: 50000,
+                    type: 'drop',
+                    items: {},
+                  },
+                  items: [],
+                },
+              },
+            ],
+            0
+          );
         }
-      );
 
-      if (success) {
-        const result =
-          quantity !== item.quantity ? item.split(toInventory, quantity, slot) : item.move(toInventory, slot);
+        const success = await fetchNui(
+          'moveItem',
+          {
+            fromType: fromInventory.type,
+            toType: 'drop',
+            fromId: fromInventory.inventoryId,
+            toId: inventoryId,
+            fromSlot: item.anchorSlot,
+            toSlot: 0,
+            quantity,
+          },
+          {
+            data: true,
+          }
+        );
 
-        // Refreshes are handled differently in CEF.
-        if (isEnvBrowser()) {
-          if (typeof result === 'object') items[result.uniqueId] = result;
+        const toInventory = inventoryId && getInventoryById(inventoryId);
 
-          fromInventory.refreshSlots();
+        if (success && toInventory) {
+          onItemMovement(item, fromInventory, getInventoryById(inventoryId!)!, quantity, 0);
+        }
 
-          if (fromInventory !== toInventory) toInventory.refreshSlots();
+        return resetDragState();
+      }
+
+      const toInventory = getInventoryById(targetInventoryId);
+
+      if (!toInventory) return;
+
+      const element: HTMLElement = document.elementFromPoint(
+        event.clientX - (item.width * SLOT_SIZE) / 2 + SLOT_SIZE / 2,
+        event.clientY - (item.height * SLOT_SIZE) / 2 + SLOT_SIZE / 2
+      ) as HTMLElement;
+
+      const slot = element?.dataset.slot ? +element.dataset.slot : null;
+
+      if (slot !== null && slot !== dragSlot) {
+        const success = await fetchNui(
+          'moveItem',
+          {
+            fromType: fromInventory.type,
+            toType: toInventory.type,
+            fromId: fromInventory.inventoryId,
+            toId: toInventory.inventoryId,
+            fromSlot: item.anchorSlot,
+            toSlot: slot,
+            quantity,
+          },
+          {
+            data: true,
+          }
+        );
+
+        if (success) {
+          onItemMovement(item, fromInventory, toInventory, quantity, slot);
         }
       }
-    }
 
-    resetDragState();
+      return resetDragState();
+    } catch (err) {
+      console.error(err);
+      resetDragState();
+    }
   }
 
   function onKeyDown(event: KeyboardEvent) {

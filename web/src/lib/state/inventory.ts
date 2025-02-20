@@ -7,9 +7,6 @@ export class InventoryState extends BaseInventory {
 
   constructor(data: Partial<BaseInventory>) {
     super(data);
-
-    // @ts-ignore
-    this.items = data.items;
   }
 
   refreshSlots() {

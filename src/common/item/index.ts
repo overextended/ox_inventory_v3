@@ -3,9 +3,6 @@ import { BaseInventory } from '@common/inventory/class';
 import fetch from 'sync-fetch';
 import { ResourceContext, ResourceName } from '..';
 
-// Because somehow FXServer still only supports NodeJS v16
-const structuredClone = <T extends Object>(obj: T) => JSON.parse(JSON.stringify(obj)) as T;
-
 export interface ItemMetadata {
   label?: string;
   weight?: number;
@@ -229,6 +226,17 @@ export function ItemFactory(name: string, item: ItemProperties) {
     }
 
     /**
+     * Temporary workaround for a weird rendering issue.
+     */
+    public delete() {
+      const inventory = this.inventoryId && BaseInventory.fromId(this.inventoryId);
+
+      if (inventory) this.removeFromInventory(inventory);
+
+      delete InventoryItems[this.uniqueId];
+    }
+
+    /**
      * Compares the properties of two items and returns `true` if they are similar enough to merge the stacks.
      */
     public canMerge(item: InventoryItem) {
@@ -295,8 +303,8 @@ export function ItemFactory(name: string, item: ItemProperties) {
       }
 
       const clone = structuredClone(this);
-      clone.quantity = quantity;
       delete clone.uniqueId;
+      clone.quantity = quantity;
 
       const newItem = new Item(clone);
 

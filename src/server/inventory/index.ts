@@ -4,6 +4,7 @@ import { Inventory } from './class';
 import { CreateItem } from '../item';
 import { GetPlayer } from '@overextended/ox_core/server';
 import { GetInventoryItems } from '../kvp';
+import Config from '@common/config';
 
 async function GetDefaultInventoryData(inventoryId: string, type: string) {
   const inventory: Partial<BaseInventory> = {
@@ -27,13 +28,26 @@ async function GetDefaultInventoryData(inventoryId: string, type: string) {
 export async function GetInventory(inventoryId: string, type: string) {
   if (type === 'player' && !inventoryId.includes(`player`)) {
     const player = GetPlayer(inventoryId);
+
+    if (!player) return console.error(`Cannot get inventory for invalid player ${inventoryId}`);
+
     inventoryId = `player:${player.charId.toString()}`;
   }
 
   let inventory = Inventory.fromId(inventoryId);
 
   if (!inventory) {
-    const data = (await GetDbInventoryData(inventoryId)) || (await GetDefaultInventoryData(inventoryId, type));
+    const data =
+      type === 'drop'
+        ? {
+            inventoryId: inventoryId,
+            label: `Drop ${+GetHashKey(inventoryId)}`,
+            width: Config.Drop_Width,
+            height: Config.Drop_Height,
+            maxWeight: Config.Drop_MaxWeight,
+            type,
+          }
+        : (await GetDbInventoryData(inventoryId)) || (await GetDefaultInventoryData(inventoryId, type));
     const items = GetInventoryItems(inventoryId);
 
     inventory = new Inventory(data);

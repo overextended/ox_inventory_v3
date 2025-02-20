@@ -2,6 +2,7 @@ import { GetInventoryItem } from '@common/item';
 import { GetInventory } from './inventory';
 import { CreateItem } from './item';
 import './kvp';
+import { onClientCallback } from '@overextended/ox_lib/server';
 
 onNet(`ox_inventory:requestOpenInventory`, async () => {
   const playerId = source;
@@ -17,21 +18,30 @@ onNet(`ox_inventory:closeInventory`, async () => {
   inventory?.close(playerId, false);
 });
 
-onNet(`ox_inventory:requestMoveItem`, async (data: MoveItem) => {
+onClientCallback(`ox_inventory:requestMoveItem`, async (playerId, data: MoveItem) => {
   const fromInventory = await GetInventory(data.fromId, data.fromType);
-  const toInventory = data.fromId === data.toId ? fromInventory : await GetInventory(data.toId, data.toType);
+  const toInventory =
+    data.fromId === data.toId ? fromInventory : await GetInventory(data.toId ?? Date.now().toString(), data.toType);
 
   if (!fromInventory || !toInventory) return console.error(`Invalid inventory`);
 
   const item = GetInventoryItem(fromInventory.items[data.fromSlot]);
 
+  if (!item) return console.error(`Invalid item in ${fromInventory.inventoryId}<${data.fromSlot}>`);
+
   data.quantity = Math.max(1, Math.min(item.quantity, data.quantity));
+  data.toSlot = data.toSlot ?? 0;
 
-  if (!item || data.quantity > item.quantity) return console.error(`Invalid item or item count`);
+  if (data.quantity > item.quantity) return console.error(`Invalid item or item count`);
 
-  data.quantity !== item.quantity
-    ? item.split(toInventory, data.quantity, data.toSlot)
-    : item.move(toInventory, data.toSlot);
+  const success =
+    data.quantity !== item.quantity
+      ? item.split(toInventory, data.quantity, data.toSlot)
+      : item.move(toInventory, data.toSlot);
+
+  if (success) toInventory.open(playerId);
+
+  return !!success;
 });
 
 RegisterCommand(

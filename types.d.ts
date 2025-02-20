@@ -2,9 +2,9 @@ declare interface MoveItem {
   fromType: string;
   toType: string;
   fromId: string;
-  toId: string;
+  toId?: string;
   fromSlot: number;
-  toSlot: number;
+  toSlot?: number;
   quantity: number;
   rotate: boolean;
 }
