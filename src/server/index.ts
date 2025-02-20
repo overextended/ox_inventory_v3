@@ -8,14 +8,14 @@ onNet(`ox_inventory:requestOpenInventory`, async () => {
   const playerId = source;
   const inventory = await GetInventory(playerId.toString(), `player`);
 
-  inventory?.open(playerId);
+  if (inventory) inventory.open(playerId);
 });
 
 onNet(`ox_inventory:closeInventory`, async () => {
   const playerId = source;
   const inventory = await GetInventory(playerId.toString(), `player`);
 
-  inventory?.close(playerId, false);
+  if (inventory) inventory.close(playerId, false);
 });
 
 onClientCallback(`ox_inventory:requestMoveItem`, async (playerId, data: MoveItem) => {

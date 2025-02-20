@@ -178,6 +178,7 @@ const kvp = new Kvp<{
   last_item_id: number;
   inventory_item: InventoryItem;
   inventory_items: number[];
+  last_cleared: string;
 }>();
 
 export default kvp;
@@ -187,8 +188,8 @@ export function GetInventoryItems(inventoryId: string) {
   return Array.from(itemIds, (itemId) => kvp.getJson(`inventory_item.${itemId}`));
 }
 
-export function UpdateInventoryItem(uniqueId: number, item: InventoryItem) {
-  if (item.quantity < 1) return kvp.delete(`inventory_item.${uniqueId}`, true);
+export function UpdateInventoryItem(uniqueId: number, item?: InventoryItem) {
+  if (!item || item.quantity < 1) return kvp.delete(`inventory_item.${uniqueId}`, true);
 
   kvp.setJson(`inventory_item.${uniqueId}`, item, true);
 }
@@ -222,3 +223,54 @@ RegisterCommand(
   },
   true
 );
+
+setImmediate(() => {
+  const lastCleared = Number(kvp.getString('last_cleared')) || 0;
+  const timestamp = Date.now();
+  const elapsed = timestamp - lastCleared;
+  let clearedKeys = 0;
+
+  // temp value - probably run daily?
+  if (!lastCleared || elapsed > 600) {
+    console.log(`^3Starting kvp validation${lastCleared ? ` - validation last ran ${elapsed}ms ago!` : ''}^0`);
+
+    const inventory_item = kvp.getAllKeys('inventory_item.');
+    const inventoryItems: Record<string, number[]> = {};
+
+    inventory_item.forEach((key) => {
+      const data = kvp.getJson(key as any) as Partial<InventoryItem>;
+      let isValid = true;
+
+      console.log(`^3Checking data for '${key}'.^0`);
+
+      if (data.inventoryId) {
+        let items = inventoryItems[data.inventoryId];
+
+        if (!items) {
+          items = kvp.getJson(`inventory_items.${data.inventoryId}`);
+          inventoryItems[data.inventoryId] = items;
+        }
+
+        if (!items) {
+          console.log(`^3 No inventory exists with id ${data.inventoryId}!^0`);
+          isValid = false;
+        } else if (items.indexOf(data.uniqueId) < 0) {
+          console.log(`^3 ${key} is not part of inventory ${data.inventoryId}!^0`);
+          isValid = false;
+        }
+      } else {
+        console.log(`^3 ${key} has no inventory!^0`);
+        isValid = false;
+      }
+
+      if (!isValid) {
+        console.log(`^1 ${key} is invalid! Clearing data from kvp.`);
+        kvp.delete(key);
+        clearedKeys++;
+      }
+    });
+
+    kvp.setString('last_cleared', timestamp.toString());
+    console.log(`^2Kvp validation completed. ${clearedKeys} keys have been removed.^0`);
+  }
+});

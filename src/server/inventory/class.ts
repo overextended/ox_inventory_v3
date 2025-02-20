@@ -2,10 +2,15 @@ import { BaseInventory } from '@common/inventory/class';
 
 export class Inventory extends BaseInventory {
   #openedBy: Set<number>;
+  isTemporary = false;
 
-  constructor(data: any) {
+  constructor(data: Partial<BaseInventory>) {
     super(data);
     this.#openedBy = new Set();
+
+    if (data.type === 'drop') {
+      this.isTemporary = true;
+    }
   }
 
   public emit(event: string, args?: any) {

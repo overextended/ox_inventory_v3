@@ -21,13 +21,15 @@ export async function CreateItem(name: string, data = {} as Partial<InventoryIte
       const success = itemMove.apply(this, arguments) as ReturnType<typeof itemMove>;
 
       if (success) {
+        if (!currentInventory.isTemporary) UpdateInventoryItems(currentInventory);
+
         UpdateInventoryItem(this.uniqueId, this);
-        UpdateInventoryItems(currentInventory);
         currentInventory.emit(`ox_inventory:moveItem`);
 
         // todo: optimise
         if (currentInventory !== targetInventory) {
-          UpdateInventoryItems(targetInventory);
+          if (!targetInventory.isTemporary) UpdateInventoryItems(targetInventory);
+
           targetInventory.emit(`ox_inventory:moveItem`);
         }
 
