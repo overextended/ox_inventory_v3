@@ -10,6 +10,8 @@ export class Inventory extends BaseInventory {
 
     if (data.type === 'drop') {
       this.isTemporary = true;
+
+      emitNet('ox_inventory:createDrop', -1, data);
     }
   }
 

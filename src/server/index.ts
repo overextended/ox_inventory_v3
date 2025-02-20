@@ -3,12 +3,20 @@ import { GetInventory } from './inventory';
 import { CreateItem } from './item';
 import './kvp';
 import { onClientCallback } from '@overextended/ox_lib/server';
+import { Inventory } from './inventory/class';
 
-onNet(`ox_inventory:requestOpenInventory`, async () => {
+onNet(`ox_inventory:requestOpenInventory`, async (nearbyInventories: string[]) => {
   const playerId = source;
   const inventory = await GetInventory(playerId.toString(), `player`);
 
   if (inventory) inventory.open(playerId);
+
+  nearbyInventories.forEach((inventoryId) => {
+    const nearbyInventory = Inventory.fromId(inventoryId);
+
+    // todo: validation
+    if (nearbyInventory) nearbyInventory.open(playerId);
+  });
 });
 
 onNet(`ox_inventory:closeInventory`, async () => {
@@ -21,7 +29,9 @@ onNet(`ox_inventory:closeInventory`, async () => {
 onClientCallback(`ox_inventory:requestMoveItem`, async (playerId, data: MoveItem) => {
   const fromInventory = await GetInventory(data.fromId, data.fromType);
   const toInventory =
-    data.fromId === data.toId ? fromInventory : await GetInventory(data.toId ?? Date.now().toString(), data.toType);
+    data.fromId === data.toId
+      ? fromInventory
+      : await GetInventory(data.toId ?? Date.now().toString(), { type: data.toType, coords: data.coords });
 
   if (!fromInventory || !toInventory) return console.error(`Invalid inventory`);
 

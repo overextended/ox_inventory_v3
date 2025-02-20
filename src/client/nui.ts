@@ -1,6 +1,6 @@
 import { BaseInventory } from '@common/inventory/class';
 import { InventoryItem } from '@common/item';
-import { triggerServerCallback } from '@overextended/ox_lib/client';
+import { cache, triggerServerCallback } from '@overextended/ox_lib/client';
 
 export function OpenInventory(data: { inventory: BaseInventory; items: InventoryItem[] }) {
   SetNuiFocus(true, true);
@@ -30,6 +30,10 @@ RegisterNuiCallback(`getStateKeyValue`, ([state, key]: [state: string, key: stri
 });
 
 RegisterNuiCallback(`moveItem`, async (data: MoveItem, cb: (status: number) => void) => {
+  if (data.toType === 'drop' && !data.toId) {
+    data.coords = GetEntityCoords(cache.ped, true) as [number, number, number];
+  }
+
   const response = await triggerServerCallback<boolean>(`ox_inventory:requestMoveItem`, 50, data);
   cb(response ? 1 : 0);
 });

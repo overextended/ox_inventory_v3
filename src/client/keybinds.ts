@@ -1,3 +1,4 @@
+import { cache } from '@overextended/ox_lib';
 import { CloseInventory } from './nui';
 
 RegisterCommand(
@@ -6,7 +7,8 @@ RegisterCommand(
     // todo: hotbar
     // const isTabDown = IsRawKeyDown(0x09);
 
-    emitNet(`ox_inventory:requestOpenInventory`);
+    const nearbyInventories = exports[cache.resource].getNearbyInventories();
+    emitNet(`ox_inventory:requestOpenInventory`, nearbyInventories);
   },
   false
 );

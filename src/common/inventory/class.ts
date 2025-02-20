@@ -1,6 +1,5 @@
 import Config from '@common/config';
 import { GetInventoryItem, InventoryItem } from '@common/item';
-import { Vector3 } from '@nativewrappers/fivem';
 
 export class BaseInventory {
   private static instances: Record<string, BaseInventory> = {};
@@ -20,7 +19,7 @@ export class BaseInventory {
   public maxWeight: number;
   public netId?: number;
   public ownerId?: string;
-  public coords?: Vector3;
+  public coords?: [number, number, number];
 
   constructor(data: any) {
     this.inventoryId = data.inventoryId;
