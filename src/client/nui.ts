@@ -31,7 +31,14 @@ RegisterNuiCallback(`getStateKeyValue`, ([state, key]: [state: string, key: stri
 
 RegisterNuiCallback(`moveItem`, async (data: MoveItem, cb: (status: number) => void) => {
   if (data.toType === 'drop' && !data.toId) {
-    data.coords = GetEntityCoords(cache.ped, true) as [number, number, number];
+    const nearestDrop = exports[cache.resource].getClosestInventory('drop');
+
+    if (!nearestDrop) {
+      data.coords = GetEntityCoords(cache.ped, true) as [number, number, number];
+    } else {
+      data.toId = nearestDrop?.inventoryId;
+      delete data.toSlot;
+    }
   }
 
   const response = await triggerServerCallback<boolean>(`ox_inventory:requestMoveItem`, 50, data);
