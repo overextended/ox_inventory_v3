@@ -40,7 +40,6 @@ onClientCallback(`ox_inventory:requestMoveItem`, async (playerId, data: MoveItem
   if (!item) return console.error(`Invalid item in ${fromInventory.inventoryId}<${data.fromSlot}>`);
 
   data.quantity = Math.max(1, Math.min(item.quantity, data.quantity));
-  data.toSlot = data.toSlot ?? 0;
 
   if (data.quantity > item.quantity) return console.error(`Invalid item or item count`);
 
