@@ -12,7 +12,7 @@
   import InventoryWindow from '$lib/components/InventoryWindow.svelte';
 
   let visible = $state(false);
-  let isHoldingShift = false;
+  let keyPressed = { shift: false, control: false, alt: false };
   let openInventories = $state<{ inventory: InventoryState; items: Partial<InventoryItem>[] }[]>([]);
 
   debugData<{ inventory: Partial<BaseInventory>; items: Partial<InventoryItem>[] }>(
@@ -153,10 +153,16 @@
     if (!sourceInventory) return;
 
     if (event.button === 0) {
-      const slot = +target?.dataset.slot;
+      const slot = +target.dataset.slot;
       const item = slot !== null && sourceInventory.getItemInSlot(slot);
 
       if (!item) return;
+
+      if (keyPressed.alt) {
+        // prompt for amount of item to split from the stack (should this be on drop?)
+      } else if (keyPressed.control) {
+        // quick-move item to player inventory?
+      }
 
       isDragging = true;
       dragSlot = slot;
@@ -226,7 +232,7 @@
 
       const quantity = Math.max(
         1,
-        Math.min(item.quantity, isHoldingShift ? Math.floor(item.quantity / 2) : item.quantity)
+        Math.min(item.quantity, keyPressed.shift ? Math.floor(item.quantity / 2) : item.quantity)
       );
 
       if (targetInventoryId === 'drop' && isEnvBrowser()) {
@@ -292,12 +298,16 @@
   }
 
   function onKeyDown(event: KeyboardEvent) {
+    const key = event.key.toLowerCase();
+
+    if (key in keyPressed) {
+      return (keyPressed[key as keyof typeof keyPressed] = true); // bruh
+    }
+
     switch (event.key.toLowerCase()) {
       case 'escape':
       case 'tab':
         return fetchNui(`closeInventory`);
-      case 'shift':
-        return (isHoldingShift = true);
       case 'r':
         if (!dragItem || dragItem.width === dragItem.height) return;
         return (dragItem.rotate = !dragItem.rotate);
@@ -305,10 +315,9 @@
   }
 
   function onKeyUp(event: KeyboardEvent) {
-    switch (event.key) {
-      case 'Shift':
-        return (isHoldingShift = false);
-    }
+    const key = event.key.toLowerCase() as keyof typeof keyPressed;
+
+    if (keyPressed[key]) keyPressed[key] = false;
   }
 
   const preventDefault = (event: KeyboardEvent | MouseEvent) => event.preventDefault();
