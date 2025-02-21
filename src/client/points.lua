@@ -26,10 +26,30 @@ RegisterNetEvent('ox_inventory:removeDrop', function(dropId)
     table.remove(drops, index)
 end)
 
+exports('getClosestInventory', function(type)
+    if not type then
+        local point = lib.points.getClosestPoint()
+
+        if point and point.currentDistance < 1 then
+            return point
+        end
+    end
+
+    local points = lib.points.getNearbyPoints()
+
+    return lib.array.reduce(points, function(acc, point, index)
+        if point.currentDistance < acc.distance then
+            return point
+        end
+
+        return acc
+    end)
+end)
+
 exports('getNearbyInventories', function()
     local points = lib.points.getNearbyPoints()
 
     return lib.array.map(points,
         ---@param point CPoint
-        function(point) return point.currentDistance < 8 and point.inventoryId end)
+        function(point) return point.currentDistance < 1 and point.inventoryId end)
 end)
