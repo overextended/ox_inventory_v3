@@ -37,6 +37,7 @@ exports('getClosestInventory', function(type, distance)
         end
     end
 
+    ---@type CPoint
     local point = lib.array.reduce(lib.points.getNearbyPoints(), function(acc, point)
         if point.currentDistance < acc.distance then
             return point
@@ -45,7 +46,7 @@ exports('getClosestInventory', function(type, distance)
         return acc
     end)
 
-    return point and point.distance < distance and point.inventoryId
+    return point and point.currentDistance < distance and point.inventoryId
 end)
 
 exports('getNearbyInventories', function()
