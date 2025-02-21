@@ -2,33 +2,39 @@ import Config from '@common/config';
 import { BaseInventory } from '@common/inventory/class';
 import fetch from 'sync-fetch';
 import { ResourceContext, ResourceName } from '..';
+import { joaat } from '@common/utils';
 
 export interface ItemMetadata {
-  label?: string;
-  weight?: number;
+  name: string;
   icon?: string;
   value?: number;
-  rarity?: string;
-  degrade?: number;
-  tradeable?: boolean;
-}
-
-export interface ItemProperties extends ItemMetadata {
-  name: string;
-  label: string;
+  label?: string;
   weight?: number;
   width?: number;
+  rarity?: string;
   height?: number;
   category?: string;
   decay?: boolean;
+  degrade?: number;
+  tradeable?: boolean;
   itemLimit?: number;
   stackSize?: number;
   description?: string;
   inventoryId?: string;
+
+  [key: string]: unknown;
 }
 
-export interface Item extends ReturnType<typeof ItemFactory> {}
-export interface InventoryItem extends InstanceType<Item> {}
+interface WeaponMetadata extends ItemMetadata {
+  category: 'weapon';
+  ammoName: string;
+  ammoCount: number;
+  hash?: number;
+}
+
+type ItemProperties = ItemMetadata | WeaponMetadata;
+export type Item = ReturnType<typeof ItemFactory>;
+export type InventoryItem = InstanceType<Item>;
 
 const Items: Record<string, Item> = {};
 const InventoryItems: Record<string, InventoryItem> = {};
@@ -64,7 +70,13 @@ export function ItemFactory(name: string, item: ItemProperties) {
 
   item.icon = item.icon ?? `${Config.Inventory_ImagePath}/${iconPath}`;
 
-  const Item = class implements ItemProperties {
+  if (typeof item.hash === 'string') item.hash = joaat(item.hash);
+
+  if (item.category === 'weapon') {
+    item.ammoName = 'ammo_9'; // todo
+  }
+
+  const Item = class implements ItemMetadata {
     static properties = item;
 
     static CreateUniqueId(item: InventoryItem): number {
@@ -74,6 +86,9 @@ export function ItemFactory(name: string, item: ItemProperties) {
 
     /** A unique name to identify the item type and inherit data. */
     readonly name = name;
+
+    /** The amount of ammo loaded into a weapon. */
+    public ammoCount = item.ammoCount;
 
     /** A unique identifier used to reference the item and save it in the database. */
     public uniqueId: number;
@@ -92,20 +107,25 @@ export function ItemFactory(name: string, item: ItemProperties) {
 
     [key: string]: unknown;
 
-    constructor(metadata?: ItemMetadata) {
+    constructor(metadata?: ItemProperties) {
       if (metadata) {
-        if ('name' in metadata) delete metadata.name;
-        if ('metadata' in metadata) delete metadata.metadata;
+        // todo: make this less dumb
+        delete metadata.name;
+        delete metadata.metadata;
+        delete metadata.ammoName;
 
         Object.assign(this, metadata, 'metadata' in metadata ? metadata.metadata : null);
       }
 
       if (!this.uniqueId) Item.CreateUniqueId(this);
 
-      // testing only
-      if (item.category === 'weapon' && !this.durability) {
-        this.durability = Math.floor(Math.random() * 90) + 1;
+      if (item.category === 'weapon') {
+        this.durability = this.durability ?? Math.floor(Math.random() * 90) + 1;
+
+        if (item.ammoName) this.ammoCount = this.ammoCount ?? 0;
       }
+
+      console.log(this.name, this.hash);
 
       InventoryItems[this.uniqueId] = this;
     }
@@ -176,6 +196,14 @@ export function ItemFactory(name: string, item: ItemProperties) {
 
     get height() {
       return (Config.Inventory_MultiSlotItems && this.rotate ? item.width : item.height) || 1;
+    }
+
+    get hash() {
+      return item.hash;
+    }
+
+    get ammoName() {
+      return item.ammoName;
     }
 
     private addToInventory(inventory: BaseInventory, slots: number[]) {
