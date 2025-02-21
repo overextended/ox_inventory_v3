@@ -203,7 +203,7 @@
     try {
       const target = event.target as HTMLElement;
       const parent = target.parentNode! as HTMLElement;
-      const targetInventoryId = parent?.dataset?.inventoryid as string;
+      const targetInventoryId = parent?.dataset?.inventoryid || 'drop';
       const fromInventory = getInventoryById(dragItem.inventoryId!);
       const item = fromInventory?.getItemInSlot(dragSlot as number);
 
@@ -215,55 +215,27 @@
         Math.min(item.quantity, isHoldingShift ? Math.floor(item.quantity / 2) : item.quantity)
       );
 
-      if (!targetInventoryId) {
-        const inventoryId = isEnvBrowser() ? Date.now().toString() : undefined;
-
-        if (inventoryId) {
-          debugData<{ inventory: Partial<BaseInventory>; items: Partial<InventoryItem>[] }>(
-            [
-              {
-                action: 'openInventory',
-                data: {
-                  inventory: {
-                    inventoryId: inventoryId,
-                    label: `Drop ${inventoryId}`,
-                    width: 6,
-                    height: 4,
-                    maxWeight: 50000,
-                    type: 'drop',
-                    items: {},
-                  },
-                  items: [],
+      if (targetInventoryId === 'drop' && isEnvBrowser()) {
+        debugData<{ inventory: Partial<BaseInventory>; items: Partial<InventoryItem>[] }>(
+          [
+            {
+              action: 'openInventory',
+              data: {
+                inventory: {
+                  inventoryId: targetInventoryId,
+                  label: `Drop`,
+                  width: 6,
+                  height: 4,
+                  maxWeight: 50000,
+                  type: 'drop',
+                  items: {},
                 },
+                items: [],
               },
-            ],
-            0
-          );
-        }
-
-        const success = await fetchNui(
-          'moveItem',
-          {
-            fromType: fromInventory.type,
-            toType: 'drop',
-            fromId: fromInventory.inventoryId,
-            toId: inventoryId,
-            fromSlot: item.anchorSlot,
-            toSlot: 0,
-            quantity,
-          },
-          {
-            data: true,
-          }
+            },
+          ],
+          0
         );
-
-        const toInventory = inventoryId && getInventoryById(inventoryId);
-
-        if (success && toInventory) {
-          onItemMovement(item, fromInventory, getInventoryById(inventoryId!)!, quantity, 0);
-        }
-
-        return resetDragState();
       }
 
       const toInventory = getInventoryById(targetInventoryId);
@@ -282,9 +254,9 @@
           'moveItem',
           {
             fromType: fromInventory.type,
-            toType: toInventory.type,
+            toType: toInventory?.type || 'drop',
             fromId: fromInventory.inventoryId,
-            toId: toInventory.inventoryId,
+            toId: toInventory?.inventoryId,
             fromSlot: item.anchorSlot,
             toSlot: slot,
             quantity,
