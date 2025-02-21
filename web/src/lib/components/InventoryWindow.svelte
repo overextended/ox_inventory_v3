@@ -105,12 +105,7 @@
                 class="h-full w-full flex flex-col justify-between font-semibold text-foreground pointer-events-none"
               >
                 <p class="text-[0.65rem]">{item.label}</p>
-                <p>x{item.quantity}</p>
-
-                {#if item.ammoName}
-                  <!-- placeholder -->
-                  <p class="absolute left-8 bottom-0">{item.ammoCount ?? 0} bullets</p>
-                {/if}
+                <p>{item.ammoName ? `${item.ammoCount} bullets` : `x${item.quantity}`}</p>
 
                 {#if item.durability}
                   <svg class="absolute bottom-1 left-1 w-6 h-6" viewBox="0 0 36 36">
