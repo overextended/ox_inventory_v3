@@ -191,10 +191,14 @@ export function ItemFactory(name: string, item: ItemProperties) {
       if (!inventory || this.inventoryId !== inventory.inventoryId) return false;
 
       const slots = inventory.getSlotsForItem(this, this.anchorSlot);
-      delete this.anchorSlot;
-      delete this.inventoryId;
 
-      return slots ? inventory.setSlotRefs(slots) : false;
+      if (slots) {
+        inventory.setSlotRefs(slots);
+        delete this.anchorSlot;
+        delete this.inventoryId;
+      }
+
+      return slots;
     }
 
     private swapItems(
@@ -255,6 +259,7 @@ export function ItemFactory(name: string, item: ItemProperties) {
     public move(inventory: BaseInventory, startSlot?: number) {
       startSlot = startSlot ?? inventory.findAvailableSlot(this);
       const existingItem = inventory.getItemInSlot(startSlot);
+      const currentInventory = this.inventoryId && BaseInventory.fromId(this.inventoryId);
 
       if (
         existingItem &&
@@ -263,15 +268,18 @@ export function ItemFactory(name: string, item: ItemProperties) {
         this.height === existingItem.height &&
         !this.canMerge(existingItem)
       ) {
-        return this.swapItems(BaseInventory.fromId(this.inventoryId), inventory, existingItem, startSlot);
+        return this.swapItems(currentInventory, inventory, existingItem, startSlot);
       }
 
+      const currentSlots = currentInventory && this.removeFromInventory(currentInventory);
       const quantity = existingItem === this ? this.quantity : this.quantity + (existingItem?.quantity ?? 0);
-      const slots = inventory.canHoldItem(this, startSlot, quantity);
+      let slots = inventory.canHoldItem(this, startSlot, quantity);
 
-      if (!slots) return false;
+      if (!slots) {
+        if (currentSlots) this.addToInventory(inventory, currentSlots);
 
-      this.removeFromInventory(BaseInventory.fromId(this.inventoryId));
+        return false;
+      }
 
       if (existingItem?.anchorSlot === startSlot) {
         existingItem.quantity += this.quantity;
