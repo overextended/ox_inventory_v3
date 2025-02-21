@@ -27,18 +27,17 @@
         : window.innerHeight / 16;
 
     const container = document.getElementById(`inventory-${inventory.inventoryId}`) as HTMLElement;
-    while (true) {
-      const element = document.elementFromPoint(left, top);
 
-      if (!element || element.id === 'app') break;
+    while (true) {
+      const element = document.elementFromPoint(left, top) as HTMLElement;
+
+      if (!element || element.id === 'app' || element.dataset.slot) break;
 
       const rect = element.getBoundingClientRect();
 
       left = rect.right + 2;
       top = rect.top;
     }
-
-    console.log(left, top);
 
     container.style.position = 'absolute';
     container.style.top = `${top}px`;
