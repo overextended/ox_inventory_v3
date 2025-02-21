@@ -183,9 +183,14 @@
     fromInventory: InventoryState,
     toInventory: InventoryState,
     quantity: number,
-    slot: number
+    slot: number,
+    currentRotate?: boolean
   ) {
+    itemRotation = currentRotate;
+
     const result = quantity !== item.quantity ? item.split(toInventory, quantity, slot) : item.move(toInventory, slot);
+
+    if (typeof result === 'object') item.rotate = currentRotate;
 
     // Refreshes are handled differently in CEF.
     if (isEnvBrowser()) {
@@ -195,6 +200,15 @@
 
       if (fromInventory !== toInventory) toInventory.refreshSlots();
     }
+  }
+
+  function getSlotIdFromPoint(x: number, y: number, item: InventoryItem) {
+    const element = document.elementFromPoint(
+      x - (item.width * SLOT_SIZE) / 2 + SLOT_SIZE / 2,
+      y - (item.height * SLOT_SIZE) / 2 + SLOT_SIZE / 2
+    ) as HTMLElement | null;
+
+    return element?.dataset.slot ? +element.dataset.slot : null;
   }
 
   async function onStopDrag(event: MouseEvent) {
@@ -236,44 +250,43 @@
           ],
           0
         );
+
+        await new Promise((resolve) => setTimeout(resolve, 0));
       }
 
       const toInventory = getInventoryById(targetInventoryId);
+      const slot = targetInventoryId === 'drop' ? 0 : getSlotIdFromPoint(event.clientX, event.clientY, item);
 
-      if (!toInventory) return;
+      if (typeof slot !== 'number') throw new Error(`Cannot move item to invalid slot (${slot})`);
 
-      const element: HTMLElement = document.elementFromPoint(
-        event.clientX - (item.width * SLOT_SIZE) / 2 + SLOT_SIZE / 2,
-        event.clientY - (item.height * SLOT_SIZE) / 2 + SLOT_SIZE / 2
-      ) as HTMLElement;
+      if (fromInventory === toInventory && item.anchorSlot === slot) return;
 
-      const slot = element?.dataset.slot ? +element.dataset.slot : null;
+      const rotate = item.rotate;
+      item.rotate = itemRotation;
 
-      if (slot !== null && slot !== dragSlot) {
-        const success = await fetchNui(
-          'moveItem',
-          {
-            fromType: fromInventory.type,
-            toType: toInventory?.type || 'drop',
-            fromId: fromInventory.inventoryId,
-            toId: toInventory?.inventoryId,
-            fromSlot: item.anchorSlot,
-            toSlot: slot,
-            quantity,
-          },
-          {
-            data: true,
-          }
-        );
-
-        if (success) {
-          onItemMovement(item, fromInventory, toInventory, quantity, slot);
+      const success = await fetchNui(
+        'moveItem',
+        {
+          fromType: fromInventory.type,
+          toType: toInventory?.type || 'drop',
+          fromId: fromInventory.inventoryId,
+          toId: toInventory?.inventoryId,
+          fromSlot: item.anchorSlot,
+          toSlot: slot,
+          quantity,
+          rotate,
+        },
+        {
+          data: true,
         }
-      }
+      );
 
-      return resetDragState();
-    } catch (err) {
-      console.error(err);
+      if (success && toInventory) {
+        onItemMovement(item, fromInventory, toInventory, quantity, slot, rotate);
+      }
+    } catch (err: any) {
+      console.error(err.message);
+    } finally {
       resetDragState();
     }
   }
@@ -286,9 +299,8 @@
       case 'shift':
         return (isHoldingShift = true);
       case 'r':
-        // if (!dragItem || dragItem.width === dragItem.height) return;
-        // return (dragItem.rotate = !dragItem.rotate);
-        return;
+        if (!dragItem || dragItem.width === dragItem.height) return;
+        return (dragItem.rotate = !dragItem.rotate);
     }
   }
 

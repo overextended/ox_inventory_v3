@@ -44,12 +44,21 @@ onClientCallback(`ox_inventory:requestMoveItem`, async (playerId, data: MoveItem
 
   if (data.quantity > item.quantity) return console.error(`Invalid item or item count`);
 
+  const currentRotate = item.rotate;
+  item.rotate = data.rotate;
+
   const success =
     data.quantity !== item.quantity
       ? item.split(toInventory, data.quantity, data.toSlot)
       : item.move(toInventory, data.toSlot);
 
-  if (success) toInventory.open(playerId);
+  if (success) {
+    if (success !== true) {
+      item.rotate = currentRotate;
+    }
+
+    toInventory.open(playerId);
+  } else item.rotate = currentRotate;
 
   return !!success;
 });
