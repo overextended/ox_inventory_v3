@@ -125,8 +125,6 @@ export function ItemFactory(name: string, item: ItemProperties) {
         if (item.ammoName) this.ammoCount = this.ammoCount ?? 0;
       }
 
-      console.log(this.name, this.hash);
-
       InventoryItems[this.uniqueId] = this;
     }
 

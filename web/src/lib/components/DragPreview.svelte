@@ -9,9 +9,10 @@
   }
 
   let { dragImg = $bindable(), dropIndicator = $bindable(), dragItem }: Props = $props();
-  let dropTransform = $state(`translate(0, 0)`);
   let dragTransform = $state(`translate(0, 0)`);
   let visible = $state(false);
+  let left = $state(0);
+  let top = $state(0);
 
   function updateDragIndicator(event: MouseEvent) {
     if (!dragItem) return;
@@ -36,6 +37,8 @@
 
     if (!parent?.dataset?.inventoryid) {
       visible = false;
+      left = 0;
+      top = 0;
       return;
     }
 
@@ -55,10 +58,8 @@
       Math.min(Math.floor(adjustedY / SLOT_SIZE), Math.floor(invRect.height / SLOT_SIZE) - dragItem.height)
     );
 
-    const globalX = invRect.left + slotX * SLOT_SIZE;
-    const globalY = invRect.top + slotY * SLOT_SIZE;
-
-    dropTransform = `translate(${globalX}px, ${globalY}px)`;
+    left = invRect.left + slotX * SLOT_SIZE;
+    top = invRect.top + slotY * SLOT_SIZE;
     visible = true;
   }
 
@@ -78,7 +79,8 @@
     style={`
     width: ${dragItem.width * SLOT_SIZE}px;
     height: ${dragItem.height * SLOT_SIZE}px;
-    transform: ${dropTransform};
+    left: ${left}px;
+    top: ${top}px;
     visibility: ${visible ? 'block' : 'hidden'};
   `}
   ></div>

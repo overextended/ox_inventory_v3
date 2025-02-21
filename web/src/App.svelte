@@ -214,18 +214,19 @@
     return element?.dataset.slot ? +element.dataset.slot : null;
   }
 
-  async function onStopDrag(event: MouseEvent) {
+  async function onMouseUp(event: MouseEvent) {
     if (!isDragging || !dragItem || event.button !== 0) return;
 
     try {
-      const target = event.target as HTMLElement;
+      const item = dragItem;
+      const top = +dropIndicator.style.top.slice(0, -2) + (item.height * SLOT_SIZE) / 2;
+      const left = +dropIndicator.style.left.slice(0, -2) + (item.width * SLOT_SIZE) / 2;
+      const target = document.elementFromPoint(left, top) as HTMLElement;
       const parent = target.parentNode! as HTMLElement;
       const targetInventoryId = parent?.dataset?.inventoryid || 'drop';
       const fromInventory = getInventoryById(dragItem.inventoryId!);
-      const item = fromInventory?.getItemInSlot(dragSlot as number);
 
       if (!fromInventory) throw new Error(`Cannot move item from unknown inventory (${dragItem.inventoryId})`);
-      if (!item) throw new Error(`Cannot move unknown item from ${dragItem.inventoryId}<${dragSlot}>`);
 
       const quantity = Math.max(
         1,
@@ -258,7 +259,7 @@
       }
 
       const toInventory = getInventoryById(targetInventoryId);
-      const slot = targetInventoryId === 'drop' ? 0 : getSlotIdFromPoint(event.clientX, event.clientY, item);
+      const slot = targetInventoryId === 'drop' ? 0 : getSlotIdFromPoint(left, top, item);
 
       if (typeof slot !== 'number') throw new Error(`Cannot move item to invalid slot (${slot})`);
 
@@ -321,7 +322,7 @@
 </script>
 
 <svelte:window
-  onmouseup={onStopDrag}
+  onmouseup={onMouseUp}
   onkeydown={onKeyDown}
   onkeyup={onKeyUp}
   oncontextmenu={preventDefault}
