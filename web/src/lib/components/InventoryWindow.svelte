@@ -3,6 +3,7 @@
   import { SLOT_GAP, SLOT_SIZE } from '$lib/constants/inventory';
   import type { InventoryState } from '$lib/state/inventory';
   import type { InventoryItem } from '~/src/common/item';
+  import DurabilityCircle from '$lib/components/DurabilityCircle.svelte';
 
   interface Props {
     visible: boolean;
@@ -108,32 +109,7 @@
                 <p>{item.ammoName ? `${item.ammoCount} bullets` : `x${item.quantity}`}</p>
 
                 {#if item.durability}
-                  <svg class="absolute bottom-1 left-1 w-6 h-6" viewBox="0 0 36 36">
-                    <circle
-                      class="text-gray-400 opacity-20"
-                      stroke="currentColor"
-                      stroke-width="6"
-                      fill="none"
-                      r="12"
-                      cx="18"
-                      cy="18"
-                    />
-
-                    {#if item.durabiility !== 0}
-                      <circle
-                        class="text-green-500"
-                        stroke="currentColor"
-                        stroke-width="6"
-                        stroke-dasharray={`${(item.durability / 100) * (2 * Math.PI * 12)}, ${2 * Math.PI * 12}`}
-                        stroke-linecap="round"
-                        fill="none"
-                        r="12"
-                        cx="18"
-                        cy="18"
-                        style={`stroke: hsl(${item.durability * 1.1}, 100%, 50%);`}
-                      />
-                    {/if}
-                  </svg>
+                  <DurabilityCircle durability={item.durability} />
                 {/if}
               </div>
             </div>

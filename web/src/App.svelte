@@ -69,7 +69,7 @@
               inventoryId: 'trunk',
               uniqueId: 11,
               anchorSlot: 0,
-              durability: 80,
+              durability: 90,
             },
           ],
         },
@@ -331,13 +331,6 @@
 
 <DragPreview bind:dragImg bind:dropIndicator {dragItem} />
 
-{#each openInventories as openInventory}
-  <InventoryWindow
-    visible
-    {isDragging}
-    {dragItem}
-    inventory={openInventory.inventory}
-    itemState={openInventory.inventory.itemState}
-    {onMouseDown}
-  />
+{#each openInventories as { inventory }}
+  <InventoryWindow visible {isDragging} {dragItem} {inventory} itemState={inventory.itemState} {onMouseDown} />
 {/each}
