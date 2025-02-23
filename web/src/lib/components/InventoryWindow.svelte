@@ -3,6 +3,7 @@
   import { SLOT_GAP, SLOT_SIZE } from '$lib/constants/inventory';
   import type { DragItemType, InventoryState } from '$lib/state/inventory';
   import DurabilityCircle from '$lib/components/DurabilityCircle.svelte';
+  import ItemImage from '$lib/components/ItemImage.svelte';
 
   interface Props {
     visible: boolean;
@@ -86,8 +87,6 @@
           {#if item && item.anchorSlot === index}
             {@const w = item.width}
             {@const h = item.height}
-            {@const width = item.rotate ? h : w}
-            {@const height = item.rotate ? w : h}
             <div
               data-slot={index}
               data-anchorSlot={item.anchorSlot === index}
@@ -97,22 +96,16 @@
                 dragItem === item && 'opacity-50'
               )}
               style={`
-                width: ${SLOT_SIZE * (item.rotate ? item.height : item.width) - 1}px;
-                height:  ${SLOT_SIZE * (item.rotate ? item.width : item.height) - SLOT_GAP}px;
+                width: ${SLOT_SIZE * w - 1}px;
+                height:  ${SLOT_SIZE * h - SLOT_GAP}px;
               `}
             >
-              <div
-                class={cn(
-                  'w-full h-full absolute pointer-events-none top-0 left-0 bg-no-repeat bg-[length:75%] bg-center',
-                  item.rotate && '-rotate-90 origin-bottom'
-                )}
-                style={`background-image: url('${item.icon}');`}
-              ></div>
+              <ItemImage width={w} height={h} icon={item.icon} rotate={item.rotate} />
               <div
                 class="h-full w-full flex flex-col justify-between font-semibold text-foreground pointer-events-none"
               >
                 <p class="text-[0.65rem]">{item.label}</p>
-                <p>{item.ammoName ? `${width} bullets` : `x${item.quantity}`}</p>
+                <p>{item.ammoName ? `${item.ammoCount} bullets` : `x${item.quantity}`}</p>
 
                 {#if item.durability}
                   <DurabilityCircle durability={item.durability} />
