@@ -10,7 +10,7 @@
     dragImg?: HTMLElement;
   }
 
-  const { width, height, rotate, icon, dragImg = $bindable(), className }: ItemImageProps = $props();
+  const { width, height, rotate, icon, dragImg = $bindable() }: ItemImageProps = $props();
 </script>
 
 <div
