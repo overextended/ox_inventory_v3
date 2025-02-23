@@ -1,11 +1,11 @@
 <script lang="ts">
   import { SLOT_GAP, SLOT_SIZE } from '$lib/constants/inventory';
-  import type { InventoryItem } from '@common/item';
+  import type { DragItemType } from '$lib/state/inventory';
 
   interface Props {
     dragImg: HTMLElement;
     dropIndicator: HTMLElement;
-    dragItem: InventoryItem | null;
+    dragItem: DragItemType | null;
   }
 
   let { dragImg = $bindable(), dropIndicator = $bindable(), dragItem }: Props = $props();

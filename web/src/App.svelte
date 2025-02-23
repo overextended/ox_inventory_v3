@@ -5,7 +5,7 @@
   import { useNuiEvent } from '$lib/hooks/useNuiEvents';
   import { debugData } from '$lib/utils/debugData';
   import { fetchNui } from '$lib/utils/fetchNui';
-  import { InventoryState } from '$lib/state/inventory';
+  import { type DragItemType, InventoryState } from '$lib/state/inventory';
   import { CreateItem } from '$lib/helpers/create-item';
   import { SLOT_SIZE } from '$lib/constants/inventory';
   import DragPreview from '$lib/components/DragPreview.svelte';
@@ -131,10 +131,32 @@
 
   let isDragging = $state(false);
   let dragSlot = $state<number | null>(null);
-  let dragItem = $state<InventoryItem | null>(null);
+  let dragItem = $state<DragItemType | null>(null);
   let dragImg: HTMLElement = $state(null)!;
   let dropIndicator: HTMLElement = $state(null)!;
   let itemRotation: boolean | undefined = false;
+
+  function getDragItemProps({
+    anchorSlot,
+    rotate,
+    uniqueId,
+    inventoryId,
+    quantity,
+    height,
+    width,
+    icon,
+  }: InventoryItem): DragItemType {
+    return {
+      uniqueId,
+      rotate,
+      inventoryId,
+      height,
+      anchorSlot,
+      width,
+      icon,
+      quantity,
+    };
+  }
 
   function getInventoryById(inventoryId: string) {
     return openInventories.find((openInventory) => openInventory.inventory.inventoryId === inventoryId)?.inventory;
@@ -166,7 +188,7 @@
 
     isDragging = true;
     dragSlot = slot;
-    dragItem = item;
+    dragItem = getDragItemProps(item);
     itemRotation = item.rotate;
   }
 
@@ -191,9 +213,10 @@
   ) {
     itemRotation = currentRotate;
 
+    item.rotate = currentRotate;
     const result = quantity !== item.quantity ? item.split(toInventory, quantity, slot) : item.move(toInventory, slot);
 
-    if (typeof result === 'object') item.rotate = currentRotate;
+    // if (typeof result === 'object') item.rotate = currentRotate;
 
     // Refreshes are handled differently in CEF.
     if (isEnvBrowser()) {
@@ -218,15 +241,16 @@
     if (!isDragging || !dragItem || event.button !== 0) return;
 
     try {
-      const item = dragItem;
+      const fromInventory = getInventoryById(dragItem.inventoryId!);
+
+      if (!fromInventory) throw new Error(`Cannot move item from unknown inventory (${dragItem.inventoryId})`);
+
+      const item = fromInventory.getItemInSlot(dragItem.anchorSlot!);
       const top = +dropIndicator.style.top.slice(0, -2) + (item.height * SLOT_SIZE) / 2;
       const left = +dropIndicator.style.left.slice(0, -2) + (item.width * SLOT_SIZE) / 2;
       const target = document.elementFromPoint(left, top) as HTMLElement;
       const parent = target.parentNode! as HTMLElement;
       const targetInventoryId = parent?.dataset?.inventoryid || 'drop';
-      const fromInventory = getInventoryById(dragItem.inventoryId!);
-
-      if (!fromInventory) throw new Error(`Cannot move item from unknown inventory (${dragItem.inventoryId})`);
 
       const quantity = Math.max(
         1,
@@ -265,8 +289,8 @@
 
       if (fromInventory === toInventory && item.anchorSlot === slot) return;
 
-      const rotate = item.rotate;
       item.rotate = itemRotation;
+      const rotate = item.rotate;
 
       const success = await fetchNui(
         'moveItem',
@@ -308,7 +332,15 @@
         return fetchNui(`closeInventory`);
       case 'r':
         if (!dragItem || dragItem.width === dragItem.height) return;
-        return (dragItem.rotate = !dragItem.rotate);
+
+        dragItem.rotate = !dragItem.rotate;
+        itemRotation = dragItem.rotate;
+
+        const temp = dragItem.width;
+        dragItem.width = dragItem.height;
+        dragItem.height = temp;
+
+        return;
     }
   }
 
