@@ -325,7 +325,7 @@ export function ItemFactory(name: string, item: ItemProperties) {
         return false;
       }
 
-      this.tempRotate ? (this.rotate = true) : delete this.rotate;
+      this.rotate ? (this.rotate = true) : delete this.rotate;
       delete this.tempRotate;
 
       return this.addToInventory(inventory, slots);
