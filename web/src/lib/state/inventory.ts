@@ -13,3 +13,14 @@ export class InventoryState extends BaseInventory {
     this.itemState.set(Array.from({ length: this.width * this.height }).map((_, index) => this.getItemInSlot(index)));
   }
 }
+
+export interface DragItemType {
+  width: InventoryItem['width'];
+  height: InventoryItem['height'];
+  anchorSlot: InventoryItem['anchorSlot'];
+  uniqueId: InventoryItem['uniqueId'];
+  inventoryId: InventoryItem['inventoryId'];
+  rotate: InventoryItem['rotate'];
+  icon: InventoryItem['icon'];
+  quantity: InventoryItem['quantity'];
+}

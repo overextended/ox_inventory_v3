@@ -1,5 +1,5 @@
 import { BaseInventory } from '@common/inventory/class';
-import { ItemMetadata, ItemProperties } from '@common/item';
+import { ItemProperties } from '@common/item';
 import { oxmysql } from '@overextended/oxmysql';
 
 export function GetDbItemData(name: string): Promise<ItemProperties> {
@@ -27,11 +27,11 @@ export function InsertDbInventoryData(inventory: Partial<BaseInventory>) {
 
 export function GetDbInventoryItems(
   inventoryId: string
-): Promise<{ inventoryId: string; uniqueId: number; name: string; metadata: string | ItemMetadata }[]> {
+): Promise<{ inventoryId: string; uniqueId: number; name: string; metadata: string | Partial<ItemProperties> }[]> {
   return oxmysql.rawExecute(`SELECT * FROM ox_inventory_items WHERE inventoryId = ?`, [inventoryId]);
 }
 
-export function AddDbInventoryItem(name: string, data: ItemMetadata & { inventoryId?: string }) {
+export function AddDbInventoryItem(name: string, data: Partial<ItemProperties>) {
   const metadata = { ...data };
   delete metadata.inventoryId;
 
@@ -42,7 +42,7 @@ export function AddDbInventoryItem(name: string, data: ItemMetadata & { inventor
   ]);
 }
 
-export function UpdateDbInventoryItem(uniqueId: number, data: ItemMetadata) {
+export function UpdateDbInventoryItem(uniqueId: number, data: Partial<ItemProperties>) {
   return oxmysql.prepare(`UPDATE ox_inventory_items SET metadata = ? WHERE uniqueId = ?`, [
     JSON.stringify(data),
     uniqueId,

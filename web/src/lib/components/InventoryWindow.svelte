@@ -1,14 +1,14 @@
 <script lang="ts">
   import { cn } from '$lib/utils.js';
   import { SLOT_GAP, SLOT_SIZE } from '$lib/constants/inventory';
-  import type { InventoryState } from '$lib/state/inventory';
-  import type { InventoryItem } from '~/src/common/item';
+  import type { DragItemType, InventoryState } from '$lib/state/inventory';
   import DurabilityCircle from '$lib/components/DurabilityCircle.svelte';
+  import ItemImage from '$lib/components/ItemImage.svelte';
 
   interface Props {
     visible: boolean;
     isDragging: boolean;
-    dragItem: InventoryItem | null;
+    dragItem: DragItemType | null;
     inventory: InventoryState;
     itemState: InventoryState['itemState'];
     onMouseDown: (event: MouseEvent) => void;
@@ -85,23 +85,22 @@
           onmousedown={onMouseDown}
         >
           {#if item && item.anchorSlot === index}
+            {@const w = item.width}
+            {@const h = item.height}
             <div
               data-slot={index}
               data-anchorSlot={item.anchorSlot === index}
               class={cn(
-                'w-full h-full bg-no-repeat bg-[length:75%] bg-center absolute top-0 left-0 z-50 bg-black/50 text-right text-xs px-1 flex item',
+                'absolute top-0 left-0 z-50 bg-black/50 text-right text-xs px-1 flex',
                 isDragging && 'pointer-events-none',
                 dragItem === item && 'opacity-50'
               )}
               style={`
-                --icon: url('${item.icon}');
-                --transform: rotate(${item.rotate ? '-90deg' : '0deg'}) ${item.rotate ? `translate(-${SLOT_SIZE / 2}px, -${SLOT_SIZE / 2}px)` : ''};
-                --width: ${SLOT_SIZE * (item.rotate ? item.height : item.width) - 1}px;
-                --height: ${SLOT_SIZE * (item.rotate ? item.width : item.height) - SLOT_GAP}px;
-                width: ${SLOT_SIZE * item.width - 1}px;
-                height: ${SLOT_SIZE * item.height - SLOT_GAP}px;
+                width: ${SLOT_SIZE * w - 1}px;
+                height:  ${SLOT_SIZE * h - SLOT_GAP}px;
               `}
             >
+              <ItemImage width={w} height={h} icon={item.icon} rotate={item.rotate} />
               <div
                 class="h-full w-full flex flex-col justify-between font-semibold text-foreground pointer-events-none"
               >

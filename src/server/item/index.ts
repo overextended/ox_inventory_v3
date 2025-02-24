@@ -1,9 +1,9 @@
-import { GetItemData, InventoryItem, ItemFactory } from '@common/item';
+import { GetItemData, InventoryItem, ItemFactory, ItemProperties } from '@common/item';
 import { GetDbItemData } from '../db';
 import kvp, { AddInventoryItem, UpdateInventoryItem, UpdateInventoryItems } from '../kvp';
 import { Inventory } from '../inventory/class';
 
-export async function CreateItem(name: string, data = {} as Partial<InventoryItem>) {
+export async function CreateItem(name: string, data = {} as Partial<ItemProperties>) {
   let Item = GetItemData(name);
 
   if (!Item) {

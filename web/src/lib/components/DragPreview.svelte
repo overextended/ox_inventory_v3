@@ -1,15 +1,19 @@
 <script lang="ts">
   import { SLOT_GAP, SLOT_SIZE } from '$lib/constants/inventory';
-  import type { InventoryItem } from '@common/item';
+  import type { DragItemType } from '$lib/state/inventory';
+  import ItemImage from '$lib/components/ItemImage.svelte';
+  import { cn } from '$lib/utils';
 
   interface Props {
     dragImg: HTMLElement;
     dropIndicator: HTMLElement;
-    dragItem: InventoryItem | null;
+    dragItem: DragItemType | null;
   }
 
   let { dragImg = $bindable(), dropIndicator = $bindable(), dragItem }: Props = $props();
-  let dragTransform = $state(`translate(0, 0)`);
+  let dragX = $state('');
+  let dragY = $state('');
+  let dragTransform = $derived(`translate(${dragX}px, ${dragY}px)`);
   let visible = $state(false);
   let left = $state(0);
   let top = $state(0);
@@ -25,15 +29,8 @@
       parent = target.parentNode as HTMLElement;
     }
 
-    const rotation = dragItem.rotate ? -90 : 0;
-    const dragX = dragItem.rotate
-      ? `-${event.clientY - dragImg.clientHeight / 2}`
-      : `${event.clientX - dragImg.clientWidth / 2}`;
-    const dragY = dragItem.rotate
-      ? `${event.clientX - dragImg.clientWidth / 2}`
-      : `${event.clientY - dragImg.clientHeight / 2}`;
-
-    dragTransform = `rotate(${rotation}deg) translate(${dragX}px, ${dragY}px)`;
+    dragX = `${event.clientX - dragImg.clientWidth / 2}`;
+    dragY = `${event.clientY - dragImg.clientHeight / 2}`;
 
     if (!parent?.dataset?.inventoryid) {
       visible = false;
@@ -84,16 +81,16 @@
     visibility: ${visible ? 'block' : 'hidden'};
   `}
   ></div>
+
   <div
     bind:this={dragImg}
-    class="pointer-events-none fixed left-0 top-0 z-[51] bg-none bg-center bg-no-repeat bg-contain item"
+    class={cn('absolute pointer-events-none top-0 z-[51] left-0', dragItem && 'pointer-events-none')}
     style={`
-      --icon: url('${dragItem.icon}');
-      --transform: ${dragTransform};
-      --width: ${SLOT_SIZE * (dragItem.rotate ? dragItem.height : dragItem.width) - 1}px;
-      --height: ${SLOT_SIZE * (dragItem.rotate ? dragItem.width : dragItem.height) - SLOT_GAP}px;
+      transform: ${dragTransform};
       width: ${SLOT_SIZE * dragItem.width - 1}px;
-      height: ${SLOT_SIZE * dragItem.height - SLOT_GAP}px;
+      height:  ${SLOT_SIZE * dragItem.height - SLOT_GAP}px;
     `}
-  ></div>
+  >
+    <ItemImage width={dragItem.width} height={dragItem.height} icon={dragItem.icon} rotate={dragItem.rotate} />
+  </div>
 {/if}
