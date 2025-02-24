@@ -189,11 +189,11 @@ export function ItemFactory(name: string, item: ItemProperties) {
     }
 
     get width() {
-      return (Config.Inventory_MultiSlotItems && this.rotate ? item.height : item.width) || 1;
+      return (Config.Inventory_MultiSlotItems && (this.rotate ? item.height : item.width)) || 1;
     }
 
     get height() {
-      return (Config.Inventory_MultiSlotItems && this.rotate ? item.width : item.height) || 1;
+      return (Config.Inventory_MultiSlotItems && (this.rotate ? item.width : item.height)) || 1;
     }
 
     get hash() {
