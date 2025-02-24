@@ -5,6 +5,7 @@
   import DurabilityCircle from '$lib/components/DurabilityCircle.svelte';
   import ItemImage from '$lib/components/ItemImage.svelte';
   import { GetItemData } from '@common/item';
+  import { fetchNui } from '$lib/utils/fetchNui';
 
   interface Props {
     visible: boolean;
@@ -13,9 +14,10 @@
     inventory: InventoryState;
     itemState: InventoryState['itemState'];
     onMouseDown: (event: MouseEvent) => void;
+    inventoryCount: number;
   }
 
-  let { inventory, visible, itemState, isDragging, dragItem, onMouseDown }: Props = $props();
+  let { inventory, visible, itemState, isDragging, dragItem, onMouseDown, inventoryCount }: Props = $props();
 
   function draggableWindow(node: HTMLElement) {
     let moving = false;
@@ -69,7 +71,18 @@
   <div class="flex flex-col">
     <!-- svelte-ignore a11y_no_static_element_interactions -->
     <div class="w-full bg-background p-2 text-foreground hover:cursor-move" use:draggableWindow>
-      <p>{inventory.label}</p>
+      <p>
+        {inventory.label}
+        {#if inventory.type }
+          <button
+            type="button"
+            class="cursor-pointer float-end font-bold"
+            onclick={() =>
+              fetchNui(`closeInventory`, { inventoryId: inventory.inventoryId, inventoryCount: inventoryCount })}
+            >X</button
+          >
+        {/if}
+      </p>
     </div>
     <div
       id="inv-grid"

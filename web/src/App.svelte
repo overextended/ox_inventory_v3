@@ -14,6 +14,7 @@
   let visible = $state(false);
   let keyPressed = { shift: false, control: false, alt: false };
   let openInventories = $state<{ inventory: InventoryState; items: Partial<InventoryItem>[] }[]>([]);
+  let inventoryCount = $derived(openInventories.length - 1);
 
   debugData<{ inventory: Partial<BaseInventory>; items: Partial<InventoryItem>[] }>(
     [
@@ -355,5 +356,5 @@
 <DragPreview bind:dragImg bind:dropIndicator {dragItem} />
 
 {#each openInventories as { inventory }}
-  <InventoryWindow visible {isDragging} {dragItem} {inventory} itemState={inventory.itemState} {onMouseDown} />
+  <InventoryWindow visible {isDragging} {dragItem} {inventory} itemState={inventory.itemState} {onMouseDown} {inventoryCount} />
 {/each}
