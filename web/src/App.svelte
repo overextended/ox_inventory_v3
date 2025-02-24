@@ -313,7 +313,7 @@
         onItemMovement(item, fromInventory, toInventory, quantity, slot, rotate);
       }
     } catch (err: any) {
-      console.error(err.message);
+      console.error(`Error during moveItem: ${err.message}`);
     } finally {
       resetDragState();
     }

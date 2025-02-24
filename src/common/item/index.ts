@@ -4,7 +4,7 @@ import fetch from 'sync-fetch';
 import { ResourceContext, ResourceName } from '..';
 import { joaat } from '@common/utils';
 
-export interface ItemMetadata {
+interface ItemMetadata {
   name: string;
   icon?: string;
   value?: number;
@@ -32,7 +32,7 @@ interface WeaponMetadata extends ItemMetadata {
   hash?: number;
 }
 
-type ItemProperties = ItemMetadata | WeaponMetadata;
+export type ItemProperties = ItemMetadata | WeaponMetadata;
 export type Item = ReturnType<typeof ItemFactory>;
 export type InventoryItem = InstanceType<Item>;
 
@@ -107,7 +107,7 @@ export function ItemFactory(name: string, item: ItemProperties) {
 
     [key: string]: unknown;
 
-    constructor(metadata?: ItemProperties) {
+    constructor(metadata?: Partial<ItemProperties>) {
       if (metadata) {
         // todo: make this less dumb
         delete metadata.name;
