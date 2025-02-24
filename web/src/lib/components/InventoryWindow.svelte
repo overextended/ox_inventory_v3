@@ -73,7 +73,7 @@
     <div class="w-full bg-background p-2 text-foreground hover:cursor-move" use:draggableWindow>
       <p>
         {inventory.label}
-        {#if inventory.type }
+        {#if inventory.type}
           <button
             type="button"
             class="cursor-pointer float-end font-bold"
@@ -107,7 +107,7 @@
               class={cn(
                 'absolute top-0 left-0 z-50 bg-black/50 text-right text-xs px-1 flex',
                 isDragging && 'pointer-events-none',
-                dragItem === item && 'opacity-50'
+                dragItem?.uniqueId === item.uniqueId && 'opacity-80 brightness-50 grayscale-[0.8]'
               )}
               style={`
                 width: ${SLOT_SIZE * w - 1}px;
