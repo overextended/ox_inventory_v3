@@ -43,6 +43,7 @@ const excludeKeysForComparison: Record<string, true> = {
   quantity: true,
   anchorSlot: true,
   inventoryId: true,
+  tempRotate: true,
 };
 
 export function GetItemData(name: string) {
@@ -255,9 +256,6 @@ export function ItemFactory(name: string, item: ItemProperties) {
       return true;
     }
 
-    /**
-     * Temporary workaround for a weird rendering issue.
-     */
     public delete() {
       const inventory = this.inventoryId && BaseInventory.fromId(this.inventoryId);
 
@@ -270,6 +268,8 @@ export function ItemFactory(name: string, item: ItemProperties) {
      * Compares the properties of two items and returns `true` if they are similar enough to merge the stacks.
      */
     public canMerge(item: InventoryItem) {
+      if (this.name !== item.name) return false;
+
       const keysA = Object.keys(this).filter((key) => !excludeKeysForComparison[key]);
       const keysB = Object.keys(item).filter((key) => !excludeKeysForComparison[key]);
 
@@ -292,8 +292,20 @@ export function ItemFactory(name: string, item: ItemProperties) {
         existingItem !== this &&
         this.width === existingItem.width &&
         this.height === existingItem.height &&
-        !this.canMerge(existingItem)
+        existingItem.anchorSlot === startSlot
       ) {
+        const canMerge = this.canMerge(existingItem);
+
+        if (canMerge) {
+          existingItem.quantity += this.quantity;
+          this.delete();
+
+          // todo: maybe improve this hacky method of forcing kvp sync
+          existingItem.move(inventory, existingItem.anchorSlot);
+
+          return true;
+        }
+
         return this.swapItems(currentInventory, inventory, existingItem, startSlot);
       }
 
@@ -305,7 +317,7 @@ export function ItemFactory(name: string, item: ItemProperties) {
       let slots = inventory.canHoldItem(this, startSlot, quantity);
 
       if (!slots) {
-        this.rotate = this.tempRotate as boolean;
+        this.tempRotate ? (this.rotate = true) : delete this.rotate;
         delete this.tempRotate;
 
         if (currentSlots) this.addToInventory(currentInventory, currentSlots);
@@ -313,27 +325,21 @@ export function ItemFactory(name: string, item: ItemProperties) {
         return false;
       }
 
+      this.tempRotate ? (this.rotate = true) : delete this.rotate;
       delete this.tempRotate;
-
-      if (existingItem?.anchorSlot === startSlot) {
-        existingItem.quantity += this.quantity;
-        this.quantity = 0;
-
-        // todo: maybe improve this hacky method of forcing kvp sync
-        existingItem.move(inventory, existingItem.anchorSlot);
-
-        return true;
-      }
 
       return this.addToInventory(inventory, slots);
     }
 
     public split(inventory: BaseInventory, quantity: number, startSlot?: number) {
       const existingItem = inventory.getItemInSlot(startSlot);
+      const currentInventory = BaseInventory.fromId(this.inventoryId);
       quantity = Math.max(1, Math.ceil(quantity));
       startSlot = startSlot ?? inventory.findAvailableSlot(this);
 
-      if (existingItem?.anchorSlot === startSlot) {
+      if (existingItem?.anchorSlot === startSlot && currentInventory?.inventoryId === inventory.inventoryId) {
+        this.tempRotate ? (this.rotate = true) : delete this.rotate;
+        delete this.tempRotate;
         const canHoldItem = inventory.canHoldItem(this, startSlot, this.quantity + (existingItem?.quantity ?? 0));
 
         if (!canHoldItem) return false;
@@ -346,11 +352,12 @@ export function ItemFactory(name: string, item: ItemProperties) {
 
       const clone = structuredClone(this);
       clone.quantity = quantity;
-      clone.rotate = clone.tempRotate as boolean;
 
       delete this.tempRotate;
       delete clone.uniqueId;
       delete clone.tempRotate;
+
+      if (!clone.rotate) delete clone.rotate;
 
       const newItem = new Item(clone);
       const slots = inventory.canHoldItem(newItem, startSlot);
