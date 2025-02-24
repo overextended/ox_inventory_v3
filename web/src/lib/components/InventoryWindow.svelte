@@ -4,6 +4,7 @@
   import type { DragItemType, InventoryState } from '$lib/state/inventory';
   import DurabilityCircle from '$lib/components/DurabilityCircle.svelte';
   import ItemImage from '$lib/components/ItemImage.svelte';
+  import { GetItemData } from '@common/item';
 
   interface Props {
     visible: boolean;
@@ -105,7 +106,17 @@
                 class="h-full w-full flex flex-col justify-between font-semibold text-foreground pointer-events-none"
               >
                 <p class="text-[0.65rem]">{item.label}</p>
-                <p>{item.ammoName ? `${item.ammoCount} bullets` : `x${item.quantity}`}</p>
+                {#if item.ammoName}
+                  <p class="flex items-end justify-end">
+                    <img
+                      src={GetItemData(item.ammoName as string).properties.icon}
+                      alt=""
+                      class="h-5"
+                    />{item.ammoCount || 320}
+                  </p>
+                {:else}
+                  <p>x{item.quantity}</p>
+                {/if}
 
                 {#if item.durability}
                   <DurabilityCircle durability={item.durability} />
