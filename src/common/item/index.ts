@@ -47,7 +47,23 @@ const excludeKeysForComparison: Record<string, true> = {
 };
 
 export function GetItemData(name: string) {
-  return Items[name];
+  let item = Items[name];
+
+  if (item && !item.properties.icon) {
+    const iconPath = `${item.properties.category}/${item.name}.webp`;
+    item.properties.icon = `${Config.Inventory_ImagePath}/${iconPath}`;
+
+    // Use resource configured image path; fallback to ox cdn
+    const iconUrl = item.properties.icon ?? `${Config.Inventory_ImagePath}/${iconPath}`;
+    const iconType =
+      ResourceContext === 'web'
+        ? (fetch(iconUrl)?.blob() as any)?.type
+        : LoadResourceFile(ResourceName, iconUrl) && 'image/webp';
+
+    item.properties.icon = iconType === 'image/webp' ? iconUrl : `https://items.overextended.dev/${iconPath}`;
+  }
+
+  return item;
 }
 
 export function GetInventoryItem(uniqueId: number) {
@@ -65,11 +81,6 @@ export function ItemFactory(name: string, item: ItemProperties) {
   item.category = item.category ?? 'miscellaneous';
   item.itemLimit = clamp(item.itemLimit);
   item.stackSize = clamp(item.category === 'weapon' ? 1 : item.stackSize);
-
-  const iconPath = `${item.category}/${item.name}.webp`;
-  let hasIcon = false;
-
-  item.icon = item.icon ?? `${Config.Inventory_ImagePath}/${iconPath}`;
 
   if (typeof item.hash === 'string') item.hash = joaat(item.hash);
 
@@ -166,18 +177,6 @@ export function ItemFactory(name: string, item: ItemProperties) {
     }
 
     get icon() {
-      if (!hasIcon) {
-        // Use resource configured image path; fallback to ox cdn
-        const iconUrl = item.icon ?? `${Config.Inventory_ImagePath}/${iconPath}`;
-        const iconType =
-          ResourceContext === 'web'
-            ? (fetch(iconUrl)?.blob() as any)?.type
-            : LoadResourceFile(ResourceName, iconUrl) && 'image/webp';
-
-        item.icon = iconType === 'image/webp' ? iconUrl : `https://items.overextended.dev/${iconPath}`;
-        hasIcon = true;
-      }
-
       return item.icon;
     }
 
