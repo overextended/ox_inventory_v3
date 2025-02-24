@@ -2,8 +2,8 @@ import { BaseInventory } from '@common/inventory/class';
 import { ItemProperties } from '@common/item';
 import { oxmysql } from '@overextended/oxmysql';
 
-export function GetDbItemData(name: string): Promise<ItemProperties> {
-  return oxmysql.single(`SELECT * FROM ox_items WHERE name = ?`, [name]);
+export function GetDbItemData(): Promise<ItemProperties[]> {
+  return oxmysql.query(`SELECT * FROM ox_items`);
 }
 
 export function GetDbInventoryData(inventoryId: string): Promise<BaseInventory> {
