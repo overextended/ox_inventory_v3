@@ -134,7 +134,6 @@
   let dragItem = $state<DragItemType | null>(null);
   let dragImg: HTMLElement = $state(null)!;
   let dropIndicator: HTMLElement = $state(null)!;
-  let itemRotation: boolean | undefined = false;
 
   function getDragItemProps({
     anchorSlot,
@@ -189,14 +188,11 @@
     isDragging = true;
     dragSlot = slot;
     dragItem = getDragItemProps(item);
-    itemRotation = item.rotate;
   }
 
   function resetDragState() {
     if (!dragItem) return;
 
-    dragItem.rotate = itemRotation;
-    itemRotation = false;
     isDragging = false;
     dragSlot = null;
     dragItem = null;
@@ -208,24 +204,17 @@
     fromInventory: InventoryState,
     toInventory: InventoryState,
     quantity: number,
-    slot: number,
-    currentRotate?: boolean
+    slot: number
   ) {
-    itemRotation = currentRotate;
+    if (!isEnvBrowser()) return;
 
-    item.rotate = currentRotate;
     const result = quantity !== item.quantity ? item.split(toInventory, quantity, slot) : item.move(toInventory, slot);
 
-    // if (typeof result === 'object') item.rotate = currentRotate;
+    if (typeof result === 'object') Object.assign(item, result);
 
-    // Refreshes are handled differently in CEF.
-    if (isEnvBrowser()) {
-      if (typeof result === 'object') Object.assign(item, result);
+    fromInventory.refreshSlots();
 
-      fromInventory.refreshSlots();
-
-      if (fromInventory !== toInventory) toInventory.refreshSlots();
-    }
+    if (fromInventory !== toInventory) toInventory.refreshSlots();
   }
 
   function getSlotIdFromPoint(x: number, y: number, item: InventoryItem) {
@@ -289,8 +278,7 @@
 
       if (fromInventory === toInventory && item.anchorSlot === slot) return;
 
-      item.rotate = itemRotation;
-      const rotate = item.rotate;
+      item.tempRotate = dragItem.rotate;
 
       const success = await fetchNui(
         'moveItem',
@@ -301,16 +289,16 @@
           toId: toInventory?.inventoryId,
           fromSlot: item.anchorSlot,
           toSlot: slot,
+          rotate: item.tempRotate,
           quantity,
-          rotate,
         },
         {
           data: true,
         }
       );
 
-      if (success && toInventory) {
-        onItemMovement(item, fromInventory, toInventory, quantity, slot, rotate);
+      if (success) {
+        if (toInventory) onItemMovement(item, fromInventory, toInventory, quantity, slot);
       }
     } catch (err: any) {
       console.error(`Error during moveItem: ${err.message}`);
@@ -322,25 +310,23 @@
   function onKeyDown(event: KeyboardEvent) {
     const key = event.key.toLowerCase();
 
-    if (key in keyPressed) {
-      return (keyPressed[key as keyof typeof keyPressed] = true); // bruh
-    }
-
-    switch (event.key.toLowerCase()) {
+    switch (key) {
       case 'escape':
       case 'tab':
         return fetchNui(`closeInventory`);
       case 'r':
         if (!dragItem || dragItem.width === dragItem.height) return;
 
-        dragItem.rotate = !dragItem.rotate;
-        itemRotation = dragItem.rotate;
-
         const temp = dragItem.width;
         dragItem.width = dragItem.height;
         dragItem.height = temp;
+        dragItem.rotate = !dragItem.rotate;
 
         return;
+      case 'control':
+      case 'shift':
+      case 'alt':
+        return (keyPressed[key] = true);
     }
   }
 

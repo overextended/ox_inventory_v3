@@ -299,13 +299,21 @@ export function ItemFactory(name: string, item: ItemProperties) {
 
       const currentSlots = currentInventory && this.removeFromInventory(currentInventory);
       const quantity = existingItem === this ? this.quantity : this.quantity + (existingItem?.quantity ?? 0);
+
+      [this.rotate, this.tempRotate] = [(this.tempRotate as boolean) ?? this.rotate, this.rotate];
+
       let slots = inventory.canHoldItem(this, startSlot, quantity);
 
       if (!slots) {
-        if (currentSlots) this.addToInventory(inventory, currentSlots);
+        this.rotate = this.tempRotate as boolean;
+        delete this.tempRotate;
+
+        if (currentSlots) this.addToInventory(currentInventory, currentSlots);
 
         return false;
       }
+
+      delete this.tempRotate;
 
       if (existingItem?.anchorSlot === startSlot) {
         existingItem.quantity += this.quantity;
@@ -337,11 +345,14 @@ export function ItemFactory(name: string, item: ItemProperties) {
       }
 
       const clone = structuredClone(this);
-      delete clone.uniqueId;
       clone.quantity = quantity;
+      clone.rotate = clone.tempRotate as boolean;
+
+      delete this.tempRotate;
+      delete clone.uniqueId;
+      delete clone.tempRotate;
 
       const newItem = new Item(clone);
-
       const slots = inventory.canHoldItem(newItem, startSlot);
 
       if (!slots) return false;
