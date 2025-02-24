@@ -2,7 +2,7 @@ import { GetItemData, ItemFactory, type ItemProperties } from '~/src/common/item
 import { isEnvBrowser } from '$lib/utils/misc';
 import { fetchNui } from '$lib/utils/fetchNui';
 
-export async function CreateItem(name: string, metadata: Partial<ItemProperties> = {}) {
+export async function CreateItem(name: string, metadata?: Partial<ItemProperties>) {
   let Item = GetItemData(name);
 
   if (!Item) {
@@ -28,8 +28,10 @@ export async function CreateItem(name: string, metadata: Partial<ItemProperties>
               category: 'ammo',
             }
       : await fetchNui(`getStateKeyValue`, [`global`, `Item:${name}`]);
-    Item = ItemFactory(name, data);
+
+    ItemFactory(name, data);
+    Item = GetItemData(name);
   }
 
-  return new Item(metadata);
+  return metadata ? new Item(metadata) : Item;
 }

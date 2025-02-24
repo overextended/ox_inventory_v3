@@ -109,7 +109,7 @@
                 {#if item.ammoName}
                   <p class="flex items-end justify-end">
                     <img
-                      src={GetItemData(item.ammoName as string).properties.icon}
+                      src={GetItemData(item.ammoName as string)?.properties?.icon}
                       alt=""
                       class="h-5"
                     />{item.ammoCount || 320}
