@@ -10,18 +10,22 @@ export function OpenInventory(data: { inventory: BaseInventory; items: Inventory
   });
 }
 
-export function CloseInventory() {
-  emitNet(`ox_inventory:closeInventory`);
-  SetNuiFocus(false, false);
+export function CloseInventory(data?: { inventoryId: string; inventoryCount: number }, cb?: (value: number) => void) {
+  emitNet(`ox_inventory:closeInventory`, data?.inventoryId);
+
   SendNUIMessage({
     action: 'closeInventory',
+    data: data?.inventoryId,
   });
+
+  if (!data || !data.inventoryCount) {
+    SetNuiFocus(false, false);
+  }
+
+  if (cb) cb(1);
 }
 
-RegisterNuiCallback(`closeInventory`, (_: never, cb: (value: number) => void) => {
-  CloseInventory();
-  cb(1);
-});
+RegisterNuiCallback(`closeInventory`, CloseInventory);
 
 RegisterNuiCallback(`getStateKeyValue`, ([state, key]: [state: string, key: string], cb: (value: unknown) => void) => {
   const value = state === 'global' ? GlobalState[key] : LocalPlayer.state[key];

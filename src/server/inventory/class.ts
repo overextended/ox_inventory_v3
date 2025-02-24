@@ -15,6 +15,14 @@ export class Inventory extends BaseInventory {
     }
   }
 
+  static getInventories(playerId?: number) {
+    return Object.values(this.instances as Record<string, Inventory>).filter((inventory) => {
+      if (!playerId || inventory.#openedBy.has(playerId)) {
+        return inventory;
+      }
+    });
+  }
+
   public emit(event: string, args?: any) {
     this.#openedBy.forEach((playerId) => emitNet(event, playerId, args));
   }
@@ -28,5 +36,9 @@ export class Inventory extends BaseInventory {
     this.#openedBy.delete(playerId);
 
     if (emit) emitNet(`ox_inventory:closeInventory`, playerId);
+
+    if (this.type === 'drop' && !this.#openedBy.size && Object.keys(this.items).length === 0) {
+      emitNet(`ox_inventory:removeDrop`, -1, this.inventoryId);
+    }
   }
 }

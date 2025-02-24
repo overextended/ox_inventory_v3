@@ -2,7 +2,7 @@ import Config from '@common/config';
 import { GetInventoryItem, InventoryItem } from '@common/item';
 
 export class BaseInventory {
-  private static instances: Record<string, BaseInventory> = {};
+  static instances: Record<string, BaseInventory> = {};
   /** A unique identifier used to reference the inventory and save it in the database. */
   readonly inventoryId: string;
 

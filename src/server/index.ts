@@ -19,11 +19,12 @@ onNet(`ox_inventory:requestOpenInventory`, async (nearbyInventories: string[]) =
   });
 });
 
-onNet(`ox_inventory:closeInventory`, async () => {
+onNet(`ox_inventory:closeInventory`, async (inventoryId?: string) => {
   const playerId = source;
-  const inventory = await GetInventory(playerId.toString(), `player`);
 
-  if (inventory) inventory.close(playerId, false);
+  if (inventoryId) return Inventory.fromId(inventoryId)?.close(playerId, false);
+
+  Inventory.getInventories(playerId).forEach((inventory) => inventory.close(playerId, false));
 });
 
 onClientCallback(`ox_inventory:requestMoveItem`, async (playerId, data: MoveItem) => {
