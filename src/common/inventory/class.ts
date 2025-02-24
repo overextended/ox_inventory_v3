@@ -10,7 +10,7 @@ export class BaseInventory {
   readonly type: string;
 
   /** An object where each key-value refers to the grid position and an item's uniqueid in that slot. */
-  readonly items: Record<number, number> = {};
+  public items: Record<number, number> = {};
 
   public label: string;
   public width: number;

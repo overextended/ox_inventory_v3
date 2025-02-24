@@ -81,7 +81,8 @@
   useNuiEvent('openInventory', async (data: { inventory: InventoryState; items: InventoryItem[] }) => {
     let inventory = getInventoryById(data.inventory.inventoryId);
 
-    if (!inventory) {
+    if (inventory) inventory.items = data.inventory.items;
+    else {
       inventory = new InventoryState(data.inventory);
       openInventories.push({ inventory, items: data.items });
     }
