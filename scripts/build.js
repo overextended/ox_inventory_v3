@@ -16,7 +16,7 @@ createBuilder(
       name: 'server',
       options: {
         platform: 'node',
-        target: ['node16'],
+        target: ['node22'],
         format: 'cjs',
       },
     },
@@ -35,7 +35,7 @@ createBuilder(
       client_scripts: [outfiles.client, '@ox_lib/init.lua', 'src/client/points.lua'],
       server_scripts: [outfiles.server],
       files: ['locales/*.json', ...files],
-      dependencies: ['/server:7290', '/onesync', 'oxmysql', 'ox_lib', 'ox_target'],
+      dependencies: ['/server:13019', '/onesync', 'oxmysql', 'ox_lib', 'ox_target'],
       metadata: {
         ui_page: 'dist/web/index.html',
         lua54: 'yes',
