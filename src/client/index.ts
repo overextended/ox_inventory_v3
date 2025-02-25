@@ -1,15 +1,7 @@
-import { BaseInventory } from '@common/inventory/class';
-import { InventoryItem } from '@common/item';
-import { CloseInventory } from './nui';
+import { CloseInventory, OpenInventory } from './nui';
 import './keybinds';
 
-onNet(`ox_inventory:openInventory`, async (data: { inventory: BaseInventory; items: InventoryItem[] }) => {
-  SetNuiFocus(true, true);
-  SendNUIMessage({
-    action: 'openInventory',
-    data: data,
-  });
-});
+onNet(`ox_inventory:openInventory`, OpenInventory);
 
 onNet(`ox_inventory:closeInventory`, CloseInventory);
 

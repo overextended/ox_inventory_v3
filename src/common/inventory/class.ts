@@ -17,11 +17,12 @@ export class BaseInventory {
   public height: number;
   public weight: number;
   public maxWeight: number;
+  public playerId: number;
   public netId?: number;
   public ownerId?: string;
   public coords?: [number, number, number];
 
-  constructor(data: any) {
+  constructor(data: Partial<BaseInventory>) {
     this.inventoryId = data.inventoryId;
     this.type = data.type ?? 'player';
     this.items = data.items ?? {};
@@ -33,6 +34,7 @@ export class BaseInventory {
     this.netId = data.netId;
     this.ownerId = data.ownerId;
     this.coords = data.coords;
+    this.playerId = data.playerId;
 
     BaseInventory.instances[this.inventoryId] = this;
   }

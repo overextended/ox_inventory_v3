@@ -26,14 +26,15 @@ async function GetDefaultInventoryData(inventoryId: string, type: string) {
 }
 
 export async function GetInventory(inventoryId: string, data: string | Partial<Inventory>) {
-  data = typeof data === 'string' ? { type: data } : { type: 'player', ...data };
+  data = typeof data === 'string' ? { inventoryId, type: data } : { inventoryId, type: 'player', ...data };
 
-  if (data.type === 'player' && !inventoryId.includes(`player`)) {
+  if (data.type === 'player' && typeof inventoryId === 'number') {
     const player = GetPlayer(inventoryId);
 
     if (!player) return console.error(`Cannot get inventory for invalid player ${inventoryId}`);
 
-    inventoryId = `player:${player.charId.toString()}`;
+    data.playerId = +inventoryId;
+    inventoryId = `player:${player.charId}`;
   }
 
   let inventory = Inventory.fromId(inventoryId);
@@ -41,18 +42,18 @@ export async function GetInventory(inventoryId: string, data: string | Partial<I
   if (!inventory) {
     const items = GetInventoryItems(inventoryId);
 
-    inventory = new Inventory(
-      data.type === 'drop'
+    inventory = new Inventory({
+      ...data,
+      ...(data.type === 'drop'
         ? {
             inventoryId: inventoryId,
             label: `Drop ${+GetHashKey(inventoryId)}`,
             width: Config.Drop_Width,
             height: Config.Drop_Height,
             maxWeight: Config.Drop_MaxWeight,
-            ...data,
           }
-        : (await GetDbInventoryData(inventoryId)) || (await GetDefaultInventoryData(inventoryId, data.type))
-    );
+        : (await GetDbInventoryData(inventoryId)) || (await GetDefaultInventoryData(inventoryId, data.type))),
+    });
 
     for (const data of items) {
       const name = data.name;

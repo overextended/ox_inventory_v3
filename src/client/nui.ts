@@ -2,7 +2,9 @@ import { BaseInventory } from '@common/inventory/class';
 import { InventoryItem } from '@common/item';
 import { cache, triggerServerCallback } from '@overextended/ox_lib/client';
 
-export function OpenInventory(data: { inventory: BaseInventory; items: InventoryItem[] }) {
+export function OpenInventory(data: { inventory: BaseInventory; items: InventoryItem[]; playerId: number }) {
+  data.playerId = cache.serverId;
+
   SetNuiFocus(true, true);
   SendNUIMessage({
     action: 'openInventory',

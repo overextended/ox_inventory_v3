@@ -15,6 +15,7 @@
   let keyPressed = { shift: false, control: false, alt: false };
   let openInventories = $state<{ inventory: InventoryState; items: Partial<InventoryItem>[] }[]>([]);
   let inventoryCount = $derived(openInventories.length - 1);
+  let playerId = $state(0);
 
   debugData<{ inventory: Partial<BaseInventory>; items: Partial<InventoryItem>[] }>(
     [
@@ -22,7 +23,7 @@
         action: 'openInventory',
         data: {
           inventory: {
-            inventoryId: 'player',
+            inventoryId: 'player:0',
             label: 'Inventory',
             items: {
               0: 7,
@@ -35,7 +36,7 @@
             {
               name: 'ammo_9',
               quantity: 7,
-              inventoryId: 'player',
+              inventoryId: 'player:0',
               uniqueId: 7,
               anchorSlot: 0,
             },
@@ -43,7 +44,7 @@
             {
               name: 'HeavyPistol',
               quantity: 1,
-              inventoryId: 'player',
+              inventoryId: 'player:0',
               uniqueId: 8,
               anchorSlot: 4,
               durability: 34,
@@ -79,41 +80,46 @@
     1000
   );
 
-  useNuiEvent('openInventory', async (data: { inventory: InventoryState; items: InventoryItem[] }) => {
-    let inventory = getInventoryById(data.inventory.inventoryId);
+  useNuiEvent(
+    'openInventory',
+    async (data: { inventory: InventoryState; items: InventoryItem[]; playerId: number }) => {
+      if (!playerId) playerId = data.playerId;
 
-    if (inventory) inventory.items = data.inventory.items;
-    else {
-      inventory = new InventoryState(data.inventory);
-      openInventories.push({ inventory, items: data.items });
-    }
+      let inventory = getInventoryById(data.inventory.inventoryId);
 
-    for (const value of data.items) {
-      let item = GetInventoryItem(value.uniqueId);
-
-      if (item) {
-        // todo: figure out why this is so scuffed
-        const oldInventory =
-          item.inventoryId &&
-          item.inventoryId !== data.inventory.inventoryId &&
-          InventoryState.fromId(item.inventoryId);
-
-        item.delete();
-
-        if (oldInventory) oldInventory.refreshSlots();
+      if (inventory) inventory.items = data.inventory.items;
+      else {
+        inventory = new InventoryState(data.inventory);
+        openInventories.push({ inventory, items: data.items });
       }
 
-      item = (await CreateItem(value.name, value)) as InventoryItem;
+      for (const value of data.items) {
+        let item = GetInventoryItem(value.uniqueId);
 
-      if (typeof item.ammoName === 'string') {
-        await CreateItem(item.ammoName);
+        if (item) {
+          // todo: figure out why this is so scuffed
+          const oldInventory =
+            item.inventoryId &&
+            item.inventoryId !== data.inventory.inventoryId &&
+            InventoryState.fromId(item.inventoryId);
+
+          item.delete();
+
+          if (oldInventory) oldInventory.refreshSlots();
+        }
+
+        item = (await CreateItem(value.name, value)) as InventoryItem;
+
+        if (typeof item.ammoName === 'string') {
+          await CreateItem(item.ammoName);
+        }
+
+        item.move(inventory, item.anchorSlot);
       }
 
-      item.move(inventory, item.anchorSlot);
+      inventory.refreshSlots();
     }
-
-    inventory.refreshSlots();
-  });
+  );
 
   useNuiEvent('closeInventory', (inventoryId: string) => {
     if (inventoryId) {
@@ -356,5 +362,14 @@
 <DragPreview bind:dragImg bind:dropIndicator {dragItem} />
 
 {#each openInventories as { inventory }}
-  <InventoryWindow visible {isDragging} {dragItem} {inventory} itemState={inventory.itemState} {onMouseDown} {inventoryCount} />
+  <InventoryWindow
+    visible
+    {isDragging}
+    {dragItem}
+    {inventory}
+    itemState={inventory.itemState}
+    {onMouseDown}
+    {inventoryCount}
+    {playerId}
+  />
 {/each}

@@ -15,9 +15,10 @@
     itemState: InventoryState['itemState'];
     onMouseDown: (event: MouseEvent) => void;
     inventoryCount: number;
+    playerId: number;
   }
 
-  let { inventory, visible, itemState, isDragging, dragItem, onMouseDown, inventoryCount }: Props = $props();
+  let { inventory, visible, itemState, isDragging, dragItem, onMouseDown, inventoryCount, playerId }: Props = $props();
 
   function draggableWindow(node: HTMLElement) {
     let moving = false;
@@ -73,7 +74,10 @@
     <div class="w-full bg-background p-2 text-foreground hover:cursor-move" use:draggableWindow>
       <p>
         {inventory.label}
-        {#if inventory.type}
+
+        {#if inventory.playerId}({inventory.playerId === playerId ? 'you' : inventory.playerId}){/if}
+
+        {#if inventory.playerId !== playerId}
           <button
             type="button"
             class="cursor-pointer float-end font-bold"
