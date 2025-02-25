@@ -298,9 +298,8 @@ export function ItemFactory(name: string, item: ItemProperties) {
         if (canMerge) {
           existingItem.quantity += this.quantity;
           this.quantity = 0;
-          this.delete();
 
-          // todo: maybe improve this hacky method of forcing kvp sync
+          this.delete();
           existingItem.move(inventory, existingItem.anchorSlot);
 
           return true;

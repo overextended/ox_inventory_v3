@@ -1,9 +1,8 @@
 import { BaseInventory } from '@common/inventory/class';
-import { GetDbInventoryData, InsertDbInventoryData } from '../db';
+import db from '../db';
 import { Inventory } from './class';
 import { CreateItem } from '../item';
 import { GetPlayer } from '@overextended/ox_core/server';
-import { GetInventoryItems } from '../kvp';
 import Config from '@common/config';
 
 async function GetDefaultInventoryData(inventoryId: string, type: string) {
@@ -20,12 +19,12 @@ async function GetDefaultInventoryData(inventoryId: string, type: string) {
       throw new Error(`invalid inventory type ${type}`);
   }
 
-  await InsertDbInventoryData(inventory);
+  db.insertInventory(inventory);
 
   return inventory;
 }
 
-export async function GetInventory(inventoryId: string, data: string | Partial<Inventory>) {
+export function GetInventory(inventoryId: string, data: string | Partial<Inventory>) {
   data = typeof data === 'string' ? { inventoryId, type: data } : { inventoryId, type: 'player', ...data };
 
   if (data.type === 'player' && typeof inventoryId === 'number') {
@@ -40,8 +39,6 @@ export async function GetInventory(inventoryId: string, data: string | Partial<I
   let inventory = Inventory.fromId(inventoryId);
 
   if (!inventory) {
-    const items = GetInventoryItems(inventoryId);
-
     inventory = new Inventory({
       ...data,
       ...(data.type === 'drop'
@@ -52,16 +49,16 @@ export async function GetInventory(inventoryId: string, data: string | Partial<I
             height: Config.Drop_Height,
             maxWeight: Config.Drop_MaxWeight,
           }
-        : (await GetDbInventoryData(inventoryId)) || (await GetDefaultInventoryData(inventoryId, data.type))),
+        : db.getInventory(inventoryId) || GetDefaultInventoryData(inventoryId, data.type)),
     });
+
+    const items = db.getInventoryItems(inventory.inventoryId);
 
     for (const data of items) {
       const name = data.name;
-      const metadata = typeof data.metadata === 'string' ? JSON.parse(data.metadata) : data.metadata;
-      delete data.metadata;
-      delete (data as any).name; // todo: fix typing :(
+      delete data.name;
 
-      await CreateItem(name, Object.assign(data, metadata));
+      CreateItem(name, data);
     }
   }
 

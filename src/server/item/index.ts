@@ -1,15 +1,10 @@
 import { GetItemData, InventoryItem, ItemFactory, ItemProperties } from '@common/item';
-import { GetDbItemData } from '../db';
-import kvp, { AddInventoryItem, UpdateInventoryItem, UpdateInventoryItems } from '../kvp';
+import db from '../db';
 import { Inventory } from '../inventory/class';
 
-(async () => {
-  const items = await GetDbItemData();
+db.getItems('ammo').forEach(CreateItemClass);
 
-  items.forEach(CreateItemClass);
-})();
-
-async function CreateItemClass(data: ItemProperties) {
+function CreateItemClass(data: ItemProperties) {
   const Item = ItemFactory(data.name, data);
   const itemMove = Item.prototype.move;
   const itemSplit = Item.prototype.split;
@@ -17,7 +12,7 @@ async function CreateItemClass(data: ItemProperties) {
   GlobalState.set(`Item:${Item.properties.name}`, Item.properties, true);
 
   Item.CreateUniqueId = function (item: InventoryItem): number {
-    return AddInventoryItem(item.name, item).uniqueId;
+    return db.updateInventoryItem(item);
   };
 
   Item.prototype.move = function (inventory: Inventory) {
@@ -26,19 +21,11 @@ async function CreateItemClass(data: ItemProperties) {
     const success = itemMove.apply(this, arguments) as ReturnType<typeof itemMove>;
 
     if (success) {
-      if (!currentInventory.isTemporary) UpdateInventoryItems(currentInventory);
-
-      UpdateInventoryItem(this.uniqueId, this);
+      // todo: don't trigger save on initial item movement
+      db.updateInventoryItem(this);
       currentInventory.emit(`ox_inventory:moveItem`);
 
-      // todo: optimise
-      if (currentInventory !== targetInventory) {
-        if (!targetInventory.isTemporary) UpdateInventoryItems(targetInventory);
-
-        targetInventory.emit(`ox_inventory:moveItem`);
-      }
-
-      kvp.flush();
+      if (currentInventory !== targetInventory) targetInventory.emit(`ox_inventory:moveItem`);
     }
 
     return success;
@@ -50,19 +37,11 @@ async function CreateItemClass(data: ItemProperties) {
     const newItem = itemSplit.apply(this, arguments) as ReturnType<typeof itemSplit>;
 
     if (newItem) {
-      UpdateInventoryItem(this.uniqueId, this);
-      UpdateInventoryItem(newItem.uniqueId, newItem);
-
-      UpdateInventoryItems(currentInventory);
+      db.updateInventoryItem(this);
+      db.updateInventoryItem(newItem);
       currentInventory.emit(`ox_inventory:moveItem`);
 
-      // todo: optimise
-      if (currentInventory !== targetInventory) {
-        UpdateInventoryItems(targetInventory);
-        targetInventory.emit(`ox_inventory:moveItem`);
-      }
-
-      kvp.flush();
+      if (currentInventory !== targetInventory) targetInventory.emit(`ox_inventory:moveItem`);
     }
 
     return newItem;
@@ -71,10 +50,20 @@ async function CreateItemClass(data: ItemProperties) {
   return Item;
 }
 
-export async function CreateItem(name: string, data = {} as Partial<ItemProperties>) {
+export function CreateItem(name: string, data = {} as Partial<ItemProperties>) {
   let Item = GetItemData(name);
 
-  if (!data.uniqueId) AddInventoryItem(name, data as InventoryItem);
+  if (!Item) {
+    const data = db.getItem(name);
+
+    if (!data) return;
+
+    Item = CreateItemClass(data);
+  }
+
+  data.name = name;
+
+  if (!data.uniqueId) db.updateInventoryItem(data);
 
   const item = new Item(data);
   const inventory = Inventory.fromId(data.inventoryId);

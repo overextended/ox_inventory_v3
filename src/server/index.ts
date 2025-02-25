@@ -1,7 +1,6 @@
 import { GetInventoryItem } from '@common/item';
 import { GetInventory } from './inventory';
 import { CreateItem } from './item';
-import './kvp';
 import { onClientCallback } from '@overextended/ox_lib/server';
 import { Inventory } from './inventory/class';
 
@@ -58,12 +57,12 @@ onClientCallback(`ox_inventory:requestMoveItem`, async (playerId, data: MoveItem
 
 RegisterCommand(
   `additem`,
-  async (playerId: number, args: string[]) => {
-    const inventory = await GetInventory(playerId.toString(), `player`);
+  (playerId: number, args: string[]) => {
+    const inventory = GetInventory(playerId.toString(), `player`);
 
     if (!inventory) return;
 
-    await CreateItem(args[0], { inventoryId: inventory.inventoryId, quantity: Number(args[1]) || 1 });
+    CreateItem(args[0], { inventoryId: inventory.inventoryId, quantity: Number(args[1]) || 1 });
   },
   false
 );

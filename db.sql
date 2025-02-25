@@ -1,32 +1,26 @@
+CREATE TABLE items (
+  name TEXT PRIMARY KEY,
+  category TEXT,
+  data BLOB NOT NULL
+) WITHOUT ROWID;
 
-CREATE TABLE ox_items (
-  `name` VARCHAR(50) NOT NULL,
-  `label` VARCHAR(50) NOT NULL,
-  `weight` INT(10) UNSIGNED NULL DEFAULT NULL,
-  `width` TINYINT(3) UNSIGNED NULL DEFAULT NULL,
-  `height` TINYINT(3) UNSIGNED NULL DEFAULT NULL,
-  `category` VARCHAR(50) NULL DEFAULT NULL,
-  `decay` TINYINT(1) UNSIGNED NULL DEFAULT NULL,
-  `itemLimit` INT(10) UNSIGNED NULL DEFAULT NULL,
-  `stackSize` SMALLINT(5) UNSIGNED NULL DEFAULT NULL,
-  `description` TEXT NULL DEFAULT NULL,
-  `icon` VARCHAR(100) NULL DEFAULT NULL,
-  `value` INT(10) UNSIGNED NULL DEFAULT NULL,
-  `rarity` VARCHAR(50) NULL DEFAULT NULL,
-  `degrade` INT(10) UNSIGNED NULL DEFAULT NULL,
-  `tradeable` TINYINT(1) UNSIGNED NULL DEFAULT NULL
+CREATE TABLE inventories (
+  inventoryId TEXT PRIMARY KEY,
+  type TEXT,
+  data BLOB NOT NULL
+) WITHOUT ROWID;
+
+CREATE TABLE inventory_items (
+  uniqueId INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  inventoryId TEXT NULL,
+  data BLOB NOT NULL
 );
 
-CREATE TABLE `ox_inventories` (
-	`inventoryId` VARCHAR(50) NOT NULL,
-	`ownerId` VARCHAR(50) NOT NULL,
-	`type` VARCHAR(50) NOT NULL
-);
+CREATE INDEX category ON items(category);
+CREATE INDEX type ON inventories(type);
+CREATE INDEX inventoryId ON inventory_items(inventoryId);
 
-CREATE TABLE `ox_inventory_items` (
-	`inventoryId` VARCHAR(50) NULL DEFAULT NULL,
-	`uniqueId` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-	`name` VARCHAR(50) NOT NULL,
-	`metadata` JSON NOT NULL,
-	PRIMARY KEY (`uniqueId`)
-);
+INSERT INTO items (name, category, data) VALUES
+  ('ammo_9', 'ammo', jsonb('{ label: "9mm", weight: 7 }')),
+  ('HeavyPistol', 'weapon', jsonb('{ label: "Heavy Pistol", weight: 1100, width: 2, height: 2 }')),
+  ('HeavyRifle', 'weapon', jsonb('{ label: "Heavy Rifle", weight: 3300, width: 7, height: 3 }'));
