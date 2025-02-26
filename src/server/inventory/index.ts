@@ -1,65 +1,59 @@
-import { BaseInventory } from '@common/inventory/class';
 import db from '../db';
 import { Inventory } from './class';
 import { CreateItem } from '../item';
 import { GetPlayer } from '@overextended/ox_core/server';
 import Config from '@common/config';
 
-async function GetDefaultInventoryData(inventoryId: string, type: string) {
-  const inventory: Partial<BaseInventory> = {
-    inventoryId: inventoryId,
-    ownerId: inventoryId,
-    type,
-  };
+export function GetInventory(inventoryId: string | number, data?: string | Partial<Inventory>) {
+  let inventory = typeof inventoryId === 'string' && Inventory.fromId(inventoryId);
 
-  switch (type) {
-    case 'player':
-      break;
-    default:
-      throw new Error(`invalid inventory type ${type}`);
-  }
+  if (inventory) return inventory;
 
-  db.insertInventory(inventory);
+  data = typeof data === 'string' ? { type: data } : data || { type: 'player' };
 
-  return inventory;
-}
-
-export function GetInventory(inventoryId: string, data: string | Partial<Inventory>) {
-  data = typeof data === 'string' ? { inventoryId, type: data } : { inventoryId, type: 'player', ...data };
-
-  if (data.type === 'player' && typeof inventoryId === 'number') {
+  if (typeof inventoryId === 'number') {
     const player = GetPlayer(inventoryId);
 
     if (!player) return console.error(`Cannot get inventory for invalid player ${inventoryId}`);
 
     data.playerId = +inventoryId;
     inventoryId = `player:${player.charId}`;
+
+    inventory = Inventory.fromId(inventoryId);
+
+    if (inventory) return inventory;
   }
 
-  let inventory = Inventory.fromId(inventoryId);
+  data.inventoryId = inventoryId;
 
-  if (!inventory) {
-    inventory = new Inventory({
-      ...data,
-      ...(data.type === 'drop'
-        ? {
-            inventoryId: inventoryId,
-            label: `Drop ${+GetHashKey(inventoryId)}`,
-            width: Config.Drop_Width,
-            height: Config.Drop_Height,
-            maxWeight: Config.Drop_MaxWeight,
-          }
-        : db.getInventory(inventoryId) || GetDefaultInventoryData(inventoryId, data.type)),
-    });
+  switch (data.type) {
+    case 'player':
+      break;
+    case 'drop':
+      data.label = `Drop ${+GetHashKey(data.inventoryId)}`;
+      data.width = Config.Drop_Width;
+      data.height = Config.Drop_Height;
+      data.maxWeight = Config.Drop_MaxWeight;
+      break;
+    case 'player':
+      const result = db.getInventory(data.inventoryId);
 
-    const items = db.getInventoryItems(inventory.inventoryId);
+      if (!result) return db.insertInventory(data);
 
-    for (const data of items) {
-      const name = data.name;
-      delete data.name;
+      break;
+    default:
+      throw new Error(`invalid inventory type ${inventory.type} for id ${inventory.inventoryId}`);
+  }
 
-      CreateItem(name, data);
-    }
+  inventory = new Inventory(Object.assign(data, db.getInventory(data.inventoryId)));
+
+  const items = db.getInventoryItems(inventory.inventoryId);
+
+  for (const data of items) {
+    const name = data.name;
+    delete data.name;
+
+    CreateItem(name, data);
   }
 
   return inventory;

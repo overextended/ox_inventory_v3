@@ -6,7 +6,7 @@ import { Inventory } from './inventory/class';
 
 onNet(`ox_inventory:requestOpenInventory`, async (nearbyInventories: string[]) => {
   const playerId = source;
-  const inventory = await GetInventory(playerId.toString(), `player`);
+  const inventory = GetInventory(playerId, `player`);
 
   if (inventory) inventory.open(playerId);
 
@@ -27,11 +27,11 @@ onNet(`ox_inventory:closeInventory`, async (inventoryId?: string) => {
 });
 
 onClientCallback(`ox_inventory:requestMoveItem`, async (playerId, data: MoveItem) => {
-  const fromInventory = await GetInventory(data.fromId, data.fromType);
+  const fromInventory = GetInventory(data.fromId, data.fromType);
   const toInventory =
     data.fromId === data.toId
       ? fromInventory
-      : await GetInventory(data.toId ?? Date.now().toString(), { type: data.toType, coords: data.coords });
+      : GetInventory(data.toId ?? Date.now().toString(), { type: data.toType, coords: data.coords });
 
   if (!fromInventory || !toInventory) return console.error(`Invalid inventory`);
 
@@ -58,7 +58,7 @@ onClientCallback(`ox_inventory:requestMoveItem`, async (playerId, data: MoveItem
 RegisterCommand(
   `additem`,
   (playerId: number, args: string[]) => {
-    const inventory = GetInventory(playerId.toString(), `player`);
+    const inventory = GetInventory(playerId);
 
     if (!inventory) return;
 

@@ -4,10 +4,10 @@ import { GetInventoryItem, InventoryItem } from '@common/item';
 export class BaseInventory {
   static instances: Record<string, BaseInventory> = {};
   /** A unique identifier used to reference the inventory and save it in the database. */
-  readonly inventoryId: string;
+  public inventoryId: string;
 
   /** The inventory type, such as player, glovebox, trunk, etc. */
-  readonly type: string;
+  public type: string;
 
   /** An object where each key-value refers to the grid position and an item's uniqueid in that slot. */
   public items: Record<number, number> = {};
