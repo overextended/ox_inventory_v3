@@ -176,7 +176,7 @@
   function onMouseDown(event: MouseEvent) {
     const target = event.target as HTMLElement;
 
-    if (isDragging || event.button !== 0 || !target?.dataset.slot) return;
+    if (isDragging || !target?.dataset.slot) return;
 
     const parent = target.parentNode!.parentNode as HTMLElement;
 
@@ -191,15 +191,20 @@
 
     if (!item) return;
 
-    if (keyPressed.alt) {
-      // prompt for amount of item to split from the stack (should this be on drop?)
-    } else if (keyPressed.control) {
-      // quick-move item to player inventory?
-    }
+    if (event.button === 0) {
+      if (keyPressed.alt) {
+        // prompt for amount of item to split from the stack (should this be on drop?)
+      } else if (keyPressed.control) {
+        // quick-move item to player inventory?
+      }
 
-    isDragging = true;
-    dragSlot = slot;
-    dragItem = getDragItemProps(item);
+      isDragging = true;
+      dragSlot = slot;
+      dragItem = getDragItemProps(item);
+    } else if (event.button === 2) {
+      // placeholder pending context menu
+      fetchNui('useItem', item.uniqueId);
+    }
   }
 
   function resetDragState() {
