@@ -1,6 +1,7 @@
 import { BaseInventory } from '@common/inventory/class';
 import { InventoryItem } from '@common/item';
 import { cache, triggerServerCallback } from '@overextended/ox_lib/client';
+import { UseItem } from './item';
 
 export function OpenInventory(data: { inventory: BaseInventory; items: InventoryItem[]; playerId: number }) {
   data.playerId = cache.serverId;
@@ -47,4 +48,9 @@ RegisterNuiCallback(`moveItem`, async (data: MoveItem, cb: (status: number) => v
 
   const response = await triggerServerCallback<boolean>(`ox_inventory:requestMoveItem`, 50, data);
   cb(response ? 1 : 0);
+});
+
+RegisterNuiCallback(`useItem`, (itemId: number, cb: (value: number) => void) => {
+  CloseInventory(null, cb);
+  UseItem(itemId);
 });

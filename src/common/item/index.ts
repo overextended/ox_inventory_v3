@@ -1,11 +1,12 @@
 import Config from '@common/config';
 import { BaseInventory } from '@common/inventory/class';
 import fetch from 'sync-fetch';
-import { ResourceContext, ResourceName } from '..';
-import { joaat } from '@common/utils';
+import { isBrowser, ResourceContext, ResourceName } from '..';
 
-interface ItemMetadata {
+export interface ItemMetadata {
   name: string;
+  uniqueId: number;
+  quantity: number;
   icon?: string;
   value?: number;
   label?: string;
@@ -25,11 +26,11 @@ interface ItemMetadata {
   [key: string]: unknown;
 }
 
-interface WeaponMetadata extends ItemMetadata {
+export interface WeaponMetadata extends ItemMetadata {
   category: 'weapon';
   ammoName: string;
   ammoCount: number;
-  hash?: number;
+  hash: number;
 }
 
 export type ItemProperties = ItemMetadata | WeaponMetadata;
@@ -83,7 +84,7 @@ export function ItemFactory(name: string, item: ItemProperties) {
   item.stackSize = clamp(item.category === 'weapon' ? 1 : item.stackSize);
 
   if (item.category === 'weapon') {
-    item.hash = joaat(`weapon_${name}`);
+    item.hash = isBrowser ? 0 : GetHashKey(`weapon_${name}`.toUpperCase());
     item.ammoName = item.ammoName || 'ammo_9';
   }
 

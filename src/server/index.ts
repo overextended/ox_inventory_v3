@@ -55,6 +55,15 @@ onClientCallback(`ox_inventory:requestMoveItem`, async (playerId, data: MoveItem
   return !!success;
 });
 
+onClientCallback(`ox_inventory:requestUseItem`, async (playerId, itemId: number) => {
+  const inventory = GetInventory(playerId);
+  const item = inventory && GetInventoryItem(itemId);
+
+  if (!item || inventory.inventoryId !== item.inventoryId) return;
+
+  return item;
+});
+
 RegisterCommand(
   `additem`,
   (playerId: number, args: string[]) => {
