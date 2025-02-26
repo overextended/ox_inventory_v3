@@ -1,5 +1,6 @@
 import type StaticConfig from '~/static/config.json';
 import { LoadJsonFile } from './utils';
+import { isBrowser } from '.';
 
 // https://www.raygesualdo.com/posts/flattening-object-keys-with-typescript-types/
 type FlattenObjectKeys<T extends Record<string, any>, Key = keyof T> = Key extends string
@@ -35,4 +36,10 @@ export function FlattenDict<T extends Record<string, any>>(
   return target;
 }
 
-export default FlattenDict(LoadJsonFile<typeof StaticConfig>('static/config.json'));
+let config = LoadJsonFile('static/config.json');
+
+$BROWSER: {
+  config = await config;
+}
+
+export default FlattenDict(config as typeof StaticConfig);
