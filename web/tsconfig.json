@@ -2,7 +2,7 @@
   "files": [],
   "compilerOptions": {
     "baseUrl": ".",
-    "target": "ES2022",
+    "target": "ES2023",
     "useDefineForClassFields": true,
     "verbatimModuleSyntax": true,
     "isolatedModules": true,

@@ -18,6 +18,7 @@ export default defineConfig(({ mode }) => {
     build: {
       outDir: '../dist/web',
       emptyOutDir: true,
+      target: 'es2023',
       rollupOptions: {
         output: {
           assetFileNames: `assets/[name][extname]`,

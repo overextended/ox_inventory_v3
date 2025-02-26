@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "module": "esnext",
-    "target": "es2021",
-    "lib": ["es2021"],
+    "target": "es2023",
+    "lib": ["es2023"],
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "allowUnreachableCode": false,
