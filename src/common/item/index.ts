@@ -47,7 +47,7 @@ const excludeKeysForComparison: Record<string, true> = {
 };
 
 export function GetItemData(name: string) {
-  let item = Items[name];
+  let item = Items[name.toLowerCase()];
 
   if (item && !item.properties.icon) {
     const iconPath = `${item.properties.category}/${item.name}.webp`;
@@ -82,10 +82,9 @@ export function ItemFactory(name: string, item: ItemProperties) {
   item.itemLimit = clamp(item.itemLimit);
   item.stackSize = clamp(item.category === 'weapon' ? 1 : item.stackSize);
 
-  if (typeof item.hash === 'string') item.hash = joaat(item.hash);
-
   if (item.category === 'weapon') {
-    item.ammoName = 'ammo_9'; // todo
+    item.hash = joaat(`weapon_${name}`);
+    item.ammoName = item.ammoName || 'ammo_9';
   }
 
   const Item = class implements ItemMetadata {
@@ -124,7 +123,6 @@ export function ItemFactory(name: string, item: ItemProperties) {
         // todo: make this less dumb
         delete metadata.name;
         delete metadata.metadata;
-        delete metadata.ammoName;
 
         Object.assign(this, metadata, 'metadata' in metadata ? metadata.metadata : null);
       }
@@ -370,7 +368,7 @@ export function ItemFactory(name: string, item: ItemProperties) {
   };
 
   Object.defineProperty(Item, 'name', { value: item.name });
-  Items[item.name] = Item;
+  Items[name.toLowerCase()] = Item;
 
   return Item;
 }

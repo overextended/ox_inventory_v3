@@ -39,8 +39,8 @@ interface DbInventoryItem {
 
 const db = new (class Database {
   private _getItems = sqlite.prepare('SELECT name, category, JSON(data) as data FROM items');
-  private _getItemByName = sqlite.prepare('SELECT category, json(data) as data FROM items WHERE name = ?');
-  private _getItemsByCategory = sqlite.prepare('SELECT name, json(data) as data FROM items WHERE category = ?');
+  private _getItemByName = sqlite.prepare('SELECT name, category, json(data) as data FROM items WHERE name LIKE ?');
+  private _getItemsByCategory = sqlite.prepare('SELECT name, json(data) as data FROM items WHERE category LIKE ?');
   private _getInventory = sqlite.prepare(
     'SELECT inventoryId, type, json(data) as data FROM inventories WHERE inventoryId = ?'
   );
@@ -70,7 +70,7 @@ const db = new (class Database {
   getItem(name: string): ItemProperties {
     const result = this._getItemByName.get(name) as DbItem;
 
-    if (result) return { name, category: result.category, ...JSON.parse(result.data) };
+    if (result) return { name: result.name, category: result.category, ...JSON.parse(result.data) };
   }
 
   getInventory(inventoryId: string): Partial<Inventory> {
