@@ -138,7 +138,11 @@ export class BaseInventory {
     // todo: weight checks
     if (quantity > item.stackSize) return false;
 
-    if (existingItem?.anchorSlot === startSlot) {
+    if (
+      existingItem &&
+      existingItem.anchorSlot === startSlot &&
+      this.inventoryId === (existingItem.inventoryId ?? this.inventoryId)
+    ) {
       if (!item.canMerge(existingItem)) return false;
 
       return this.getItemSlots(existingItem);

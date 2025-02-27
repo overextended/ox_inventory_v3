@@ -52,10 +52,7 @@ export function GetInventory(inventoryId: string | number, data?: string | Parti
   const items = db.getInventoryItems(inventory.inventoryId);
 
   for (const data of items) {
-    const name = data.name;
-    delete data.name;
-
-    CreateItem(name, data);
+    CreateItem(data);
   }
 
   return inventory;

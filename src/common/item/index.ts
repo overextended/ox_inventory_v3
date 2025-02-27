@@ -120,13 +120,7 @@ export function ItemFactory(name: string, item: ItemProperties) {
     [key: string]: unknown;
 
     constructor(metadata?: Partial<ItemProperties>) {
-      if (metadata) {
-        // todo: make this less dumb
-        delete metadata.name;
-        delete metadata.metadata;
-
-        Object.assign(this, metadata, 'metadata' in metadata ? metadata.metadata : null);
-      }
+      if (metadata) Object.assign(this, metadata);
 
       if (!this.uniqueId) Item.CreateUniqueId(this);
 
@@ -268,8 +262,8 @@ export function ItemFactory(name: string, item: ItemProperties) {
     public canMerge(item: InventoryItem) {
       if (this.name !== item.name) return false;
 
-      const keysA = Object.keys(this).filter((key) => !excludeKeysForComparison[key]);
-      const keysB = Object.keys(item).filter((key) => !excludeKeysForComparison[key]);
+      const keysA = Object.keys(this).filter((key) => this[key] !== undefined && !excludeKeysForComparison[key]);
+      const keysB = Object.keys(item).filter((key) => item[key] !== undefined && !excludeKeysForComparison[key]);
 
       if (keysA.length !== keysB.length) return false;
 

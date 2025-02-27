@@ -50,25 +50,23 @@ function CreateItemClass(data: ItemProperties) {
   return Item;
 }
 
-export function CreateItem(name: string, data = {} as Partial<ItemProperties>) {
-  let Item = GetItemData(name);
+export function CreateItem(data = {} as Partial<ItemProperties>) {
+  let Item = GetItemData(data.name);
 
   if (!Item) {
-    const data = db.getItem(name);
+    data = db.getItem(data.name);
 
     if (!data) return;
 
-    Item = CreateItemClass(data);
+    Item = CreateItemClass(data as ItemProperties);
   }
-
-  data.name = name;
 
   if (!data.uniqueId) db.updateInventoryItem(data);
 
   const item = new Item(data);
   const inventory = Inventory.fromId(data.inventoryId);
 
-  if (inventory) item.move(inventory, item.anchorSlot ?? 0);
+  if (inventory) item.move(inventory, item.anchorSlot);
 
   return item;
 }
