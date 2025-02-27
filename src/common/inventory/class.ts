@@ -80,6 +80,12 @@ export class BaseInventory {
   public findAvailableSlot(item: InventoryItem) {
     for (let slot = 0; slot < this.width * this.height; slot++) {
       if (this.canHoldItem(item, slot)) return slot;
+
+      const existingItem = this.getItemInSlot(slot);
+
+      if (existingItem) {
+        slot += existingItem.width - 1;
+      }
     }
 
     return -1;
