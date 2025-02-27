@@ -1,8 +1,8 @@
 import { GetInventoryItem } from '@common/item';
 import { GetInventory } from './inventory';
-import { CreateItem } from './item';
 import { onClientCallback } from '@overextended/ox_lib/server';
 import { Inventory } from './inventory/class';
+import './commands'
 
 onNet(`ox_inventory:requestOpenInventory`, async (nearbyInventories: string[]) => {
   const playerId = source;
@@ -59,19 +59,8 @@ onClientCallback(`ox_inventory:requestUseItem`, async (playerId, itemId: number)
   const inventory = GetInventory(playerId);
   const item = inventory && GetInventoryItem(itemId);
 
-  if (!item || inventory.inventoryId !== item.inventoryId) return;
+  if (!item) return ['invalid_item'];
+  if (!inventory || inventory.inventoryId !== item.inventoryId) return ['invalid_inventory'];
 
   return item;
 });
-
-RegisterCommand(
-  `additem`,
-  (playerId: number, args: string[]) => {
-    const inventory = GetInventory(playerId);
-
-    if (!inventory) return;
-
-    CreateItem(args[0], { inventoryId: inventory.inventoryId, quantity: Number(args[1]) || 1 });
-  },
-  false
-);
