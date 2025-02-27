@@ -5,11 +5,11 @@ import { Inventory } from '../inventory/class';
 db.getItems('ammo').forEach(CreateItemClass);
 
 function CreateItemClass(data: ItemProperties) {
-  const Item = ItemFactory(data.name, data);
+  const Item = ItemFactory(data);
   const itemMove = Item.prototype.move;
   const itemSplit = Item.prototype.split;
 
-  GlobalState.set(`Item:${Item.properties.name}`, Item.properties, true);
+  GlobalState.set(`Item:${Item.properties.name.toLowerCase()}`, Item.properties, true);
 
   Item.CreateUniqueId = function (item: InventoryItem): number {
     return db.updateInventoryItem(item);
@@ -51,15 +51,9 @@ function CreateItemClass(data: ItemProperties) {
 }
 
 export function CreateItem(data = {} as Partial<ItemProperties>) {
-  let Item = GetItemData(data.name);
+  const Item = GetItemData(data.name) ?? CreateItemClass(db.getItem(data.name));
 
-  if (!Item) {
-    data = db.getItem(data.name);
-
-    if (!data) return;
-
-    Item = CreateItemClass(data as ItemProperties);
-  }
+  if (!Item) throw new Error(`Attempted to create invalid item ${data.name}`);
 
   if (!data.uniqueId) db.updateInventoryItem(data);
 

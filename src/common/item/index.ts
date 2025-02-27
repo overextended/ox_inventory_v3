@@ -75,21 +75,21 @@ function clamp(n = Number.MAX_SAFE_INTEGER, max = Number.MAX_SAFE_INTEGER) {
   return !n && n !== 0 ? max : Math.min(Math.max(n, 0), max);
 }
 
-export function ItemFactory(name: string, item: ItemProperties) {
-  if (!item) throw new Error(`Attempted to create invalid item '${name}'`);
+export function ItemFactory(item: ItemProperties) {
+  if (!item) return;
 
-  item.name = name;
   item.category = item.category ?? 'miscellaneous';
   item.itemLimit = clamp(item.itemLimit);
   item.stackSize = clamp(item.category === 'weapon' ? 1 : item.stackSize);
 
   if (item.category === 'weapon') {
-    item.hash = isBrowser ? 0 : GetHashKey(`weapon_${name}`.toUpperCase());
+    item.hash = isBrowser ? 0 : GetHashKey(`weapon_${item.name}`.toUpperCase());
     item.ammoName = item.ammoName || 'ammo_9';
   }
 
   const Item = class implements ItemMetadata {
     static properties = item;
+    static descriptors = Object.getOwnPropertyDescriptors(this.prototype);
 
     static CreateUniqueId(item: InventoryItem): number {
       // Temporary value used in the browser only.
@@ -97,7 +97,7 @@ export function ItemFactory(name: string, item: ItemProperties) {
     }
 
     /** A unique name to identify the item type and inherit data. */
-    readonly name = name;
+    readonly name = item.name;
 
     /** The amount of ammo loaded into a weapon. */
     public ammoCount = item.ammoCount;
@@ -120,7 +120,20 @@ export function ItemFactory(name: string, item: ItemProperties) {
     [key: string]: unknown;
 
     constructor(metadata?: Partial<ItemProperties>) {
-      if (metadata) Object.assign(this, metadata);
+      if (metadata) {
+        // there is no god
+        Object.assign(
+          this,
+          Object.keys(metadata)
+            .filter((key) => {
+              return Item.descriptors[key] ? Item.descriptors[key].writable : true;
+            })
+            .reduce((obj, key) => {
+              obj[key] = metadata[key];
+              return obj;
+            }, {} as Partial<ItemProperties>)
+        );
+      }
 
       if (!this.uniqueId) Item.CreateUniqueId(this);
 
@@ -363,7 +376,7 @@ export function ItemFactory(name: string, item: ItemProperties) {
   };
 
   Object.defineProperty(Item, 'name', { value: item.name });
-  Items[name.toLowerCase()] = Item;
+  Items[item.name.toLowerCase()] = Item;
 
   return Item;
 }

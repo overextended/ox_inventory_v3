@@ -2,8 +2,7 @@ import { GetInventory } from './inventory';
 import { CreateItem } from './item';
 import { Command } from '@nativewrappers/common';
 
-// Example usage
-const additem = new Command(
+new Command(
   'additem',
   'Create a new item and grant it to the target player.',
   (args) => {
@@ -29,5 +28,3 @@ const additem = new Command(
     },
   ] as const
 );
-
-// console.log(JSON.stringify(additem, null, 2));

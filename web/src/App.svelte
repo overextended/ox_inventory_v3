@@ -108,10 +108,10 @@
           if (oldInventory) oldInventory.refreshSlots();
         }
 
-        item = (await CreateItem(value.name, value)) as InventoryItem;
+        item = (await CreateItem(value)) as InventoryItem;
 
         if (typeof item.ammoName === 'string') {
-          await CreateItem(item.ammoName);
+          await CreateItem({ name: item.ammoName });
         }
 
         item.move(inventory, item.anchorSlot);

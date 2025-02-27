@@ -2,7 +2,8 @@ import { GetItemData, ItemFactory, type ItemProperties } from '~/src/common/item
 import { isEnvBrowser } from '$lib/utils/misc';
 import { fetchNui } from '$lib/utils/fetchNui';
 
-export async function CreateItem(name: string, metadata?: Partial<ItemProperties>) {
+export async function CreateItem(metadata: Partial<ItemProperties>) {
+  const name = metadata.name!;
   let Item = GetItemData(name);
 
   if (!Item) {
@@ -29,8 +30,10 @@ export async function CreateItem(name: string, metadata?: Partial<ItemProperties
             }
       : await fetchNui(`getStateKeyValue`, [`global`, `Item:${name}`]);
 
-    ItemFactory(name, data);
+    ItemFactory(data);
     Item = GetItemData(name);
+
+    if (!Item) throw new Error(`Attempted to create invalid item ${name}`);
   }
 
   return metadata ? new Item(metadata) : Item;
