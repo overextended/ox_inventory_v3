@@ -8,12 +8,15 @@ importers:
 
   .:
     dependencies:
+      '@nativewrappers/common':
+        specifier: ^0.0.62
+        version: 0.0.62
       '@nativewrappers/fivem':
-        specifier: ^0.0.59
-        version: 0.0.59
+        specifier: ^0.0.62
+        version: 0.0.62
       '@nativewrappers/server':
-        specifier: ^0.0.59
-        version: 0.0.59
+        specifier: ^0.0.62
+        version: 0.0.62
       '@overextended/ox_core':
         specifier: ^1.5.1
         version: 1.5.1
@@ -611,20 +614,20 @@ packages:
   '@nativewrappers/common@0.0.56':
     resolution: {integrity: sha512-z4/h3CM2JWuAj2GTgaKA1zl1PRg1/4414Gm/jw1QKQVv47ad2nV1vevdpVDAgRsxVI2YnYzGaGZ1see0JBdtyg==}
 
-  '@nativewrappers/common@0.0.59':
-    resolution: {integrity: sha512-RCsJsxqBaPJm9jFx+B1a0ZnSvqTsUKPh8UfybxMDwA9GEu3p1n8dM1nYGxcSFnJ2wBw3oaD8nTsspoJlRAPKig==}
+  '@nativewrappers/common@0.0.62':
+    resolution: {integrity: sha512-i3nS8PnYlOkcgGzyaLjMaynpMhjFtlBEkfVevaiqMMhtnUyK2nB6n2T7pK/JQEY2HSQPEh0/Y3Y0x2rFB2+aZQ==}
 
   '@nativewrappers/fivem@0.0.56':
     resolution: {integrity: sha512-0LWQos/Z6SlGNfSORRnaBEIBj4w67fp145fp57z/t5Qgvi5N7JyCZhePHB2DA5vPuz4iM2p/MksPAJM+9jGXKg==}
 
-  '@nativewrappers/fivem@0.0.59':
-    resolution: {integrity: sha512-im8ku0OvkwLDrhAsKqBCZgyzw5Qa8R/rcSihelfMjBzJMIOi0K9dqYKwt0043fS0No8mTVOUCeMVc3WZK0Y2xw==}
+  '@nativewrappers/fivem@0.0.62':
+    resolution: {integrity: sha512-2pUrwJWzrtAmSx4DoXDyzGPQpiUWVzfsxmuF7JBiBmeKsMCp31g4yLrCKAZd/GFP2TXSuYVYnv+qibM5zSHdAw==}
 
   '@nativewrappers/server@0.0.56':
     resolution: {integrity: sha512-8TxpIBdBIMj/tiKh7zrJSNUDI0tUo9arJwwpVOSh5XM6c/A8KzW0H1RR16VE3nBYAbjLWDKqGSzuQsVSCLWT5Q==}
 
-  '@nativewrappers/server@0.0.59':
-    resolution: {integrity: sha512-ztPokQJbqoXH69/GpstAu6zKBHwtn6iUTctfgSC1vcbII6vEAaiHTcyV3URinuLr4MZDCIo8Dmo7srkkzSJfmQ==}
+  '@nativewrappers/server@0.0.62':
+    resolution: {integrity: sha512-OrilrHmFyHL/LbapPhCUNUg3gtbq6HddA2ANRiE8KVnibNMox6aRULUbNs7atPZ01Xo3RhrZBEDwWieLbxLbIg==}
 
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -2364,23 +2367,23 @@ snapshots:
 
   '@nativewrappers/common@0.0.56': {}
 
-  '@nativewrappers/common@0.0.59': {}
+  '@nativewrappers/common@0.0.62': {}
 
   '@nativewrappers/fivem@0.0.56':
     dependencies:
       '@nativewrappers/common': 0.0.56
 
-  '@nativewrappers/fivem@0.0.59':
+  '@nativewrappers/fivem@0.0.62':
     dependencies:
-      '@nativewrappers/common': 0.0.59
+      '@nativewrappers/common': 0.0.62
 
   '@nativewrappers/server@0.0.56':
     dependencies:
       '@nativewrappers/common': 0.0.56
 
-  '@nativewrappers/server@0.0.59':
+  '@nativewrappers/server@0.0.62':
     dependencies:
-      '@nativewrappers/common': 0.0.59
+      '@nativewrappers/common': 0.0.62
 
   '@nodelib/fs.scandir@2.1.5':
     dependencies:

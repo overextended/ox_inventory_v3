@@ -1,33 +1,33 @@
-import { addCommand } from '@overextended/ox_lib/server';
 import { GetInventory } from './inventory';
 import { CreateItem } from './item';
+import { Command } from '@nativewrappers/common';
 
-addCommand(
+// Example usage
+const additem = new Command(
   'additem',
-  async (playerId, args) => {
-    const inventory = GetInventory(args.target as number);
+  'Create a new item and grant it to the target player.',
+  (args) => {
+    const inventory = GetInventory(args.target);
 
     if (!inventory) return;
 
-    CreateItem(args.item as string, { inventoryId: inventory.inventoryId, quantity: (args.quantity as number) || 1 });
+    CreateItem({ name: args.item, inventoryId: inventory.inventoryId, quantity: args.quantity || 1 });
   },
-  {
-    help: 'Create a new item and grant it to the target player.',
-    params: [
-      {
-        name: 'target',
-        paramType: 'playerId',
-      },
-      {
-        name: 'item',
-        paramType: 'string',
-      },
-      {
-        name: 'quantity',
-        paramType: 'number',
-        optional: true,
-      },
-    ],
-    restricted: 'group.admin',
-  }
+  [
+    {
+      name: 'target',
+      type: 'playerId',
+    },
+    {
+      name: 'item',
+      type: 'string',
+    },
+    {
+      name: 'quantity',
+      type: 'number',
+      optional: true,
+    },
+  ] as const
 );
+
+// console.log(JSON.stringify(additem, null, 2));

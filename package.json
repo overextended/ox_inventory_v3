@@ -53,8 +53,9 @@
     "vite": "^6.2.0"
   },
   "dependencies": {
-    "@nativewrappers/fivem": "^0.0.59",
-    "@nativewrappers/server": "^0.0.59",
+    "@nativewrappers/common": "^0.0.62",
+    "@nativewrappers/fivem": "^0.0.62",
+    "@nativewrappers/server": "^0.0.62",
     "@overextended/ox_core": "^1.5.1",
     "@overextended/ox_lib": "^3.29.0",
     "@overextended/oxmysql": "^1.4.2",
