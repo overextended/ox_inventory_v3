@@ -1,5 +1,9 @@
 import { BaseInventory } from '@common/inventory/class';
 
+const drops: string[] = [];
+
+on('playerJoining', () => emitNet('ox_inventory:createDrop', -1, drops));
+
 export class Inventory extends BaseInventory {
   #openedBy: Set<number>;
   isTemporary = false;
@@ -11,6 +15,7 @@ export class Inventory extends BaseInventory {
     if (data.type === 'drop') {
       this.isTemporary = true;
 
+      drops.push(this.inventoryId);
       emitNet('ox_inventory:createDrop', -1, data);
     }
   }

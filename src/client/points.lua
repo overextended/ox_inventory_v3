@@ -9,11 +9,23 @@ local function nearbyDrop(drop)
     ---@diagnostic enable
 end
 
-RegisterNetEvent('ox_inventory:createDrop', function(data)
+local function createDrop(data)
     data.nearby = nearbyDrop
     data.distance = 40
 
     drops:push(lib.points.new(data))
+end
+
+RegisterNetEvent('ox_inventory:createDrop', function(data)
+    if table.type(data) == 'array' then
+        for i = 1, #data do
+            createDrop(data[i])
+        end
+
+        return
+    end
+
+    createDrop(data)
 end)
 
 RegisterNetEvent('ox_inventory:removeDrop', function(dropId)
