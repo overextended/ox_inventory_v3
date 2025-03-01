@@ -1,4 +1,4 @@
-import { isEnvBrowser } from "./misc";
+import { isEnvBrowser } from './misc';
 
 export interface DebugEvent<T = any> {
   action: string;
@@ -17,7 +17,7 @@ export const debugData = <P>(events: DebugEvent<P>[], timer = 1000): void => {
     for (const event of events) {
       setTimeout(() => {
         window.dispatchEvent(
-          new MessageEvent("message", {
+          new MessageEvent('message', {
             data: {
               action: event.action,
               data: event.data,

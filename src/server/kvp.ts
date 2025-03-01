@@ -1,5 +1,5 @@
-import { InventoryItem } from '@common/item';
-import { Inventory } from './inventory/class';
+import type { InventoryItem } from '@common/item';
+import type { Inventory } from './inventory/class';
 
 // todo: utilise kvp class from nativewrappers, once the kinks are worked out
 
@@ -41,7 +41,7 @@ export class Kvp<Schema extends KvpSchema> {
    * Returns the value associated with a key as a parsed JSON string.
    */
   public getJson<K extends string, O = KvpObject<K>>(
-    key: K extends ValidJsonKey<O> ? K : never
+    key: K extends ValidJsonKey<O> ? K : never,
   ): O extends string ? Schema[O] : null {
     const str = GetResourceKvpString(key);
     return str ? JSON.parse(str) : null;
@@ -78,7 +78,7 @@ export class Kvp<Schema extends KvpSchema> {
   public setJson<K extends string, O = KvpObject<K>>(
     key: K extends ValidJsonKey<O> ? K : never,
     value: O extends string ? Schema[O] : never,
-    async = false
+    async = false,
   ): void {
     const str = JSON.stringify(value);
     return async ? SetResourceKvpNoSync(key, str) : SetResourceKvp(key, str);
@@ -91,7 +91,7 @@ export class Kvp<Schema extends KvpSchema> {
   public set<K extends string, O = KvpObject<K>>(
     key: K extends keyof Schema ? K : O extends string ? K : never,
     value: K extends keyof Schema ? Schema[K] : O extends string ? Schema[O] : never,
-    async = false
+    async = false,
   ): void {
     switch (typeof value) {
       case 'function':
@@ -214,14 +214,14 @@ export function AddInventoryItem(name: string, data: InventoryItem) {
 console.log(kvp.getAllKeys(''));
 
 RegisterCommand(
-  `clearInventoryKvp`,
+  'clearInventoryKvp',
   (playerId: number) => {
     if (playerId > 0) return;
 
     const keys = kvp.getAllKeys('');
     keys.forEach((key) => kvp.delete(key));
   },
-  true
+  true,
 );
 
 setImmediate(() => {

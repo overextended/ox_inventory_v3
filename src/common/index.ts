@@ -6,7 +6,7 @@ declare const window: {
  * Determine if the script is running in CEF, a browser, or neither.
  * @returns {number}
  *          0 - runnning on the client or server
- * 
+ *
  *          1 - running in CEF
  *
  *          2 - running in a browser

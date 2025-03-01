@@ -26,5 +26,5 @@ new Command(
       type: 'number',
       optional: true,
     },
-  ] as const
+  ] as const,
 );

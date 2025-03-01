@@ -2,11 +2,11 @@ import { GetInventoryItem } from '@common/item';
 import { GetInventory } from './inventory';
 import { onClientCallback } from '@overextended/ox_lib/server';
 import { Inventory } from './inventory/class';
-import './commands'
+import './commands';
 
-onNet(`ox_inventory:requestOpenInventory`, async (nearbyInventories: string[]) => {
+onNet('ox_inventory:requestOpenInventory', async (nearbyInventories: string[]) => {
   const playerId = source;
-  const inventory = GetInventory(playerId, `player`);
+  const inventory = GetInventory(playerId, 'player');
 
   if (inventory) inventory.open(playerId);
 
@@ -18,7 +18,7 @@ onNet(`ox_inventory:requestOpenInventory`, async (nearbyInventories: string[]) =
   });
 });
 
-onNet(`ox_inventory:closeInventory`, async (inventoryId?: string) => {
+onNet('ox_inventory:closeInventory', async (inventoryId?: string) => {
   const playerId = source;
 
   if (inventoryId) return Inventory.fromId(inventoryId)?.close(playerId, false);
@@ -26,14 +26,14 @@ onNet(`ox_inventory:closeInventory`, async (inventoryId?: string) => {
   Inventory.getInventories(playerId).forEach((inventory) => inventory.close(playerId, false));
 });
 
-onClientCallback(`ox_inventory:requestMoveItem`, async (playerId, data: MoveItem) => {
+onClientCallback('ox_inventory:requestMoveItem', async (playerId, data: MoveItem) => {
   const fromInventory = GetInventory(data.fromId, data.fromType);
   const toInventory =
     data.fromId === data.toId
       ? fromInventory
       : GetInventory(data.toId ?? Date.now().toString(), { type: data.toType, coords: data.coords });
 
-  if (!fromInventory || !toInventory) return console.error(`Invalid inventory`);
+  if (!fromInventory || !toInventory) return console.error('Invalid·inventory');
 
   const item = GetInventoryItem(fromInventory.items[data.fromSlot]);
 
@@ -41,7 +41,7 @@ onClientCallback(`ox_inventory:requestMoveItem`, async (playerId, data: MoveItem
 
   data.quantity = Math.max(1, Math.min(item.quantity, data.quantity));
 
-  if (data.quantity > item.quantity) return console.error(`Invalid item or item count`);
+  if (data.quantity > item.quantity) return console.error('Invalid item or item count');
 
   item.tempRotate = data.rotate;
 
@@ -55,7 +55,7 @@ onClientCallback(`ox_inventory:requestMoveItem`, async (playerId, data: MoveItem
   return !!success;
 });
 
-onClientCallback(`ox_inventory:requestUseItem`, async (playerId, itemId: number) => {
+onClientCallback('ox_inventory:requestUseItem', async (playerId, itemId: number) => {
   const inventory = GetInventory(playerId);
   const item = inventory && GetInventoryItem(itemId);
 

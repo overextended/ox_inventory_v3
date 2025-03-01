@@ -8,9 +8,9 @@ RegisterCommand(
     // const isTabDown = IsRawKeyDown(0x09);
 
     const nearbyInventories = exports[cache.resource].getNearbyInventories();
-    emitNet(`ox_inventory:requestOpenInventory`, nearbyInventories);
+    emitNet('ox_inventory:requestOpenInventory', nearbyInventories);
   },
-  false
+  false,
 );
 
 RegisterCommand('closeInventory', CloseInventory, false);

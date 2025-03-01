@@ -1,5 +1,5 @@
 import Config from '@common/config';
-import { GetInventoryItem, InventoryItem } from '@common/item';
+import { GetInventoryItem, type InventoryItem } from '@common/item';
 
 export class BaseInventory {
   static instances: Record<string, BaseInventory> = {};

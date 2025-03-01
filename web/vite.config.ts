@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
-import path from 'path';
+import path from 'node:path';
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
@@ -21,9 +21,9 @@ export default defineConfig(({ mode }) => {
       target: 'es2023',
       rollupOptions: {
         output: {
-          assetFileNames: `assets/[name][extname]`,
-          entryFileNames: `assets/[name].js`,
-          chunkFileNames: `assets/[name].js`,
+          assetFileNames: 'assets/[name][extname]',
+          entryFileNames: 'assets/[name].js',
+          chunkFileNames: 'assets/[name].js',
         },
       },
     },

@@ -1,11 +1,10 @@
-import { onDestroy } from "svelte";
+import { onDestroy } from 'svelte';
 
 export type NuiEventHandler<T = any> = (data: T) => void;
 export interface NuiMessage<T = unknown> {
   action: string;
   data: T;
 }
-
 
 const eventListeners = new Map<string, NuiEventHandler[]>();
 
@@ -18,7 +17,7 @@ const eventListener = (event: MessageEvent<NuiMessage>) => {
   }
 };
 
-window.addEventListener("message", eventListener);
+window.addEventListener('message', eventListener);
 
 /**
  * A function that manage events listeners for receiving data from the client scripts
@@ -31,10 +30,7 @@ window.addEventListener("message", eventListener);
  * })
  *
  **/
-export function useNuiEvent<T = unknown>(
-  action: string,
-  handler: NuiEventHandler<T>,
-) {
+export function useNuiEvent<T = unknown>(action: string, handler: NuiEventHandler<T>) {
   const handlers = eventListeners.get(action) || [];
   handlers.push(handler);
   eventListeners.set(action, handlers);

@@ -1,4 +1,4 @@
-import { GetItemData, InventoryItem, ItemFactory, ItemProperties } from '@common/item';
+import { GetItemData, type InventoryItem, ItemFactory, type ItemProperties } from '@common/item';
 import db from '../db';
 import { Inventory } from '../inventory/class';
 
@@ -11,9 +11,7 @@ function CreateItemClass(data: ItemProperties) {
 
   GlobalState.set(`Item:${Item.properties.name.toLowerCase()}`, Item.properties, true);
 
-  Item.CreateUniqueId = function (item: InventoryItem): number {
-    return db.updateInventoryItem(item);
-  };
+  Item.CreateUniqueId = (item: InventoryItem): number => db.updateInventoryItem(item);
 
   Item.prototype.move = function (inventory: Inventory) {
     const currentInventory = Inventory.fromId(this.inventoryId);
@@ -23,9 +21,9 @@ function CreateItemClass(data: ItemProperties) {
     if (success) {
       // todo: don't trigger save on initial item movement
       db.updateInventoryItem(this);
-      currentInventory.emit(`ox_inventory:moveItem`);
+      currentInventory.emit('ox_inventory:moveItem');
 
-      if (currentInventory !== targetInventory) targetInventory.emit(`ox_inventory:moveItem`);
+      if (currentInventory !== targetInventory) targetInventory.emit('ox_inventory:moveItem');
     }
 
     return success;
@@ -39,9 +37,9 @@ function CreateItemClass(data: ItemProperties) {
     if (newItem) {
       db.updateInventoryItem(this);
       db.updateInventoryItem(newItem);
-      currentInventory.emit(`ox_inventory:moveItem`);
+      currentInventory.emit('ox_inventory:moveItem');
 
-      if (currentInventory !== targetInventory) targetInventory.emit(`ox_inventory:moveItem`);
+      if (currentInventory !== targetInventory) targetInventory.emit('ox_inventory:moveItem');
     }
 
     return newItem;

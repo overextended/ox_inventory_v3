@@ -9,8 +9,8 @@
     "web:dev": "cd web && vite dev",
     "build": "node scripts/build.js",
     "watch": "node scripts/build.js --watch",
-    "prettier": "prettier ./{src,web}/**/*.{ts,tsx} --write",
-    "eslint": "eslint ./{src,web}/**/*.{ts,tsx}"
+    "format": "pnpm biome format --write",
+    "lint": "pnpm biome lint --write"
   },
   "keywords": [
     "fivem"
@@ -21,24 +21,19 @@
   },
   "bugs": "https://github.com/overextended/fivem-typescript-boilerplate/issues",
   "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
     "@citizenfx/client": "latest",
     "@citizenfx/server": "latest",
-    "@eslint/js": "^9.21.0",
     "@jgoz/esbuild-plugin-typecheck": "^4.0.3",
     "@overextended/fx-utils": "^0.0.4",
     "@sveltejs/vite-plugin-svelte": "^5.0.3",
     "@tsconfig/svelte": "^5.0.4",
-    "@types/eslint__js": "^8.42.3",
     "@types/node": "^22.13.5",
     "@types/sync-fetch": "^0.4.3",
-    "@typescript-eslint/eslint-plugin": "^8.25.0",
-    "@typescript-eslint/parser": "^8.25.0",
-    "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.4.20",
     "bits-ui": "1.0.0-next.77",
     "clsx": "^2.1.1",
     "esbuild": "^0.25.0",
-    "eslint": "^9.21.0",
     "prettier": "^3.5.2",
     "prettier-plugin-svelte": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.6.11",

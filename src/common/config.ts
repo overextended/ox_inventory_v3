@@ -22,7 +22,7 @@ type FlattenObject<T extends Record<string, any>> = {
 export function FlattenDict<T extends Record<string, any>>(
   source: T,
   target = {} as any,
-  prefix?: string
+  prefix?: string,
 ): FlattenObject<T> {
   for (const key in source) {
     const fullKey = prefix ? `${prefix}_${key}` : key;

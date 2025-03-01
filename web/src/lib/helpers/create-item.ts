@@ -28,7 +28,7 @@ export async function CreateItem(metadata: Partial<ItemProperties>) {
               height: 1,
               category: 'ammo',
             }
-      : await fetchNui(`getStateKeyValue`, [`global`, `Item:${name}`]);
+      : await fetchNui('getStateKeyValue', ['global', `Item:${name}`]);
 
     ItemFactory(data);
     Item = GetItemData(name);

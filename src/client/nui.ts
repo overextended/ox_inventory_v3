@@ -1,5 +1,5 @@
-import { BaseInventory } from '@common/inventory/class';
-import { InventoryItem } from '@common/item';
+import type { BaseInventory } from '@common/inventory/class';
+import type { InventoryItem } from '@common/item';
 import { cache, triggerServerCallback } from '@overextended/ox_lib/client';
 import { UseItem } from './item';
 
@@ -14,7 +14,7 @@ export function OpenInventory(data: { inventory: BaseInventory; items: Inventory
 }
 
 export function CloseInventory(data?: { inventoryId: string; inventoryCount: number }, cb?: (value: number) => void) {
-  emitNet(`ox_inventory:closeInventory`, data?.inventoryId);
+  emitNet('ox_inventory:closeInventory', data?.inventoryId);
 
   SendNUIMessage({
     action: 'closeInventory',
@@ -28,15 +28,15 @@ export function CloseInventory(data?: { inventoryId: string; inventoryCount: num
   if (cb) cb(1);
 }
 
-RegisterNuiCallback(`closeInventory`, CloseInventory);
+RegisterNuiCallback('closeInventory', CloseInventory);
 
-RegisterNuiCallback(`getStateKeyValue`, ([state, key]: [state: string, key: string], cb: (value: unknown) => void) => {
+RegisterNuiCallback('getStateKeyValue', ([state, key]: [state: string, key: string], cb: (value: unknown) => void) => {
   const value = state === 'global' ? GlobalState[key] : LocalPlayer.state[key];
 
   cb(value);
 });
 
-RegisterNuiCallback(`moveItem`, async (data: MoveItem, cb: (status: number) => void) => {
+RegisterNuiCallback('moveItem', async (data: MoveItem, cb: (status: number) => void) => {
   if (data.toType === 'drop' && !data.toId) {
     const nearestDrop = exports[cache.resource].getClosestInventory('drop');
 
@@ -46,11 +46,11 @@ RegisterNuiCallback(`moveItem`, async (data: MoveItem, cb: (status: number) => v
     } else data.coords = GetEntityCoords(cache.ped, true) as [number, number, number];
   }
 
-  const response = await triggerServerCallback<boolean>(`ox_inventory:requestMoveItem`, 50, data);
+  const response = await triggerServerCallback<boolean>('ox_inventory:requestMoveItem', 50, data);
   cb(response ? 1 : 0);
 });
 
-RegisterNuiCallback(`useItem`, (itemId: number, cb: (value: number) => void) => {
+RegisterNuiCallback('useItem', (itemId: number, cb: (value: number) => void) => {
   CloseInventory(null, cb);
   UseItem(itemId);
 });

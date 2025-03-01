@@ -1,6 +1,6 @@
-import { InventoryItem, ItemProperties } from '@common/item';
+import type { InventoryItem, ItemProperties } from '@common/item';
 import { DatabaseSync } from 'node:sqlite';
-import { Inventory } from './inventory/class';
+import type { Inventory } from './inventory/class';
 import { cache } from '@overextended/ox_lib';
 
 const sqlite = new DatabaseSync(`${GetResourcePath(cache.resource)}/db.sqlite`);
@@ -42,17 +42,17 @@ const db = new (class Database {
   private _getItemByName = sqlite.prepare('SELECT name, category, json(data) as data FROM items WHERE name LIKE ?');
   private _getItemsByCategory = sqlite.prepare('SELECT name, json(data) as data FROM items WHERE category LIKE ?');
   private _getInventory = sqlite.prepare(
-    'SELECT inventoryId, type, json(data) as data FROM inventories WHERE inventoryId = ?'
+    'SELECT inventoryId, type, json(data) as data FROM inventories WHERE inventoryId = ?',
   );
   private _insertInventory = sqlite.prepare(
-    'INSERT INTO inventories (inventoryId, type, data) VALUES (?, ?, jsonb(?))'
+    'INSERT INTO inventories (inventoryId, type, data) VALUES (?, ?, jsonb(?))',
   );
   private _getInventoryItems = sqlite.prepare(
-    'SELECT uniqueId, inventoryId, json(data) as data FROM inventory_items WHERE inventoryId = ?'
+    'SELECT uniqueId, inventoryId, json(data) as data FROM inventory_items WHERE inventoryId = ?',
   );
   private _deleteInventoryItem = sqlite.prepare('DELETE FROM inventory_items WHERE uniqueId = ?');
   private _updateInventoryItem = sqlite.prepare(
-    'INSERT INTO inventory_items (uniqueId, inventoryId, data) VALUES (?, ?, jsonb(?)) ON CONFLICT(uniqueId) DO UPDATE SET inventoryId = excluded.inventoryId, data = excluded.data'
+    'INSERT INTO inventory_items (uniqueId, inventoryId, data) VALUES (?, ?, jsonb(?)) ON CONFLICT(uniqueId) DO UPDATE SET inventoryId = excluded.inventoryId, data = excluded.data',
   );
 
   getItems(category?: string): ItemProperties[] {
@@ -109,7 +109,7 @@ const db = new (class Database {
     const rowId = this._updateInventoryItem.run(
       item.uniqueId || null,
       item.inventoryId || null,
-      JSON.stringify(data)
+      JSON.stringify(data),
     )?.lastInsertRowid;
 
     if (!item.uniqueId) item.uniqueId = Number(rowId);

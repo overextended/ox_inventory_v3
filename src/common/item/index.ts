@@ -48,7 +48,7 @@ const excludeKeysForComparison: Record<string, true> = {
 };
 
 export function GetItemData(name: string) {
-  let item = Items[name.toLowerCase()];
+  const item = Items[name.toLowerCase()];
 
   if (item && !item.properties.icon) {
     const iconPath = `${item.properties.category}/${item.name}.webp`;
@@ -106,7 +106,7 @@ export function ItemFactory(item: ItemProperties) {
     public uniqueId: number;
 
     /** The number of items stored in the stack. */
-    public quantity: number = 1;
+    public quantity = 1;
 
     /** The inventoryId of the inventory which holds this item. */
     public inventoryId?: string;
@@ -128,10 +128,13 @@ export function ItemFactory(item: ItemProperties) {
             .filter((key) => {
               return Item.descriptors[key] ? Item.descriptors[key].writable : true;
             })
-            .reduce((obj, key) => {
-              obj[key] = metadata[key];
-              return obj;
-            }, {} as Partial<ItemProperties>)
+            .reduce(
+              (obj, key) => {
+                obj[key] = metadata[key];
+                return obj;
+              },
+              {} as Partial<ItemProperties>,
+            ),
         );
       }
 
@@ -237,7 +240,7 @@ export function ItemFactory(item: ItemProperties) {
       fromInventory: BaseInventory,
       toInventory: BaseInventory,
       toItem: InventoryItem,
-      targetSlot: number
+      targetSlot: number,
     ) {
       const originalSlot = this.anchorSlot;
       const currentSlots = fromInventory.getItemSlots(this);
@@ -319,7 +322,7 @@ export function ItemFactory(item: ItemProperties) {
 
       [this.rotate, this.tempRotate] = [(this.tempRotate as boolean) ?? this.rotate, this.rotate];
 
-      let slots = inventory.canHoldItem(this, startSlot, quantity);
+      const slots = inventory.canHoldItem(this, startSlot, quantity);
 
       if (!slots) {
         this.tempRotate ? (this.rotate = true) : delete this.rotate;
