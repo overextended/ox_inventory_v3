@@ -6,6 +6,8 @@
   import ItemImage from '$lib/components/ItemImage.svelte';
   import { GetItemData } from '@common/item';
   import { fetchNui } from '$lib/utils/fetchNui';
+  import { draggableWindow } from '$lib/actions/draggableWindow';
+  import { openContextMenu } from '$lib/actions/openContextMenu';
 
   interface Props {
     visible: boolean;
@@ -19,59 +21,12 @@
   }
 
   let { inventory, visible, itemState, isDragging, dragItem, onMouseDown, inventoryCount, playerId }: Props = $props();
-
-  function draggableWindow(node: HTMLElement) {
-    let moving = false;
-    let left =
-      inventory.type === 'player'
-        ? window.innerWidth / 2 - (SLOT_SIZE * inventory.width + SLOT_GAP) / 2
-        : window.innerWidth / 16;
-    let top =
-      inventory.type === 'player'
-        ? window.innerHeight / 2 - (SLOT_SIZE * inventory.height + SLOT_GAP) / 2
-        : window.innerHeight / 16;
-
-    const container = document.getElementById(`inventory-${inventory.inventoryId}`) as HTMLElement;
-
-    while (true) {
-      const element = document.elementFromPoint(left, top) as HTMLElement;
-
-      if (!element || element.id === 'app' || element.dataset.slot) break;
-
-      const rect = element.getBoundingClientRect();
-
-      left = rect.right + 2;
-      top = rect.top;
-    }
-
-    container.style.position = 'absolute';
-    container.style.top = `${top}px`;
-    container.style.left = `${left}px`;
-    container.style.userSelect = 'none';
-
-    node.addEventListener('mousedown', () => {
-      moving = true;
-    });
-
-    window.addEventListener('mousemove', (e) => {
-      if (moving) {
-        left += e.movementX;
-        top += e.movementY;
-        container.style.top = `${top}px`;
-        container.style.left = `${left}px`;
-      }
-    });
-
-    window.addEventListener('mouseup', () => {
-      moving = false;
-    });
-  }
 </script>
 
 <div class={cn('absolute top-1/4 left-1/4 z-[50]', !visible && 'hidden')} id={`inventory-${inventory.inventoryId}`}>
   <div class="flex flex-col">
     <!-- svelte-ignore a11y_no_static_element_interactions -->
-    <div class="w-full bg-background p-2 text-foreground hover:cursor-move" use:draggableWindow>
+    <div class="w-full bg-background p-2 text-foreground hover:cursor-move" use:draggableWindow={{ inventory }}>
       <p>
         {inventory.label}
 
@@ -108,6 +63,7 @@
             <div
               data-slot={index}
               data-anchorSlot={item.anchorSlot === index}
+              use:openContextMenu={{ itemId: item.uniqueId }}
               class={cn(
                 'absolute top-0 left-0 z-50 bg-black/50 text-right text-xs px-1 flex',
                 isDragging && 'pointer-events-none',
@@ -125,11 +81,7 @@
                 <p class="text-[0.65rem]">{item.label}</p>
                 {#if item.ammoName}
                   <p class="flex items-end justify-end">
-                    <img
-                      src={GetItemData(item.ammoName as string)?.properties?.icon}
-                      alt=""
-                      class="h-5"
-                    />{item.ammoCount || 320}
+                    <img src={GetItemData(item.ammoName)?.properties?.icon} alt="" class="h-5" />{item.ammoCount || 320}
                   </p>
                 {:else}
                   <p>x{item.quantity}</p>

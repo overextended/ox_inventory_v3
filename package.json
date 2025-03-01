@@ -53,6 +53,7 @@
     "vite": "^6.2.0"
   },
   "dependencies": {
+    "@iconify/svelte": "^4.2.0",
     "@nativewrappers/common": "^0.0.62",
     "@nativewrappers/fivem": "^0.0.62",
     "@nativewrappers/server": "^0.0.62",

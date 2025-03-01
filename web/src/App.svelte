@@ -10,6 +10,8 @@
   import { SLOT_SIZE } from '$lib/constants/inventory';
   import DragPreview from '$lib/components/DragPreview.svelte';
   import InventoryWindow from '$lib/components/InventoryWindow.svelte';
+  import ContextMenu from '$lib/components/context-menu/ContextMenu.svelte';
+  import { contextMenu } from '$lib/state/context-menu.svelte';
 
   let visible = $state(false);
   let keyPressed = { shift: false, control: false, alt: false };
@@ -365,6 +367,7 @@
 />
 
 <DragPreview bind:dragImg bind:dropIndicator {dragItem} />
+<ContextMenu />
 
 {#each openInventories as { inventory }}
   <InventoryWindow
