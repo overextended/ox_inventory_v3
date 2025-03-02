@@ -273,9 +273,9 @@ export function ItemFactory(item: ItemProperties) {
     }
 
     /**
-     * Compares the properties of two items and returns `true` if they are similar enough to merge the stacks.
+     * Compares the properties of two items and returns `true` if they are similar enough to merge.
      */
-    public canMerge(item: InventoryItem) {
+    public match(item: Partial<ItemProperties>) {
       if (this.name !== item.name) return false;
 
       const keysA = Object.keys(this).filter((key) => this[key] !== undefined && !excludeKeysForComparison[key]);
@@ -302,7 +302,7 @@ export function ItemFactory(item: ItemProperties) {
         this.height === existingItem.height &&
         existingItem.anchorSlot === startSlot
       ) {
-        const canMerge = this.canMerge(existingItem);
+        const canMerge = this.match(existingItem);
 
         if (canMerge) {
           existingItem.quantity += this.quantity;
