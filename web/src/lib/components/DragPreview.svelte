@@ -1,72 +1,72 @@
 <script lang="ts">
-  import { SLOT_GAP, SLOT_SIZE } from '$lib/constants/inventory';
-  import type { DragItemType } from '$lib/state/inventory';
-  import ItemImage from '$lib/components/ItemImage.svelte';
-  import { cn } from '$lib/utils';
+import { SLOT_GAP, SLOT_SIZE } from '$lib/constants/inventory';
+import type { DragItemType } from '$lib/state/inventory';
+import ItemImage from '$lib/components/ItemImage.svelte';
+import { cn } from '$lib/utils';
 
-  interface Props {
-    dragImg: HTMLElement;
-    dropIndicator: HTMLElement;
-    dragItem: DragItemType | null;
+interface Props {
+  dragImg: HTMLElement;
+  dropIndicator: HTMLElement;
+  dragItem: DragItemType | null;
+}
+
+const { dragImg = $bindable(), dropIndicator = $bindable(), dragItem }: Props = $props();
+let dragX = $state('');
+let dragY = $state('');
+const dragTransform = $derived(`translate(${dragX}px, ${dragY}px)`);
+let visible = $state(false);
+let left = $state(0);
+let top = $state(0);
+
+function updateDragIndicator(event: MouseEvent) {
+  if (!dragItem) return;
+
+  let target = event.target as HTMLElement;
+  let parent = target.parentNode as HTMLElement;
+
+  if (target.dataset.anchorslot) {
+    target = parent;
+    parent = target.parentNode as HTMLElement;
   }
 
-  let { dragImg = $bindable(), dropIndicator = $bindable(), dragItem }: Props = $props();
-  let dragX = $state('');
-  let dragY = $state('');
-  let dragTransform = $derived(`translate(${dragX}px, ${dragY}px)`);
-  let visible = $state(false);
-  let left = $state(0);
-  let top = $state(0);
+  dragX = `${event.clientX - dragImg.clientWidth / 2}`;
+  dragY = `${event.clientY - dragImg.clientHeight / 2}`;
 
-  function updateDragIndicator(event: MouseEvent) {
-    if (!dragItem) return;
-
-    let target = event.target as HTMLElement;
-    let parent = target.parentNode as HTMLElement;
-
-    if (target.dataset.anchorslot) {
-      target = parent;
-      parent = target.parentNode as HTMLElement;
-    }
-
-    dragX = `${event.clientX - dragImg.clientWidth / 2}`;
-    dragY = `${event.clientY - dragImg.clientHeight / 2}`;
-
-    if (!parent?.dataset?.inventoryid) {
-      visible = false;
-      left = 0;
-      top = 0;
-      return;
-    }
-
-    const invRect = parent.getBoundingClientRect();
-    const mouseX = event.clientX - invRect.left;
-    const mouseY = event.clientY - invRect.top;
-    const adjustedX = mouseX - (dragItem.width * SLOT_SIZE) / 2 + SLOT_SIZE / 2;
-    const adjustedY = mouseY - (dragItem.height * SLOT_SIZE) / 2 + SLOT_SIZE / 2;
-
-    const slotX = Math.max(
-      0,
-      Math.min(Math.floor(adjustedX / SLOT_SIZE), Math.floor(invRect.width / SLOT_SIZE) - dragItem.width)
-    );
-
-    const slotY = Math.max(
-      0,
-      Math.min(Math.floor(adjustedY / SLOT_SIZE), Math.floor(invRect.height / SLOT_SIZE) - dragItem.height)
-    );
-
-    left = invRect.left + slotX * SLOT_SIZE;
-    top = invRect.top + slotY * SLOT_SIZE;
-    visible = true;
+  if (!parent?.dataset?.inventoryid) {
+    visible = false;
+    left = 0;
+    top = 0;
+    return;
   }
 
-  window.addEventListener('mousemove', updateDragIndicator);
+  const invRect = parent.getBoundingClientRect();
+  const mouseX = event.clientX - invRect.left;
+  const mouseY = event.clientY - invRect.top;
+  const adjustedX = mouseX - (dragItem.width * SLOT_SIZE) / 2 + SLOT_SIZE / 2;
+  const adjustedY = mouseY - (dragItem.height * SLOT_SIZE) / 2 + SLOT_SIZE / 2;
 
-  window.addEventListener('mousedown', (event: MouseEvent) => {
-    if (!dragItem) return;
+  const slotX = Math.max(
+    0,
+    Math.min(Math.floor(adjustedX / SLOT_SIZE), Math.floor(invRect.width / SLOT_SIZE) - dragItem.width),
+  );
 
-    updateDragIndicator(event);
-  });
+  const slotY = Math.max(
+    0,
+    Math.min(Math.floor(adjustedY / SLOT_SIZE), Math.floor(invRect.height / SLOT_SIZE) - dragItem.height),
+  );
+
+  left = invRect.left + slotX * SLOT_SIZE;
+  top = invRect.top + slotY * SLOT_SIZE;
+  visible = true;
+}
+
+window.addEventListener('mousemove', updateDragIndicator);
+
+window.addEventListener('mousedown', (event: MouseEvent) => {
+  if (!dragItem) return;
+
+  updateDragIndicator(event);
+});
 </script>
 
 {#if dragItem}

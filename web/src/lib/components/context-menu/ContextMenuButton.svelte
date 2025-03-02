@@ -1,23 +1,23 @@
 <script lang="ts">
-  import Icon from '@iconify/svelte';
-  import { contextMenu } from '$lib/state/context-menu.svelte.js';
-  import { fetchNui } from '$lib/utils/fetchNui';
+import Icon from '@iconify/svelte';
+import { contextMenu } from '$lib/state/context-menu.svelte.js';
+import { fetchNui } from '$lib/utils/fetchNui';
 
-  interface ContextMenuButtonProps {
-    buttonId: string;
-    label: string;
-    icon?: string;
-  }
+interface ContextMenuButtonProps {
+  buttonId: string;
+  label: string;
+  icon?: string;
+}
 
-  let { icon, label, buttonId }: ContextMenuButtonProps = $props();
+const { icon, label, buttonId }: ContextMenuButtonProps = $props();
 
-  function buttonClick(e: MouseEvent) {
-    e.stopImmediatePropagation();
+function buttonClick(e: MouseEvent) {
+  e.stopImmediatePropagation();
 
-    fetchNui('contextMenuClick', { itemId: contextMenu.itemId, buttonId });
+  fetchNui('contextMenuClick', { itemId: contextMenu.itemId, buttonId });
 
-    contextMenu.close();
-  }
+  contextMenu.close();
+}
 </script>
 
 <button class="p-2 flex gap-2 text-sm items-center hover:bg-secondary" onclick={buttonClick}>

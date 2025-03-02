@@ -1,16 +1,16 @@
 <script lang="ts">
-  import { cn } from '$lib/utils';
-  import { SLOT_GAP, SLOT_SIZE } from '$lib/constants/inventory';
+import { cn } from '$lib/utils';
+import { SLOT_GAP, SLOT_SIZE } from '$lib/constants/inventory';
 
-  interface ItemImageProps {
-    icon?: string;
-    rotate?: boolean;
-    width: number;
-    height: number;
-    dragImg?: HTMLElement;
-  }
+interface ItemImageProps {
+  icon?: string;
+  rotate?: boolean;
+  width: number;
+  height: number;
+  dragImg?: HTMLElement;
+}
 
-  const { width, height, rotate, icon, dragImg = $bindable() }: ItemImageProps = $props();
+const { width, height, rotate, icon, dragImg = $bindable() }: ItemImageProps = $props();
 </script>
 
 <div

@@ -1,6 +1,6 @@
 {
   "files": {
-    "include": ["./src/**/*.ts", "./web/**/*.ts"]
+    "include": ["./src/**/*.ts", "./web/**/*.ts", "./web/**/*.svelte"]
   },
   "linter": {
     "enabled": true,

@@ -1,13 +1,13 @@
 <script lang="ts">
-  import { contextMenu } from "$lib/state/context-menu.svelte.js";
-  import { cn } from "$lib/utils";
-  import ContextMenuButton from "$lib/components/context-menu/ContextMenuButton.svelte";
+import { contextMenu } from '$lib/state/context-menu.svelte.js';
+import { cn } from '$lib/utils';
+import ContextMenuButton from '$lib/components/context-menu/ContextMenuButton.svelte';
 
-  function outsideClick(e: MouseEvent) {
-    e.stopImmediatePropagation();
+function outsideClick(e: MouseEvent) {
+  e.stopImmediatePropagation();
 
-    contextMenu.close();
-  }
+  contextMenu.close();
+}
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions, a11y_click_events_have_key_events -->

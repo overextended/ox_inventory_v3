@@ -1,9 +1,9 @@
 <script lang="ts">
-  interface DurabilityCircleProps {
-    durability?: number;
-  }
+interface DurabilityCircleProps {
+  durability?: number;
+}
 
-  let { durability }: DurabilityCircleProps = $props();
+const { durability }: DurabilityCircleProps = $props();
 </script>
 
 <svg class="absolute bottom-1 left-1 w-5 h-5 -rotate-90" viewBox="0 0 36 36">

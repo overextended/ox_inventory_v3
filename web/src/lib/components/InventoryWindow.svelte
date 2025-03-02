@@ -1,36 +1,36 @@
 <script lang="ts">
-  import { cn } from '$lib/utils.js';
-  import { SLOT_GAP, SLOT_SIZE } from '$lib/constants/inventory';
-  import type { DragItemType, InventoryState } from '$lib/state/inventory';
-  import DurabilityCircle from '$lib/components/DurabilityCircle.svelte';
-  import ItemImage from '$lib/components/ItemImage.svelte';
-  import { GetItemData } from '@common/item';
-  import { fetchNui } from '$lib/utils/fetchNui';
-  import { draggableWindow } from '$lib/actions/draggableWindow';
-  import { openContextMenu } from '$lib/actions/openContextMenu';
+import { cn } from '$lib/utils.js';
+import { SLOT_GAP, SLOT_SIZE } from '$lib/constants/inventory';
+import type { DragItemType, InventoryState } from '$lib/state/inventory';
+import DurabilityCircle from '$lib/components/DurabilityCircle.svelte';
+import ItemImage from '$lib/components/ItemImage.svelte';
+import { GetItemData } from '@common/item';
+import { fetchNui } from '$lib/utils/fetchNui';
+import { draggableWindow } from '$lib/actions/draggableWindow';
+import { openContextMenu } from '$lib/actions/openContextMenu';
 
-  interface Props {
-    visible: boolean;
-    isDragging: boolean;
-    dragItem: DragItemType | null;
-    inventory: InventoryState;
-    itemState: InventoryState['itemState'];
-    onMouseDown: (event: MouseEvent) => void;
-    inventoryCount: number;
-    playerId: number;
-  }
+interface Props {
+  visible: boolean;
+  isDragging: boolean;
+  dragItem: DragItemType | null;
+  inventory: InventoryState;
+  itemState: InventoryState['itemState'];
+  onMouseDown: (event: MouseEvent) => void;
+  inventoryCount: number;
+  playerId: number;
+}
 
-  let { inventory, visible, itemState, isDragging, dragItem, onMouseDown, inventoryCount, playerId }: Props = $props();
+const { inventory, visible, itemState, isDragging, dragItem, onMouseDown, inventoryCount, playerId }: Props = $props();
 </script>
 
-<div class={cn('absolute top-1/4 left-1/4 z-[50]', !visible && 'hidden')} id={`inventory-${inventory.inventoryId}`}>
+<div class={cn("absolute top-1/4 left-1/4 z-[50]", !visible && "hidden")} id={`inventory-${inventory.inventoryId}`}>
   <div class="flex flex-col">
     <!-- svelte-ignore a11y_no_static_element_interactions -->
     <div class="w-full bg-background p-2 text-foreground hover:cursor-move" use:draggableWindow={{ inventory }}>
       <p>
         {inventory.label}
 
-        {#if inventory.playerId}({inventory.playerId === playerId ? 'you' : inventory.playerId}){/if}
+        {#if inventory.playerId}({inventory.playerId === playerId ? "you" : inventory.playerId}){/if}
 
         {#if inventory.playerId !== playerId}
           <button
@@ -52,7 +52,7 @@
       {#each $itemState as item, index (item ? `${item.anchorSlot}-${index}` : `empty-${index}`)}
         <!-- svelte-ignore a11y_no_static_element_interactions -->
         <div
-          class={'bg-gradient-to-b from-black/20 to-black/50 flex text-primary-foreground items-center justify-center relative border-r border-b border-white/10'}
+          class={"bg-gradient-to-b from-black/20 to-black/50 flex text-primary-foreground items-center justify-center relative border-r border-b border-white/10"}
           style={`width: ${SLOT_SIZE}px;height: ${SLOT_SIZE}px;`}
           data-slot={index}
           onmousedown={onMouseDown}
@@ -65,9 +65,9 @@
               data-anchorSlot={item.anchorSlot === index}
               use:openContextMenu={{ itemId: item.uniqueId }}
               class={cn(
-                'absolute top-0 left-0 z-50 bg-black/50 text-right text-xs px-1 flex',
-                isDragging && 'pointer-events-none',
-                dragItem?.uniqueId === item.uniqueId && 'opacity-80 brightness-50 grayscale-[0.8]'
+                "absolute top-0 left-0 z-50 bg-black/50 text-right text-xs px-1 flex",
+                isDragging && "pointer-events-none",
+                dragItem?.uniqueId === item.uniqueId && "opacity-80 brightness-50 grayscale-[0.8]",
               )}
               style={`
                 width: ${SLOT_SIZE * w - 1}px;
@@ -81,7 +81,7 @@
                 <p class="text-[0.65rem]">{item.label}</p>
                 {#if item.ammoName}
                   <p class="flex items-end justify-end">
-                    <img src={GetItemData(item.ammoName)?.properties?.icon} alt="" class="h-5" />{item.ammoCount || 320}
+                    <img src={GetItemData(item.ammoName)?.properties?.icon} alt="" class="h-5" />{item.ammoCount}
                   </p>
                 {:else}
                   <p>x{item.quantity}</p>
