@@ -203,9 +203,6 @@
       isDragging = true;
       dragSlot = slot;
       dragItem = getDragItemProps(item);
-    } else if (event.button === 2) {
-      // placeholder pending context menu
-      fetchNui('useItem', item.uniqueId);
     }
   }
 
@@ -362,7 +359,6 @@
   onmouseup={onMouseUp}
   onkeydown={onKeyDown}
   onkeyup={onKeyUp}
-  oncontextmenu={preventDefault}
   ondragstart={preventDefault}
 />
 

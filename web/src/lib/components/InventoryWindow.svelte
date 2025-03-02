@@ -76,7 +76,7 @@
             >
               <ItemImage width={w} height={h} icon={item.icon} rotate={item.rotate} />
               <div
-                class="h-full w-full flex flex-col justify-between font-semibold text-foreground pointer-events-none"
+                class="h-full w-full flex flex-col justify-between font-semibold text-foreground pointer-events-none z-[51]"
               >
                 <p class="text-[0.65rem]">{item.label}</p>
                 {#if item.ammoName}
