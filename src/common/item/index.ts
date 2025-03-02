@@ -265,7 +265,7 @@ export function ItemFactory(item: ItemProperties) {
     }
 
     public delete() {
-      const inventory = this.inventoryId && BaseInventory.fromId(this.inventoryId);
+      const inventory = this.inventoryId && BaseInventory.FromId(this.inventoryId);
 
       if (inventory) this.removeFromInventory(inventory);
 
@@ -293,7 +293,7 @@ export function ItemFactory(item: ItemProperties) {
     public move(inventory: BaseInventory, startSlot?: number) {
       startSlot = startSlot ?? inventory.findAvailableSlot(this);
       const existingItem = inventory.getItemInSlot(startSlot);
-      const currentInventory = this.inventoryId && BaseInventory.fromId(this.inventoryId);
+      const currentInventory = this.inventoryId && BaseInventory.FromId(this.inventoryId);
 
       if (
         existingItem &&
@@ -341,7 +341,7 @@ export function ItemFactory(item: ItemProperties) {
 
     public split(inventory: BaseInventory, quantity: number, startSlot?: number) {
       const existingItem = inventory.getItemInSlot(startSlot);
-      const currentInventory = BaseInventory.fromId(this.inventoryId);
+      const currentInventory = BaseInventory.FromId(this.inventoryId);
       quantity = Math.max(1, Math.ceil(quantity));
       startSlot = startSlot ?? inventory.findAvailableSlot(this);
 

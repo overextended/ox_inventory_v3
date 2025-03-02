@@ -54,6 +54,8 @@ const db = new (class Database {
   private _updateInventoryItem = sqlite.prepare(
     'INSERT INTO inventory_items (uniqueId, inventoryId, data) VALUES (?, ?, jsonb(?)) ON CONFLICT(uniqueId) DO UPDATE SET inventoryId = excluded.inventoryId, data = excluded.data',
   );
+  private _deleteInventory = sqlite.prepare('DELETE FROM inventories WHERE inventoryId = ?');
+  private _deleteInventoryItems = sqlite.prepare('DELETE FROM inventory_items WHERE inventoryId = ?');
 
   getItems(category?: string): ItemProperties[] {
     const results = (category ? this._getItemsByCategory.all(category) : this._getItems.all()) as DbItem[];
@@ -115,6 +117,16 @@ const db = new (class Database {
     if (!item.uniqueId) item.uniqueId = Number(rowId);
 
     return item.uniqueId;
+  }
+
+  deleteInventory(inventoryId: string, deleteItems = false) {
+    const success = this._deleteInventory.run(inventoryId).changes;
+
+    if (success && deleteItems) {
+      this._deleteInventoryItems.run(inventoryId);
+    }
+
+    return success;
   }
 })();
 

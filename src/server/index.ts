@@ -11,7 +11,7 @@ onNet('ox_inventory:requestOpenInventory', async (nearbyInventories: string[]) =
   if (inventory) inventory.open(playerId);
 
   nearbyInventories.forEach((inventoryId) => {
-    const nearbyInventory = Inventory.fromId(inventoryId);
+    const nearbyInventory = Inventory.FromId(inventoryId);
 
     // todo: validation
     if (nearbyInventory) nearbyInventory.open(playerId);
@@ -21,9 +21,9 @@ onNet('ox_inventory:requestOpenInventory', async (nearbyInventories: string[]) =
 onNet('ox_inventory:closeInventory', async (inventoryId?: string) => {
   const playerId = source;
 
-  if (inventoryId) return Inventory.fromId(inventoryId)?.close(playerId, false);
+  if (inventoryId) return Inventory.FromId(inventoryId)?.close(playerId, false);
 
-  Inventory.getInventories(playerId).forEach((inventory) => inventory.close(playerId, false));
+  Inventory.GetInventories(playerId).forEach((inventory) => inventory.close(playerId, false));
 });
 
 onClientCallback('ox_inventory:requestMoveItem', async (playerId, data: MoveItem) => {

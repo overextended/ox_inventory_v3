@@ -47,8 +47,12 @@ export class BaseInventory {
   /**
    * Get a cached inventory from its unique inventory id.
    */
-  static fromId<T extends BaseInventory>(this: new (...args: any[]) => T, inventoryId: string) {
+  static FromId<T extends BaseInventory>(this: new (...args: any[]) => T, inventoryId: string) {
     return BaseInventory.instances[inventoryId] as T;
+  }
+
+  static Remove(inventoryId: string) {
+    delete BaseInventory.instances[inventoryId];
   }
 
   /**

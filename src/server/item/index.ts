@@ -14,8 +14,8 @@ function CreateItemClass(data: ItemProperties) {
   Item.CreateUniqueId = (item: InventoryItem): number => db.updateInventoryItem(item);
 
   Item.prototype.move = function (inventory: Inventory) {
-    const currentInventory = Inventory.fromId(this.inventoryId);
-    const targetInventory = Inventory.fromId(inventory.inventoryId);
+    const currentInventory = Inventory.FromId(this.inventoryId);
+    const targetInventory = Inventory.FromId(inventory.inventoryId);
     const success = itemMove.apply(this, arguments) as ReturnType<typeof itemMove>;
 
     if (success) {
@@ -34,8 +34,8 @@ function CreateItemClass(data: ItemProperties) {
   };
 
   Item.prototype.split = function (inventory: Inventory) {
-    const currentInventory = Inventory.fromId(this.inventoryId);
-    const targetInventory = Inventory.fromId(inventory.inventoryId);
+    const currentInventory = Inventory.FromId(this.inventoryId);
+    const targetInventory = Inventory.FromId(inventory.inventoryId);
     const newItem = itemSplit.apply(this, arguments) as ReturnType<typeof itemSplit>;
 
     if (newItem) {
@@ -64,7 +64,7 @@ export function CreateItem(data = {} as Partial<ItemProperties>) {
   if (!data.uniqueId) db.updateInventoryItem(data);
 
   const item = new Item(data);
-  const inventory = Inventory.fromId(data.inventoryId);
+  const inventory = Inventory.FromId(data.inventoryId);
 
   if (inventory) item.move(inventory, item.anchorSlot);
 

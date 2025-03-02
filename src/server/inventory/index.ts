@@ -5,7 +5,7 @@ import { GetPlayer } from '@overextended/ox_core/server';
 import Config from '@common/config';
 
 export function GetInventory(inventoryId: string | number, data?: string | Partial<Inventory>) {
-  let inventory = typeof inventoryId === 'string' && Inventory.fromId(inventoryId);
+  let inventory = typeof inventoryId === 'string' && Inventory.FromId(inventoryId);
 
   if (inventory) return inventory;
 
@@ -19,7 +19,7 @@ export function GetInventory(inventoryId: string | number, data?: string | Parti
     data.playerId = +inventoryId;
     inventoryId = `player:${player.charId}`;
 
-    inventory = Inventory.fromId(inventoryId);
+    inventory = Inventory.FromId(inventoryId);
 
     if (inventory) return inventory;
   }
