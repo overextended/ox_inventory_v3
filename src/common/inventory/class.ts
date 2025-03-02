@@ -177,4 +177,25 @@ export class BaseInventory {
 
     return this.getSlotsForItem(item, startSlot);
   }
+
+  /**
+   * Returns the uniqueId of the first item matching the given properties.
+   */
+  public findItem(properties: ItemProperties) {
+    return this.mapItems().find((item) => item.match(properties))?.uniqueId;
+  }
+
+  /**
+   * Returns all uniqueId's for items matching the given properties.
+   */
+  public findItems(properties: ItemProperties) {
+    return this.mapItems().filter((item) => item.match(properties) && item.uniqueId);
+  }
+
+  /**
+   * Returns the total count of all items matching the given properties.
+   */
+  public getItemCount(properties: Partial<ItemProperties>) {
+    return this.mapItems().reduce((total, item) => (item.match(properties) ? total + item.quantity : total), 0);
+  }
 }
