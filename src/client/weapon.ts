@@ -79,4 +79,5 @@ export function LoadAmmo(item: ItemProperties) {
   if (currentAmmo === newAmmo) return;
 
   AddAmmoToPed(cache.ped, CurrentWeapon.hash, addAmmo);
+  emitNet('ox_inventory:updateWeaponAmmo', addAmmo);
 }

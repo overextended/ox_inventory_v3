@@ -62,6 +62,16 @@ onClientCallback('ox_inventory:requestUseItem', async (playerId, itemId: number)
   if (!item) return ['invalid_item'];
   if (!inventory || inventory.inventoryId !== item.inventoryId) return ['invalid_inventory'];
 
+  switch (item.category) {
+    case 'weapon':
+      inventory.currentWeapon = item.uniqueId;
+      break;
+    case 'ammo':
+      if (!GetInventoryItem(inventory.currentWeapon)) return;
+
+      break;
+  }
+
   return item;
 });
 
@@ -71,4 +81,23 @@ onClientCallback('ox_inventory:getInventoryItem', async (playerId, itemId: numbe
   if (!item) return ['invalid_item'];
 
   return item;
+});
+
+onNet('ox_inventory:updateWeaponAmmo', (addAmmo: number) => {
+  const playerId = source;
+  const inventory = GetInventory(playerId);
+  const weapon = inventory && GetInventoryItem(inventory.currentWeapon);
+
+  if (!weapon || typeof weapon.ammoName !== 'string') return;
+
+  const success = inventory.removeItem({ name: weapon.ammoName });
+
+  console.log('success', success)
+
+  if (!success) return;
+
+  (weapon.ammoCount as number) += addAmmo;
+
+  // placeholder for syncing ammo count
+  weapon.move(inventory, weapon.anchorSlot);
 });

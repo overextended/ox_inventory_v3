@@ -102,22 +102,30 @@ export class Inventory extends BaseInventory {
   /**
    * Create an item and add it to this inventory, optionally merging with an existing item if requirements are met.
    */
-  public addItem(item: ItemProperties) {}
+  public addItem(item: Partial<ItemProperties>) {
+    return true;
+  }
 
   /**
    * Removes an item from this inventory, deleting the data entirely if the quantity reaches 0.
    */
-  public removeItem(item: ItemProperties) {}
+  public removeItem(item: Partial<ItemProperties>) {
+    return true;
+  }
 
   /**
    * Determine if this inventory can hold the given items.
    */
-  public canHoldItems() {}
+  public canHoldItems() {
+    return true;
+  }
 
   /**
    * Get the amount of an item this inventory can hold.
    */
-  public getCarryAmount() {}
+  public getCarryAmount() {
+    return 0;
+  }
 
   /**
    * Clears this inventory of all items that don't match the given itemIds.
@@ -125,5 +133,7 @@ export class Inventory extends BaseInventory {
   public clear(keepItems?: number[]) {}
 
   /** Gives an item from one player's inventory to another player's inventory. */
-  public giveItem() {}
+  public giveItem() {
+    return true;
+  }
 }
