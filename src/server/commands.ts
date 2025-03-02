@@ -1,6 +1,6 @@
 import { GetInventory } from './inventory';
 import { CreateItem } from './item';
-import { Command } from '@nativewrappers/common';
+import { Command } from '@nativewrappers/server';
 
 new Command(
   'additem',

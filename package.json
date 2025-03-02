@@ -49,9 +49,8 @@
   },
   "dependencies": {
     "@iconify/svelte": "^4.2.0",
-    "@nativewrappers/common": "^0.0.62",
-    "@nativewrappers/fivem": "^0.0.62",
-    "@nativewrappers/server": "^0.0.62",
+    "@nativewrappers/fivem": "^0.0.73",
+    "@nativewrappers/server": "^0.0.73",
     "@overextended/ox_core": "^1.5.1",
     "@overextended/ox_lib": "^3.29.0",
     "@overextended/oxmysql": "^1.4.2",
