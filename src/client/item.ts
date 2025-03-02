@@ -2,12 +2,32 @@ import type { ItemProperties } from '@common/item/index';
 import { triggerServerCallback } from '@overextended/ox_lib/client';
 import { CurrentWeapon, DisarmWeapon, EquipWeapon, LoadAmmo } from './weapon';
 
-export async function UseItem(itemId: number) {
-  const response = await triggerServerCallback<ItemProperties>('ox_inventory:requestUseItem', 50, itemId);
+function GetItemData(item: ItemProperties): ItemProperties {
+  return Object.assign(GlobalState[`Item:${item.name}`], item);
+}
+
+export async function GetInventoryItem(itemId: number) {
+  const response = await triggerServerCallback<ItemProperties | [string]>(
+    'ox_inventory:getInventoryItem',
+    null,
+    itemId,
+  );
 
   if (!response) return;
 
-  const item = Object.assign(GlobalState[`Item:${response.name}`], response);
+  if (Array.isArray(response)) throw new Error(`requestUseItem failed: ${response}`);
+
+  return GetItemData(response);
+}
+
+export async function UseItem(itemId: number) {
+  const response = await triggerServerCallback<ItemProperties | [string]>('ox_inventory:requestUseItem', 50, itemId);
+
+  if (!response) return;
+
+  if (Array.isArray(response)) throw new Error(`requestUseItem failed: ${response}`);
+
+  const item = GetItemData(response);
 
   console.log('Using item', item);
 

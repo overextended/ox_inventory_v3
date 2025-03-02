@@ -64,3 +64,11 @@ onClientCallback('ox_inventory:requestUseItem', async (playerId, itemId: number)
 
   return item;
 });
+
+onClientCallback('ox_inventory:getInventoryItem', async (playerId, itemId: number) => {
+  const item = GetInventoryItem(itemId);
+
+  if (!item) return ['invalid_item'];
+
+  return item;
+});
