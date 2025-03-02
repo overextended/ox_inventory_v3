@@ -141,8 +141,8 @@ if (isEnvBrowser()) {
 let isDragging = $state(false);
 let dragSlot = $state<number | null>(null);
 let dragItem = $state<DragItemType | null>(null);
-const dragImg: HTMLElement = $state(null)!;
-const dropIndicator: HTMLElement = $state(null)!;
+let dragImg: HTMLElement = $state(null)!;
+let dropIndicator: HTMLElement = $state(null)!;
 
 function getDragItemProps({
   anchorSlot,

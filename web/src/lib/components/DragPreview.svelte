@@ -10,7 +10,7 @@ interface Props {
   dragItem: DragItemType | null;
 }
 
-const { dragImg = $bindable(), dropIndicator = $bindable(), dragItem }: Props = $props();
+let { dragImg = $bindable(), dropIndicator = $bindable(), dragItem }: Props = $props();
 let dragX = $state('');
 let dragY = $state('');
 const dragTransform = $derived(`translate(${dragX}px, ${dragY}px)`);
