@@ -1,5 +1,5 @@
 import Config from '@common/config';
-import { GetInventoryItem, type InventoryItem } from '@common/item';
+import { GetInventoryItem, type ItemProperties, type InventoryItem } from '@common/item';
 
 export class BaseInventory {
   static instances: Record<string, BaseInventory> = {};
@@ -17,10 +17,15 @@ export class BaseInventory {
   public height: number;
   public weight: number;
   public maxWeight: number;
-  public playerId: number;
+  public playerId?: number;
+  public isTemporary?: boolean;
   public netId?: number;
   public ownerId?: string;
   public coords?: [number, number, number];
+  public currentWeapon?: number;
+
+  #itemCache: number[] = [];
+  #mapCache: InventoryItem[] = [];
 
   constructor(data: Partial<BaseInventory>) {
     this.inventoryId = data.inventoryId;
@@ -55,18 +60,28 @@ export class BaseInventory {
     return true;
   }
 
+  /** Clears the itemCache and mapCache. */
+  public invalidateCache() {
+    this.#itemCache.length = 0;
+    this.#mapCache.length = 0;
+  }
+
   /**
    * Get an array containing all unique item ids contained in the inventory.
    */
   public itemIds() {
-    return [...new Set(Object.values(this.items))];
+    if (!this.#itemCache.length) this.#itemCache = [...new Set(Object.values(this.items))];
+
+    return this.#itemCache;
   }
 
   /**
    * Get an array containing all InventoryItems in the inventory.
    */
   public mapItems() {
-    return this.itemIds().map((uniqueId) => GetInventoryItem(uniqueId));
+    if (!this.#mapCache.length) this.#mapCache = this.itemIds().map((uniqueId) => GetInventoryItem(uniqueId));
+
+    return this.#mapCache;
   }
 
   public getItemInSlot(slot: number) {
@@ -149,7 +164,7 @@ export class BaseInventory {
       existingItem.anchorSlot === startSlot &&
       this.inventoryId === (existingItem.inventoryId ?? this.inventoryId)
     ) {
-      if (!item.canMerge(existingItem)) return false;
+      if (!item.match(existingItem)) return false;
 
       return this.getItemSlots(existingItem);
     }

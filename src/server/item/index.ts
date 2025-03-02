@@ -22,8 +22,12 @@ function CreateItemClass(data: ItemProperties) {
       // todo: don't trigger save on initial item movement
       db.updateInventoryItem(this);
       currentInventory.emit('ox_inventory:moveItem');
+      currentInventory.invalidateCache();
 
-      if (currentInventory !== targetInventory) targetInventory.emit('ox_inventory:moveItem');
+      if (currentInventory !== targetInventory) {
+        targetInventory.emit('ox_inventory:moveItem');
+        targetInventory.invalidateCache();
+      }
     }
 
     return success;
@@ -38,8 +42,12 @@ function CreateItemClass(data: ItemProperties) {
       db.updateInventoryItem(this);
       db.updateInventoryItem(newItem);
       currentInventory.emit('ox_inventory:moveItem');
+      currentInventory.invalidateCache();
 
-      if (currentInventory !== targetInventory) targetInventory.emit('ox_inventory:moveItem');
+      if (currentInventory !== targetInventory) {
+        targetInventory.emit('ox_inventory:moveItem');
+        targetInventory.invalidateCache();
+      }
     }
 
     return newItem;
