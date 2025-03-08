@@ -21,8 +21,8 @@ function outsideClick(e: MouseEvent) {
   >
     <ContextMenuButton buttonId="use" label="Use" icon="hugeicons:cursor-magic-selection-02" />
     <ContextMenuButton buttonId="give" label="Give" icon="hugeicons:safe-delivery-01" />
-    {#each contextMenu.buttons as { label, icon, buttonId }}
-      <ContextMenuButton {label} {icon} {buttonId} />
+    {#each contextMenu.buttons as { label, icon, buttonId, menu }}
+      <ContextMenuButton {label} {icon} {buttonId} {menu}/>
     {/each}
   </div>
 </div>

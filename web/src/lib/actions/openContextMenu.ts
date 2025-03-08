@@ -6,6 +6,7 @@ export interface ContextMenuButtonResponse {
   buttonId: string;
   label: string;
   icon?: string;
+  menu?: Omit<ContextMenuButtonResponse[], 'menu'>;
 }
 
 export const openContextMenu: Action<HTMLElement, { itemId: string }> = (node, { itemId }) => {
@@ -15,9 +16,26 @@ export const openContextMenu: Action<HTMLElement, { itemId: string }> = (node, {
     const buttons = await fetchNui<ContextMenuButtonResponse[]>('openContextMenu', itemId, {
       data: [
         {
-          buttonId: 'unpack',
-          label: 'Unpack',
-          icon: 'hugeicons:package-open',
+          buttonId: 'attachments',
+          label: 'Attachments',
+          icon: 'hugeicons:attachment-01',
+          menu: [
+            {
+              buttonId: 'stock',
+              label: 'Gun Stock',
+              icon: 'game-icons:gun-stock',
+            },
+            {
+              buttonId: 'stock',
+              label: 'Silencer',
+              icon: 'game-icons:australia',
+            },
+            {
+              buttonId: 'stock',
+              label: 'Extended Magazine',
+              icon: 'game-icons:machine-gun-magazine',
+            },
+          ],
         },
         {
           buttonId: 'lock',
