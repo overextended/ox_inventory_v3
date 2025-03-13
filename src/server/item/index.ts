@@ -6,14 +6,23 @@ db.getItems('ammo').forEach(CreateItemClass);
 
 function CreateItemClass(data: ItemProperties) {
   const Item = ItemFactory(data);
+
+  if (!Item) return;
+
   const itemMove = Item.prototype.move;
   const itemSplit = Item.prototype.split;
+  const itemDelete = Item.prototype.delete;
 
   GlobalState.set(`Item:${Item.properties.name.toLowerCase()}`, Item.properties, true);
 
   Item.CreateUniqueId = (item: InventoryItem): number => db.updateInventoryItem(item);
 
   Item.prototype.move = function (inventory: Inventory) {
+    if (!this.uniqueId) {
+      db.updateInventoryItem(this);
+      this.cache();
+    }
+
     const currentInventory = Inventory.FromId(this.inventoryId);
     const targetInventory = Inventory.FromId(inventory.inventoryId);
     const success = itemMove.apply(this, arguments) as ReturnType<typeof itemMove>;
@@ -41,6 +50,7 @@ function CreateItemClass(data: ItemProperties) {
     if (newItem) {
       db.updateInventoryItem(this);
       db.updateInventoryItem(newItem);
+      newItem.cache();
       currentInventory.emit('ox_inventory:moveItem');
       currentInventory.invalidateCache();
 
@@ -53,13 +63,29 @@ function CreateItemClass(data: ItemProperties) {
     return newItem;
   };
 
+  Item.prototype.delete = function () {
+    const currentInventory = Inventory.FromId(this.inventoryId);
+
+    itemDelete.apply(this);
+    db.updateInventoryItem(this);
+
+    currentInventory.emit('ox_inventory:moveItem');
+    currentInventory.invalidateCache();
+  };
+
+  return Item;
+}
+
+export function GetItemClass(name: string) {
+  const Item = GetItemData(name) ?? CreateItemClass(db.getItem(name));
+
+  if (!Item) throw new Error(`Attempted to create invalid item ${name}`);
+
   return Item;
 }
 
 export function CreateItem(data = {} as Partial<ItemProperties>) {
-  const Item = GetItemData(data.name) ?? CreateItemClass(db.getItem(data.name));
-
-  if (!Item) throw new Error(`Attempted to create invalid item ${data.name}`);
+  const Item = GetItemClass(data.name);
 
   if (!data.uniqueId) db.updateInventoryItem(data);
 

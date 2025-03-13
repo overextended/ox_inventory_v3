@@ -40,7 +40,7 @@ export function GetInventory(inventoryId: string | number, data?: string | Parti
       data.maxWeight = Config.Drop_MaxWeight;
       break;
     default:
-      throw new Error(`invalid inventory type ${inventory.type} for id ${inventory.inventoryId}`);
+      throw new Error(`Invalid inventory type ${inventory.type} for id ${inventory.inventoryId}`);
   }
 
   const result = db.getInventory(data.inventoryId);

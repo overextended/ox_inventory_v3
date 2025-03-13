@@ -4,9 +4,6 @@ import fetch from 'sync-fetch';
 import { isBrowser, ResourceContext, ResourceName } from '..';
 
 export interface ItemMetadata {
-  name: string;
-  uniqueId: number;
-  quantity: number;
   icon?: string;
   value?: number;
   label?: string;
@@ -33,7 +30,10 @@ export interface WeaponMetadata extends ItemMetadata {
   hash: number;
 }
 
-export type ItemProperties = ItemMetadata | WeaponMetadata;
+export type ItemProperties = {
+  name: string;
+  quantity: number;
+} & (ItemMetadata | WeaponMetadata);
 export type Item = ReturnType<typeof ItemFactory>;
 export type InventoryItem = InstanceType<Item>;
 
@@ -139,14 +139,13 @@ export function ItemFactory(item: ItemProperties) {
       }
 
       if (!this.uniqueId) Item.CreateUniqueId(this);
+      if (this.uniqueId !== 0) this.cache();
 
       if (item.category === 'weapon') {
         this.durability = this.durability ?? Math.floor(Math.random() * 90) + 1;
 
         if (item.ammoName) this.ammoCount = this.ammoCount ?? 0;
       }
-
-      InventoryItems[this.uniqueId] = this;
     }
 
     get itemLimit() {
@@ -264,7 +263,13 @@ export function ItemFactory(item: ItemProperties) {
       return true;
     }
 
+    public cache() {
+      InventoryItems[this.uniqueId] = this;
+    }
+
     public delete() {
+      this.quantity = 0;
+
       const inventory = this.inventoryId && BaseInventory.FromId(this.inventoryId);
 
       if (inventory) this.removeFromInventory(inventory);
@@ -274,16 +279,18 @@ export function ItemFactory(item: ItemProperties) {
 
     /**
      * Compares the properties of two items and returns `true` if they are similar enough to merge.
+     *
+     * If strictly matching, both item properties must match exactly; otherwise, missing properties are ignored.
      */
-    public match(item: Partial<ItemProperties>) {
+    public match(item: Partial<ItemProperties>, strict = true) {
       if (this.name !== item.name) return false;
 
       const keysA = Object.keys(this).filter((key) => this[key] !== undefined && !excludeKeysForComparison[key]);
       const keysB = Object.keys(item).filter((key) => item[key] !== undefined && !excludeKeysForComparison[key]);
 
-      if (keysA.length !== keysB.length) return false;
+      if (strict) if (keysA.length !== keysB.length) return false;
 
-      for (const key of keysA) {
+      for (const key of keysB) {
         if (this[key] !== item[key]) return false;
       }
 
@@ -306,7 +313,6 @@ export function ItemFactory(item: ItemProperties) {
 
         if (canMerge) {
           existingItem.quantity += this.quantity;
-          this.quantity = 0;
 
           this.delete();
           existingItem.move(inventory, existingItem.anchorSlot);

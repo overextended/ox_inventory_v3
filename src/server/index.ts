@@ -90,9 +90,7 @@ onNet('ox_inventory:updateWeaponAmmo', (addAmmo: number) => {
 
   if (!weapon || typeof weapon.ammoName !== 'string') return;
 
-  const success = inventory.removeItem({ name: weapon.ammoName });
-
-  console.log('success', success)
+  const success = inventory.removeItem({ name: weapon.ammoName, quantity: addAmmo });
 
   if (!success) return;
 

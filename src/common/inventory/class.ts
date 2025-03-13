@@ -132,7 +132,7 @@ export class BaseInventory {
    * Determines the slotIds that will be occupied by an item, starting from startSlot.
    * @returns An array containing the slotIds that can can hold the item.
    */
-  public getSlotsForItem(item: InventoryItem, startSlot: number) {
+  public getSlotsForItem(item: ItemProperties, startSlot: number) {
     const slots: number[] = [];
 
     for (let y = 0; y < item.height; y++) {
@@ -149,13 +149,19 @@ export class BaseInventory {
       }
     }
 
-    return slots;
+    return slots.length ? slots : false;
   }
 
   /**
    * Determines if item placement is valid based on item size, inventory dimensions, weight, etc.
    */
-  public canHoldItem(item: InventoryItem, startSlot: number, quantity?: number) {
+  public canHoldItem(item: InventoryItem, startSlot = -1, quantity?: number) {
+    if (startSlot < 0) {
+      startSlot = this.findAvailableSlot(item);
+
+      if (startSlot < 0) return false;
+    }
+
     const existingItem = this.getItemInSlot(startSlot);
     quantity = quantity ? Math.max(1, Math.ceil(quantity)) : item.quantity;
 

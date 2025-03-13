@@ -1,6 +1,7 @@
 import { BaseInventory } from '@common/inventory/class';
-import type { ItemProperties } from '@common/item';
+import type { InventoryItem, ItemProperties } from '@common/item';
 import db from '../db';
+import { GetItemClass } from '../item';
 
 const drops: string[] = [];
 
@@ -102,21 +103,59 @@ export class Inventory extends BaseInventory {
   /**
    * Create an item and add it to this inventory, optionally merging with an existing item if requirements are met.
    */
-  public addItem(item: Partial<ItemProperties>) {
-    return true;
+  public addItem(data: ItemProperties): InventoryItem {
+    const Item = GetItemClass(data.name);
+    const item = new Item(data);
+    item.inventoryId = this.inventoryId;
+    const slots = this.canHoldItem(item, -1);
+
+    if (!slots) throw new Error(`Cannot add item '${data.name}' to inventory '${this.inventoryId}'`);
+
+    item.move(this, slots[0]);
+
+    return item;
   }
 
   /**
    * Removes an item from this inventory, deleting the data entirely if the quantity reaches 0.
    */
-  public removeItem(item: Partial<ItemProperties>) {
-    return true;
-  }
+  public removeItem(data: ItemProperties) {
+    const items = this.mapItems();
+    const matchedItems = [];
+    data.quantity = data.quantity || 0;
+    let quantity = data.quantity;
 
-  /**
-   * Determine if this inventory can hold the given items.
-   */
-  public canHoldItems() {
+    for (const item of items) {
+      if (item.match(data, false)) {
+        matchedItems.push(item);
+
+        if (quantity) {
+          quantity -= item.quantity;
+
+          if (quantity < 1) break;
+        } else data.quantity += item.quantity;
+      }
+    }
+
+    if (quantity > 0) return false;
+
+    quantity = data.quantity;
+
+    for (const item of matchedItems) {
+      if (item.quantity > quantity) {
+        item.quantity -= quantity;
+        quantity = 0;
+
+        item.move(this, item.anchorSlot);
+      } else {
+        quantity -= item.quantity;
+
+        item.delete();
+      }
+
+      if (quantity < 1) break;
+    }
+
     return true;
   }
 
@@ -130,10 +169,20 @@ export class Inventory extends BaseInventory {
   /**
    * Clears this inventory of all items that don't match the given itemIds.
    */
-  public clear(keepItems?: number[]) {}
+  public clear(keepItems?: number[]) {
+    const items = keepItems ? this.mapItems().filter((item) => !keepItems.includes(item.uniqueId)) : this.mapItems();
+
+    for (const item of items) item.delete();
+  }
 
   /** Gives an item from one player's inventory to another player's inventory. */
   public giveItem() {
     return true;
+  }
+
+  public canHoldItem(item: InventoryItem, startSlot?: number, quantity?: number): false | number[] {
+    GetItemClass(item.name);
+
+    return super.canHoldItem(item, startSlot, quantity);
   }
 }
