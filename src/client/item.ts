@@ -23,6 +23,8 @@ export async function GetInventoryItem(itemId: number) {
 }
 
 export async function UseItem(itemId: number) {
+  if (isUsingItem) return;
+
   isUsingItem = true;
   const response = await triggerServerCallback<ItemProperties | [string]>('ox_inventory:requestUseItem', 50, itemId);
 
@@ -43,3 +45,5 @@ export async function UseItem(itemId: number) {
 
   isUsingItem = false;
 }
+
+onNet('ox_inventory:useItem', UseItem);

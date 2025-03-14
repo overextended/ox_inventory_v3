@@ -55,15 +55,6 @@ setTick(() => {
     currentWeapon.timer = 0;
 
     emitNet('ox_inventory:updateWeapon', currentWeapon.ammoCount, currentWeapon.durability);
-
-    if (
-      Config.Weapon_AutoReload &&
-      currentWeapon.ammoCount &&
-      GetAmmoInPedWeapon(cache.ped, currentWeapon.hash) === 0
-    ) {
-      // todo: autoreload
-    }
-
     return;
   }
 
@@ -74,7 +65,6 @@ setTick(() => {
 
   if (currentWeapon.ammoName && IsPedShooting(cache.ped)) {
     let currentAmmo = GetAmmoInPedWeapon(cache.ped, currentWeapon.hash);
-    currentAmmo = currentWeapon.ammoCount < currentAmmo ? 0 : currentAmmo;
 
     if (currentAmmo < currentWeapon.ammoCount) {
       currentWeapon.ammoCount = currentAmmo;

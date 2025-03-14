@@ -3,6 +3,7 @@ import { GetInventory } from './inventory';
 import { onClientCallback } from '@overextended/ox_lib/server';
 import { Inventory } from './inventory/class';
 import './commands';
+import Config from '@common/config';
 
 onNet('ox_inventory:requestOpenInventory', async (nearbyInventories: string[]) => {
   const playerId = source;
@@ -90,12 +91,21 @@ onNet('ox_inventory:updateWeapon', (ammoCount: number, durability: number) => {
 
   if (!weapon || ammoCount > weapon.ammoCount || durability > weapon.durability) return;
 
+  console.log('set weapon durability and ammo', durability, ammoCount);
+
   if (weapon.ammoName) weapon.ammoCount = ammoCount;
 
   weapon.durability = durability;
 
   // placeholder for syncing weapon
   weapon.move(inventory, weapon.anchorSlot);
+  emitNet('ox_inventory:updateCurrentWeapon', playerId, weapon);
+
+  if (Config.Weapon_AutoReload && ammoCount === 0) {
+    const item = inventory.mapItems().find((item) => item.name === weapon.ammoName);
+
+    if (item) emitNet('ox_inventory:useItem', playerId, item.uniqueId);
+  }
 });
 
 onNet('ox_inventory:loadWeaponAmmo', (addAmmo: number) => {
@@ -113,4 +123,5 @@ onNet('ox_inventory:loadWeaponAmmo', (addAmmo: number) => {
 
   // placeholder for syncing ammo count
   weapon.move(inventory, weapon.anchorSlot);
+  emitNet('ox_inventory:updateCurrentWeapon', playerId, weapon);
 });

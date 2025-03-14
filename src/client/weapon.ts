@@ -1,7 +1,7 @@
 import Config from '@common/config';
 import type { ItemProperties, Weapon, WeaponMetadata } from '@common/item';
 import { ClearObject } from '@common/utils';
-import { cache } from '@overextended/ox_lib';
+import { cache, sleep, waitFor } from '@overextended/ox_lib';
 
 const SuppressPickupRewardType = N_0xf92099527db8e2a7;
 const ClearPickupRewardTypeSuppression = N_0x762db2d380b48d04;
@@ -57,7 +57,7 @@ export function DisarmWeapon() {
   // todo: return parachute to player
 }
 
-export function LoadAmmo(item: ItemProperties) {
+export async function LoadAmmo(item: ItemProperties) {
   if (currentWeapon.ammoName !== item.name) return;
 
   let clipSize = GetMaxAmmoInClip(cache.ped, currentWeapon.hash, true);
@@ -75,5 +75,34 @@ export function LoadAmmo(item: ItemProperties) {
   if (currentAmmo === newAmmo) return;
 
   AddAmmoToPed(cache.ped, currentWeapon.hash, addAmmo);
+
+  await sleep(100);
+
+  if (cache.vehicle) {
+    if ((cache.seat as number) > -1 || IsVehicleStopped(cache.vehicle)) TaskReloadWeapon(cache.ped, true);
+    else
+      waitFor(() => {
+        RefillAmmoInstantly(cache.ped);
+
+        const [_, ammo] = GetAmmoInClip(cache.ped, currentWeapon.hash);
+
+        return ammo === newAmmo || undefined;
+      });
+  } else {
+    MakePedReload(cache.ped);
+
+    await waitFor(() => {
+      DisableControlAction(0, 22, true);
+
+      return IsPedReloading(cache.ped) || undefined;
+    });
+  }
+
   emitNet('ox_inventory:loadWeaponAmmo', addAmmo);
 }
+
+onNet('ox_inventory:updateCurrentWeapon', (item: Weapon) => {
+  if (currentWeapon.uniqueId !== item.uniqueId) return;
+
+  Object.assign(currentWeapon, item);
+});
