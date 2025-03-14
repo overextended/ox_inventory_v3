@@ -1,5 +1,5 @@
 import Config from '@common/config';
-import type { ItemProperties, Weapon, WeaponMetadata } from '@common/item';
+import type { ItemProperties, Weapon } from '@common/item';
 import { ClearObject } from '@common/utils';
 import { cache, sleep, waitFor } from '@overextended/ox_lib';
 

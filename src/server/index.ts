@@ -1,4 +1,4 @@
-import { GetInventoryItem } from '@common/item';
+import { GetInventoryItem, type ItemProperties } from '@common/item';
 import { GetInventory } from './inventory';
 import { onClientCallback } from '@overextended/ox_lib/server';
 import { Inventory } from './inventory/class';
@@ -77,11 +77,15 @@ onClientCallback('ox_inventory:requestUseItem', async (playerId, itemId: number)
 });
 
 onClientCallback('ox_inventory:getInventoryItem', async (playerId, itemId: number) => {
-  const item = GetInventoryItem(itemId);
+  return GetInventoryItem(itemId);
+});
 
-  if (!item) return ['invalid_item'];
+onClientCallback('ox_inventory:findInventoryItem', async (playerId, data: ItemProperties) => {
+  const inventory = GetInventory(playerId);
 
-  return item;
+  if (!inventory) return;
+
+  return inventory.mapItems().find((item) => item.match(data, false));
 });
 
 onNet('ox_inventory:updateWeapon', (ammoCount: number, durability: number) => {
@@ -90,8 +94,6 @@ onNet('ox_inventory:updateWeapon', (ammoCount: number, durability: number) => {
   const weapon = inventory && GetInventoryItem(inventory.currentWeapon);
 
   if (!weapon || ammoCount > weapon.ammoCount || durability > weapon.durability) return;
-
-  console.log('set weapon durability and ammo', durability, ammoCount);
 
   if (weapon.ammoName) weapon.ammoCount = ammoCount;
 
