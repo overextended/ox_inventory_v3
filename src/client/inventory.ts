@@ -1,7 +1,16 @@
 import type { BaseInventory } from '@common/inventory/class';
-import type { InventoryItem } from '@common/item';
+import type { InventoryItem } from '@common/item/index';
 import { cache, triggerServerCallback } from '@overextended/ox_lib/client';
-import { GetInventoryItem, UseItem } from './item';
+import './context';
+
+export enum InventoryState {
+  Closed = 0,
+  Closing = 1,
+  Open = 2,
+  Busy = 3,
+}
+
+export let inventoryState: InventoryState = InventoryState.Closed;
 
 export function OpenInventory(data: { inventory: BaseInventory; items: InventoryItem[]; playerId: number }) {
   data.playerId = cache.serverId;
@@ -28,8 +37,6 @@ export function CloseInventory(data?: { inventoryId: string; inventoryCount: num
   if (cb) cb(1);
 }
 
-type NuiCb = (value: unknown) => void;
-
 RegisterNuiCallback('closeInventory', CloseInventory);
 
 RegisterNuiCallback('getStateKeyValue', ([state, key]: [state: string, key: string], cb: (value: unknown) => void) => {
@@ -52,45 +59,11 @@ RegisterNuiCallback('moveItem', async (data: MoveItem, cb: NuiCb) => {
   cb(response ? 1 : 0);
 });
 
-interface ContextMenuAction {
-  buttonId: string;
-  label: string;
-  icon: string;
-}
+onNet('ox_inventory:openInventory', OpenInventory);
 
-RegisterNuiCallback('openContextMenu', async (itemId: number, cb: NuiCb) => {
-  const item = await GetInventoryItem(itemId);
-  const response: ContextMenuAction[] = [];
+onNet('ox_inventory:closeInventory', CloseInventory);
 
-  if (item.category === 'weapon') {
-    response.push({
-      buttonId: 'unload',
-      label: 'Unload',
-      icon: 'game-icons:machine-gun-magazine',
-    });
-  }
-
-  cb(response);
+onNet('ox_inventory:moveItem', () => {
+  // todo: refresh only updated slots. for now, re-open inventory to force a refresh
+  ExecuteCommand('openInventory');
 });
-
-RegisterNuiCallback(
-  'contextMenuClick',
-  async ({ itemId, buttonId }: { itemId: number; buttonId: string }, cb: NuiCb) => {
-    const item = await GetInventoryItem(itemId);
-
-    if (!item) return cb(0);
-
-    switch (buttonId) {
-      case 'use':
-        CloseInventory(null, cb);
-
-        return UseItem(itemId);
-      case 'give':
-        return; //todo
-      case 'unload':
-        return; //todo
-    }
-
-    cb(1);
-  },
-);

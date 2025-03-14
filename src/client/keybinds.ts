@@ -1,5 +1,5 @@
 import { cache } from '@overextended/ox_lib';
-import { CloseInventory } from './nui';
+import { CloseInventory } from './inventory';
 
 RegisterCommand(
   'openInventory',
