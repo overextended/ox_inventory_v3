@@ -1,6 +1,68 @@
-import { GetItemData, type InventoryItem, ItemFactory, type ItemProperties } from '@common/item';
+import { BaseItem, GetItemData, type InventoryItem, ItemFactory, type ItemProperties } from '@common/item';
 import db from '../db';
 import { Inventory } from '../inventory/class';
+
+const itemMove = BaseItem.prototype.move;
+const itemSplit = BaseItem.prototype.split;
+const itemDelete = BaseItem.prototype.delete;
+
+BaseItem.prototype.CreateUniqueId = (item: InventoryItem): number => db.updateInventoryItem(item);
+
+BaseItem.prototype.move = function (inventory: Inventory) {
+  if (!this.uniqueId) {
+    db.updateInventoryItem(this);
+    this.cache();
+  }
+
+  const currentInventory = Inventory.FromId(this.inventoryId);
+  const targetInventory = Inventory.FromId(inventory.inventoryId);
+  const success = itemMove.apply(this, arguments) as ReturnType<typeof itemMove>;
+
+  if (success) {
+    // todo: don't trigger save on initial item movement
+    db.updateInventoryItem(this);
+    currentInventory.emit('ox_inventory:moveItem');
+    currentInventory.invalidateCache();
+
+    if (currentInventory !== targetInventory) {
+      targetInventory.emit('ox_inventory:moveItem');
+      targetInventory.invalidateCache();
+    }
+  }
+
+  return success;
+};
+
+BaseItem.prototype.split = function (inventory: Inventory) {
+  const currentInventory = Inventory.FromId(this.inventoryId);
+  const targetInventory = Inventory.FromId(inventory.inventoryId);
+  const newItem = itemSplit.apply(this, arguments) as ReturnType<typeof itemSplit>;
+
+  if (newItem) {
+    db.updateInventoryItem(this);
+    db.updateInventoryItem(newItem);
+    newItem.cache();
+    currentInventory.emit('ox_inventory:moveItem');
+    currentInventory.invalidateCache();
+
+    if (currentInventory !== targetInventory) {
+      targetInventory.emit('ox_inventory:moveItem');
+      targetInventory.invalidateCache();
+    }
+  }
+
+  return newItem;
+};
+
+BaseItem.prototype.delete = function () {
+  const currentInventory = Inventory.FromId(this.inventoryId);
+
+  itemDelete.apply(this);
+  db.updateInventoryItem(this);
+
+  currentInventory.emit('ox_inventory:moveItem');
+  currentInventory.invalidateCache();
+};
 
 db.getItems('ammo').forEach(CreateItemClass);
 
@@ -9,69 +71,7 @@ function CreateItemClass(data: ItemProperties) {
 
   if (!Item) return;
 
-  const itemMove = Item.prototype.move;
-  const itemSplit = Item.prototype.split;
-  const itemDelete = Item.prototype.delete;
-
-  GlobalState.set(`Item:${Item.properties.name.toLowerCase()}`, Item.properties, true);
-
-  Item.CreateUniqueId = (item: InventoryItem): number => db.updateInventoryItem(item);
-
-  Item.prototype.move = function (inventory: Inventory) {
-    if (!this.uniqueId) {
-      db.updateInventoryItem(this);
-      this.cache();
-    }
-
-    const currentInventory = Inventory.FromId(this.inventoryId);
-    const targetInventory = Inventory.FromId(inventory.inventoryId);
-    const success = itemMove.apply(this, arguments) as ReturnType<typeof itemMove>;
-
-    if (success) {
-      // todo: don't trigger save on initial item movement
-      db.updateInventoryItem(this);
-      currentInventory.emit('ox_inventory:moveItem');
-      currentInventory.invalidateCache();
-
-      if (currentInventory !== targetInventory) {
-        targetInventory.emit('ox_inventory:moveItem');
-        targetInventory.invalidateCache();
-      }
-    }
-
-    return success;
-  };
-
-  Item.prototype.split = function (inventory: Inventory) {
-    const currentInventory = Inventory.FromId(this.inventoryId);
-    const targetInventory = Inventory.FromId(inventory.inventoryId);
-    const newItem = itemSplit.apply(this, arguments) as ReturnType<typeof itemSplit>;
-
-    if (newItem) {
-      db.updateInventoryItem(this);
-      db.updateInventoryItem(newItem);
-      newItem.cache();
-      currentInventory.emit('ox_inventory:moveItem');
-      currentInventory.invalidateCache();
-
-      if (currentInventory !== targetInventory) {
-        targetInventory.emit('ox_inventory:moveItem');
-        targetInventory.invalidateCache();
-      }
-    }
-
-    return newItem;
-  };
-
-  Item.prototype.delete = function () {
-    const currentInventory = Inventory.FromId(this.inventoryId);
-
-    itemDelete.apply(this);
-    db.updateInventoryItem(this);
-
-    currentInventory.emit('ox_inventory:moveItem');
-    currentInventory.invalidateCache();
-  };
+  GlobalState.set(`Item:${Item.name.toLowerCase()}`, Item.properties, true);
 
   return Item;
 }
