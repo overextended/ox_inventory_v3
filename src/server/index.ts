@@ -83,7 +83,22 @@ onClientCallback('ox_inventory:getInventoryItem', async (playerId, itemId: numbe
   return item;
 });
 
-onNet('ox_inventory:updateWeaponAmmo', (addAmmo: number) => {
+onNet('ox_inventory:updateWeapon', (ammoCount: number, durability: number) => {
+  const playerId = source;
+  const inventory = GetInventory(playerId);
+  const weapon = inventory && GetInventoryItem(inventory.currentWeapon);
+
+  if (!weapon || ammoCount > weapon.ammoCount || durability > weapon.durability) return;
+
+  if (weapon.ammoName) weapon.ammoCount = ammoCount;
+
+  weapon.durability = durability;
+
+  // placeholder for syncing weapon
+  weapon.move(inventory, weapon.anchorSlot);
+});
+
+onNet('ox_inventory:loadWeaponAmmo', (addAmmo: number) => {
   const playerId = source;
   const inventory = GetInventory(playerId);
   const weapon = inventory && GetInventoryItem(inventory.currentWeapon);

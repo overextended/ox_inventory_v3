@@ -1,6 +1,5 @@
 import type StaticConfig from '~/static/config.json';
 import { LoadJsonFile } from './utils';
-import { isBrowser } from '.';
 
 // https://www.raygesualdo.com/posts/flattening-object-keys-with-typescript-types/
 type FlattenObjectKeys<T extends Record<string, any>, Key = keyof T> = Key extends string

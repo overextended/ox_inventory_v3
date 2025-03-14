@@ -14,8 +14,8 @@ declare const window: {
 export const isBrowser =
   typeof window === 'undefined' ? 0 : typeof window.GetParentResourceName !== 'undefined' ? 1 : 2;
 
-export const ResourceContext = isBrowser ? 'web' : IsDuplicityVersion() ? 'server' : 'client';
-export const ResourceName = isBrowser
+export const resourceContext = isBrowser ? 'web' : IsDuplicityVersion() ? 'server' : 'client';
+export const resourceName = isBrowser
   ? window.GetParentResourceName
     ? window.GetParentResourceName()
     : 'nui-frame-app'

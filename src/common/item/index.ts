@@ -1,7 +1,7 @@
 import Config from '@common/config';
 import { BaseInventory } from '@common/inventory/class';
 import fetch from 'sync-fetch';
-import { isBrowser, ResourceContext, ResourceName } from '..';
+import { isBrowser, resourceContext, resourceName } from '..';
 
 export interface ItemMetadata {
   icon?: string;
@@ -38,6 +38,7 @@ export type ItemProperties = {
 } & (ItemMetadata | WeaponMetadata);
 export type Item = ReturnType<typeof ItemFactory>;
 export type InventoryItem = InstanceType<Item>;
+export type Weapon = ItemProperties & WeaponMetadata;
 
 const Items: Record<string, Item> = {};
 const InventoryItems: Record<string, InventoryItem> = {};
@@ -59,9 +60,9 @@ export function GetItemData(name: string) {
     // Use resource configured image path; fallback to ox cdn
     const iconUrl = item.properties.icon ?? `${Config.Inventory_ImagePath}/${iconPath}`;
     const iconType =
-      ResourceContext === 'web'
+      resourceContext === 'web'
         ? (fetch(iconUrl)?.blob() as any)?.type
-        : LoadResourceFile(ResourceName, iconUrl) && 'image/webp';
+        : LoadResourceFile(resourceName, iconUrl) && 'image/webp';
 
     item.properties.icon = iconType === 'image/webp' ? iconUrl : `https://items.overextended.dev/${iconPath}`;
   }
@@ -78,8 +79,8 @@ function clamp(n = Number.MAX_SAFE_INTEGER, max = Number.MAX_SAFE_INTEGER) {
 }
 
 export abstract class BaseItem implements ItemMetadata {
-  readonly properties: ItemProperties;
-
+  // @ts-expect-error
+  readonly properties = this.constructor.properties as ItemProperties;
   /** A unique name to identify the item type and inherit data. */
   readonly name: string;
 

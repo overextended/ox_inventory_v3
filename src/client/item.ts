@@ -1,10 +1,12 @@
 import type { ItemProperties } from '@common/item/index';
 import { triggerServerCallback } from '@overextended/ox_lib/client';
-import { CurrentWeapon, DisarmWeapon, EquipWeapon, LoadAmmo } from './weapon';
+import { currentWeapon, DisarmWeapon, EquipWeapon, LoadAmmo } from './weapon';
 
 function GetItemData(item: ItemProperties): ItemProperties {
   return Object.assign(GlobalState[`Item:${item.name}`], item);
 }
+
+export let isUsingItem = false;
 
 export async function GetInventoryItem(itemId: number) {
   const response = await triggerServerCallback<ItemProperties | [string]>(
@@ -21,6 +23,7 @@ export async function GetInventoryItem(itemId: number) {
 }
 
 export async function UseItem(itemId: number) {
+  isUsingItem = true;
   const response = await triggerServerCallback<ItemProperties | [string]>('ox_inventory:requestUseItem', 50, itemId);
 
   if (!response) return;
@@ -29,12 +32,14 @@ export async function UseItem(itemId: number) {
 
   const item = GetItemData(response);
 
-  console.log('Using item', item);
-
   switch (item.category) {
     case 'ammo':
-      return LoadAmmo(item);
+      LoadAmmo(item);
+      break;
     case 'weapon':
-      return CurrentWeapon.uniqueId === item.uniqueId ? DisarmWeapon() : EquipWeapon(item);
+      currentWeapon.uniqueId === item.uniqueId ? DisarmWeapon() : EquipWeapon(item);
+      break;
   }
+
+  isUsingItem = false;
 }

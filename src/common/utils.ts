@@ -1,7 +1,7 @@
-import { isBrowser, ResourceName } from './';
+import { isBrowser, resourceName } from './';
 
 export function LoadFile(path: string) {
-  return LoadResourceFile(ResourceName, path);
+  return LoadResourceFile(resourceName, path);
 }
 
 export function LoadJsonFile<T = unknown>(path: string): T {
