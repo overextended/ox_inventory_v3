@@ -38,12 +38,13 @@ export function GetInventory(inventoryId: string | number, data?: string | Parti
       data.width = Config.Drop_Width;
       data.height = Config.Drop_Height;
       data.maxWeight = Config.Drop_MaxWeight;
+      data.isTemporary = true;
       break;
     default:
       throw new Error(`Invalid inventory type ${inventory.type} for id ${inventory.inventoryId}`);
   }
 
-  const result = db.getInventory(data.inventoryId);
+  const result = !data.isTemporary && db.getInventory(data.inventoryId);
 
   if (!result) db.insertInventory(data);
 

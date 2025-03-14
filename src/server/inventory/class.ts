@@ -15,8 +15,6 @@ export class Inventory extends BaseInventory {
     this.#openedBy = new Set();
 
     if (data.type === 'drop') {
-      this.isTemporary = true;
-
       drops.push(this.inventoryId);
       emitNet('ox_inventory:createDrop', -1, data);
     }
@@ -107,6 +105,7 @@ export class Inventory extends BaseInventory {
     const Item = GetItemClass(data.name);
     const item = new Item(data);
     item.inventoryId = this.inventoryId;
+
     const slots = this.canHoldItem(item, -1);
 
     if (!slots) throw new Error(`Cannot add item '${data.name}' to inventory '${this.inventoryId}'`);
