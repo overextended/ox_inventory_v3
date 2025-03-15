@@ -104,7 +104,7 @@ const db = new (class Database {
   updateInventoryItem(item: Partial<InventoryItem>): number {
     if (item.quantity < 1) return this._deleteInventoryItem.run(item.uniqueId)?.changes ? 0 : item.uniqueId;
 
-    const data = { ...item, name: item.name };
+    const data = { ...item };
     delete data.uniqueId;
     delete data.inventoryId;
 

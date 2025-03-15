@@ -36,6 +36,7 @@ export type ItemProperties = {
   name: string;
   quantity: number;
 } & (ItemMetadata | WeaponMetadata);
+
 export type Item = ReturnType<typeof ItemFactory>;
 export type InventoryItem = InstanceType<Item>;
 export type Weapon = ItemProperties & WeaponMetadata;
@@ -78,29 +79,28 @@ function clamp(n = Number.MAX_SAFE_INTEGER, max = Number.MAX_SAFE_INTEGER) {
   return !n && n !== 0 ? max : Math.min(Math.max(n, 0), max);
 }
 
+const itemProxy: ProxyHandler<BaseItem> = {
+  get: (target, prop: string) => {
+    const value = target[prop];
+    return value == null ? (target.constructor as Item).properties[prop] : value;
+  },
+};
+
 export abstract class BaseItem implements ItemMetadata {
-  // @ts-expect-error
-  readonly properties = this.constructor.properties as ItemProperties;
   /** A unique name to identify the item type and inherit data. */
   readonly name: string;
 
-  /** The amount of ammo loaded into a weapon. */
-  public ammoCount: number;
+  /** The number of items stored in the stack. */
+  public quantity: number;
 
   /** A unique identifier used to reference the item and save it in the database. */
-  public uniqueId: number;
-
-  /** The number of items stored in the stack. */
-  public quantity = 1;
+  public uniqueId?: number;
 
   /** The inventoryId of the inventory which holds this item. */
   public inventoryId?: string;
 
   /** The slotId for the top-left of the item. */
   public anchorSlot?: number;
-
-  public durability?: number;
-  public rotate?: boolean;
 
   [key: string]: unknown;
 
@@ -109,68 +109,19 @@ export abstract class BaseItem implements ItemMetadata {
     return (item.uniqueId = -Math.floor(Date.now() / 1000));
   }
 
-  get itemLimit() {
-    return this.properties.itemLimit;
-  }
-
-  get stackSize() {
-    return this.properties.stackSize;
-  }
-
-  get category() {
-    return this.properties.category;
-  }
-
-  get decay() {
-    return this.properties.decay ?? false;
-  }
-
-  get rarity() {
-    return this.properties.rarity ?? 'common';
-  }
-
-  get label() {
-    return this.properties.label ?? this.name;
-  }
-
-  get weight() {
-    return this.properties.weight;
-  }
-
-  get description() {
-    return this.properties.description;
-  }
-
-  get degrade() {
-    return this.properties.degrade;
-  }
-
-  get icon() {
-    return this.properties.icon;
-  }
-
-  get tradeable() {
-    return this.properties.tradeable ?? true;
-  }
-
-  get value() {
-    return this.properties.value ?? 0;
+  constructor() {
+    // biome-ignore lint/correctness/noConstructorReturn: <explanation>
+    return new Proxy(this, itemProxy);
   }
 
   get width() {
-    return (Config.Inventory_MultiSlotItems && (this.rotate ? this.properties.height : this.properties.width)) || 1;
+    const properties = (this.constructor as Item).properties;
+    return (Config.Inventory_MultiSlotItems && (this.rotate ? properties.height : properties.width)) || 1;
   }
 
   get height() {
-    return (Config.Inventory_MultiSlotItems && (this.rotate ? this.properties.width : this.properties.height)) || 1;
-  }
-
-  get hash() {
-    return this.properties.hash;
-  }
-
-  get ammoName() {
-    return this.properties.ammoName;
+    const properties = (this.constructor as Item).properties;
+    return (Config.Inventory_MultiSlotItems && (this.rotate ? properties.width : properties.height)) || 1;
   }
 
   protected addToInventory(inventory: BaseInventory, slots: number[]) {
@@ -222,6 +173,16 @@ export abstract class BaseItem implements ItemMetadata {
     toItem.addToInventory(fromInventory, newItemSlots);
 
     return true;
+  }
+
+  public toJSON() {
+    const obj = {} as this;
+
+    for (const key in this) {
+      if (this[key] != null) obj[key] = this[key];
+    }
+
+    return obj;
   }
 
   public cache() {
@@ -356,13 +317,17 @@ export function ItemFactory(item: ItemProperties) {
   item.category = item.category ?? 'miscellaneous';
   item.itemLimit = clamp(item.itemLimit);
   item.stackSize = clamp(item.category === 'weapon' ? 1 : item.stackSize);
+  item.durability = (item.durability || item.decay || item.degrade) && 100;
+  item.rarity = item.rarity ?? 'common';
+  item.decay = item.decay ?? false;
+  item.label = item.label ?? item.name;
+  item.tradeable = item.tradeable ?? false;
+  item.value = item.value ?? 0;
 
   if (item.category === 'weapon') {
     item.hash = isBrowser ? 0 : GetHashKey(`weapon_${item.name}`.toUpperCase());
     item.ammoName = item.ammoName || 'ammo_9';
   }
-
-  item.durability = (item.durability || item.decay || item.degrade) && 100;
 
   const Item = class extends BaseItem {
     static properties = item;
@@ -370,29 +335,11 @@ export function ItemFactory(item: ItemProperties) {
 
     readonly name = item.name;
 
-    public ammoCount = item.ammoCount as number | undefined;
-
-    [key: string]: unknown;
-
     constructor(metadata?: Partial<ItemProperties>) {
       super();
 
       if (metadata) {
-        // there is no god
-        Object.assign(
-          this,
-          Object.keys(metadata)
-            .filter((key) => {
-              return Item.descriptors[key] ? Item.descriptors[key].writable : true;
-            })
-            .reduce(
-              (obj, key) => {
-                obj[key] = metadata[key];
-                return obj;
-              },
-              {} as Partial<ItemProperties>,
-            ),
-        );
+        Object.assign(this, metadata);
       }
 
       if (!this.uniqueId) Item.CreateUniqueId(this);

@@ -20,6 +20,7 @@
         "noNonNullAssertion": "off",
         "noParameterAssign": "off",
         "noArguments": "off",
+        "noInferrableTypes": "off",
         "useConst": "off",
         "noUnusedTemplateLiteral": {
           "fix": "safe"
@@ -30,7 +31,8 @@
       },
       "complexity": {
         "noForEach": "off",
-        "noUselessConstructor": "off"
+        "noUselessConstructor": "off",
+        "noBannedTypes": "off"
       }
     }
   },
