@@ -21,9 +21,9 @@ import { cn } from '$lib/utils';
     {/if}
 
     <div class='flex flex-col gap-1'>
-      <TooltipField label="Durability" value={tooltip.item?.durability} />
-      <TooltipField label="Ingredients" value="Mustard, Ketchup"/>
-      <TooltipField label="Plate" value="XYZ123XD"/>
+      {#each Object.entries(tooltip.displayMetadata) as [key, label]}
+        <TooltipField {label} value={tooltip.item?.[key]} />
+      {/each}
     </div>
   </div>
 </div>

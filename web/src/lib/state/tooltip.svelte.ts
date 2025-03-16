@@ -7,6 +7,7 @@ interface TooltipState {
   item: InventoryItem | null;
   close: () => void;
   open: (data: { x: number; y: number; item: InventoryItem }) => void;
+  displayMetadata: Record<string, string>;
 }
 
 export const tooltip = $state<TooltipState>({
@@ -14,6 +15,7 @@ export const tooltip = $state<TooltipState>({
   y: 0,
   visible: false,
   item: null,
+  displayMetadata: {},
 
   open({ x, y, item }) {
     this.visible = true;

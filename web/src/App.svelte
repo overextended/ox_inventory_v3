@@ -7,6 +7,7 @@ import { SLOT_SIZE } from '$lib/constants/inventory';
 import { CreateItem } from '$lib/helpers/create-item';
 import { useNuiEvent } from '$lib/hooks/useNuiEvents';
 import { type DragItemType, InventoryState } from '$lib/state/inventory';
+import { tooltip } from '$lib/state/tooltip.svelte';
 import { debugData } from '$lib/utils/debugData';
 import { fetchNui } from '$lib/utils/fetchNui';
 import { isEnvBrowser } from '$lib/utils/misc';
@@ -53,6 +54,8 @@ debugData<{ inventory: Partial<BaseInventory>; items: Partial<InventoryItem>[] }
             durability: 34,
             label: 'Heavy Pistol',
             description: 'A high-powered sidearm with strong recoil and devastating stopping power.',
+            ingredients: 'Mustard, Ketchup, Beef',
+            plate: 'XYZ123XD',
           },
         ],
       },
@@ -79,6 +82,7 @@ debugData<{ inventory: Partial<BaseInventory>; items: Partial<InventoryItem>[] }
             durability: 90,
             label: 'Heavy Rifle',
             description: 'A high-caliber rifle with devastating power, perfect for mid-to-long-range combat.',
+            plate: 'XYZ123XD',
           },
         ],
       },
@@ -86,6 +90,16 @@ debugData<{ inventory: Partial<BaseInventory>; items: Partial<InventoryItem>[] }
   ],
   1000,
 );
+
+debugData<Record<string, string>>([
+  {
+    action: 'displayMetadata',
+    data: {
+      plate: 'Plate',
+      ingredients: 'Ingredients',
+    },
+  },
+]);
 
 useNuiEvent('openInventory', async (data: { inventory: InventoryState; items: InventoryItem[]; playerId: number }) => {
   if (!playerId) playerId = data.playerId;
@@ -131,6 +145,10 @@ useNuiEvent('closeInventory', (inventoryId: string) => {
 
   visible = false;
   openInventories = [];
+});
+
+useNuiEvent('displayMetadata', (data: Record<string, string>) => {
+  tooltip.displayMetadata = { ...tooltip.displayMetadata, ...data };
 });
 
 if (isEnvBrowser()) {
