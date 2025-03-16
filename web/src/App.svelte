@@ -101,6 +101,28 @@ debugData<Record<string, string>>([
   },
 ]);
 
+debugData<{ item: Partial<InventoryItem> }>(
+  [
+    {
+      action: 'updateItem',
+      data: {
+        item: {
+          name: 'HeavyRifle',
+          quantity: 1,
+          inventoryId: 'player:0',
+          uniqueId: 11,
+          anchorSlot: 37,
+          durability: 90,
+          label: 'Heavy Rifle',
+          description: 'A high-caliber rifle with devastating power, perfect for mid-to-long-range combat.',
+          plate: 'XYZ123XD',
+        },
+      },
+    },
+  ],
+  1500,
+);
+
 useNuiEvent('openInventory', async (data: { inventory: InventoryState; items: InventoryItem[]; playerId: number }) => {
   if (!playerId) playerId = data.playerId;
 
@@ -135,6 +157,33 @@ useNuiEvent('openInventory', async (data: { inventory: InventoryState; items: In
   }
 
   inventory.refreshSlots();
+});
+
+useNuiEvent('updateItem', (data: { item: InventoryItem }) => {
+  const item = GetInventoryItem(data.item.uniqueId);
+  const newItem = data.item;
+
+  if (!item) return;
+
+  if (
+    item.inventoryId !== newItem.inventoryId ||
+    item.rotate !== newItem.rotate ||
+    item.anchorSlot !== newItem.anchorSlot
+  ) {
+    const oldInventory = InventoryState.FromId(item.inventoryId);
+    const newInventory = InventoryState.FromId(newItem.inventoryId);
+
+    if (!newInventory) {
+      oldInventory.refreshSlots();
+      item.delete();
+      return;
+    }
+
+    item.move(newInventory, newItem.anchorSlot);
+
+    oldInventory.refreshSlots();
+    newInventory.refreshSlots();
+  }
 });
 
 useNuiEvent('closeInventory', (inventoryId: string) => {
