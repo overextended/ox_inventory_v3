@@ -1,17 +1,17 @@
 <script lang="ts">
-import { isEnvBrowser } from '$lib/utils/misc';
-import { type InventoryItem, GetInventoryItem } from '@common/item';
-import type { BaseInventory } from '@common/inventory/class';
-import { useNuiEvent } from '$lib/hooks/useNuiEvents';
-import { debugData } from '$lib/utils/debugData';
-import { fetchNui } from '$lib/utils/fetchNui';
-import { type DragItemType, InventoryState } from '$lib/state/inventory';
-import { CreateItem } from '$lib/helpers/create-item';
-import { SLOT_SIZE } from '$lib/constants/inventory';
 import DragPreview from '$lib/components/DragPreview.svelte';
 import InventoryWindow from '$lib/components/InventoryWindow.svelte';
 import ContextMenu from '$lib/components/context-menu/ContextMenu.svelte';
-import { contextMenu } from '$lib/state/context-menu.svelte';
+import Tooltip from '$lib/components/tooltip/Tooltip.svelte';
+import { SLOT_SIZE } from '$lib/constants/inventory';
+import { CreateItem } from '$lib/helpers/create-item';
+import { useNuiEvent } from '$lib/hooks/useNuiEvents';
+import { type DragItemType, InventoryState } from '$lib/state/inventory';
+import { debugData } from '$lib/utils/debugData';
+import { fetchNui } from '$lib/utils/fetchNui';
+import { isEnvBrowser } from '$lib/utils/misc';
+import type { BaseInventory } from '@common/inventory/class';
+import { GetInventoryItem, type InventoryItem } from '@common/item';
 
 let visible = $state(false);
 const keyPressed = { shift: false, control: false, alt: false };
@@ -41,8 +41,9 @@ debugData<{ inventory: Partial<BaseInventory>; items: Partial<InventoryItem>[] }
             inventoryId: 'player:0',
             uniqueId: 7,
             anchorSlot: 0,
+            label: '9mm',
+            description: 'Standard ammunition for pistols and SMGs, offering balanced power and reliability.',
           },
-
           {
             name: 'HeavyPistol',
             quantity: 1,
@@ -50,6 +51,8 @@ debugData<{ inventory: Partial<BaseInventory>; items: Partial<InventoryItem>[] }
             uniqueId: 8,
             anchorSlot: 4,
             durability: 34,
+            label: 'Heavy Pistol',
+            description: 'A high-powered sidearm with strong recoil and devastating stopping power.',
           },
         ],
       },
@@ -74,6 +77,8 @@ debugData<{ inventory: Partial<BaseInventory>; items: Partial<InventoryItem>[] }
             uniqueId: 11,
             anchorSlot: 0,
             durability: 90,
+            label: 'Heavy Rifle',
+            description: 'A high-caliber rifle with devastating power, perfect for mid-to-long-range combat.',
           },
         ],
       },
@@ -353,6 +358,7 @@ const preventDefault = (event: KeyboardEvent | MouseEvent) => event.preventDefau
 
 <svelte:window onmouseup={onMouseUp} onkeydown={onKeyDown} onkeyup={onKeyUp} ondragstart={preventDefault} />
 
+<Tooltip />
 <DragPreview bind:dragImg bind:dropIndicator {dragItem} />
 <ContextMenu />
 

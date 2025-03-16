@@ -1,7 +1,7 @@
 <script lang="ts">
+import ContextMenuButton from '$lib/components/context-menu/ContextMenuButton.svelte';
 import { contextMenu } from '$lib/state/context-menu.svelte.js';
 import { cn } from '$lib/utils';
-import ContextMenuButton from '$lib/components/context-menu/ContextMenuButton.svelte';
 
 function outsideClick(e: MouseEvent) {
   e.stopImmediatePropagation();
@@ -14,7 +14,7 @@ function outsideClick(e: MouseEvent) {
 <div class={cn("absolute w-full h-full hidden z-[52]", contextMenu.visible && "block")} onclick={outsideClick}>
   <div
     class={cn(
-      "bg-background p-2 min-w-[120px] shadow-lg flex-col gap-2 absolute hidden z-[53]",
+      "bg-background/90 p-2 min-w-[120px] shadow-lg flex-col gap-2 absolute hidden z-[53]",
       contextMenu.visible && "flex",
     )}
     style={`top: ${contextMenu.y}px; left: ${contextMenu.x}px`}

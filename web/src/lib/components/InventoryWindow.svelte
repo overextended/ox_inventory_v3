@@ -1,13 +1,14 @@
 <script lang="ts">
-import { cn } from '$lib/utils.js';
-import { SLOT_GAP, SLOT_SIZE } from '$lib/constants/inventory';
-import type { DragItemType, InventoryState } from '$lib/state/inventory';
+import { draggableWindow } from '$lib/actions/draggableWindow';
+import { itemTooltip } from '$lib/actions/itemTooltip';
+import { openContextMenu } from '$lib/actions/openContextMenu';
 import DurabilityCircle from '$lib/components/DurabilityCircle.svelte';
 import ItemImage from '$lib/components/ItemImage.svelte';
-import { GetItemData } from '@common/item';
+import { SLOT_GAP, SLOT_SIZE } from '$lib/constants/inventory';
+import type { DragItemType, InventoryState } from '$lib/state/inventory';
+import { cn } from '$lib/utils.js';
 import { fetchNui } from '$lib/utils/fetchNui';
-import { draggableWindow } from '$lib/actions/draggableWindow';
-import { openContextMenu } from '$lib/actions/openContextMenu';
+import { GetItemData } from '@common/item';
 
 interface Props {
   visible: boolean;
@@ -64,6 +65,7 @@ const { inventory, visible, itemState, isDragging, dragItem, onMouseDown, invent
               data-slot={index}
               data-anchorSlot={item.anchorSlot === index}
               use:openContextMenu={{ itemId: item.uniqueId }}
+              use:itemTooltip={{item}}
               class={cn(
                 "absolute top-0 left-0 z-50 bg-black/50 text-right text-xs px-1 flex",
                 isDragging && "pointer-events-none",

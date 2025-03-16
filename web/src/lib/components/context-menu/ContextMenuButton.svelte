@@ -1,57 +1,57 @@
 <script lang="ts">
-  import Icon from '@iconify/svelte';
-  import { contextMenu } from '$lib/state/context-menu.svelte.js';
-  import { fetchNui } from '$lib/utils/fetchNui';
-  import type { ContextMenuButtonResponse } from '$lib/actions/openContextMenu';
+import type { ContextMenuButtonResponse } from '$lib/actions/openContextMenu';
+import { contextMenu } from '$lib/state/context-menu.svelte.js';
+import { fetchNui } from '$lib/utils/fetchNui';
+import Icon from '@iconify/svelte';
 
-  interface ContextMenuButtonProps {
-    buttonId: string;
-    label: string;
-    icon?: string;
-    menu?: ContextMenuButtonResponse[];
+interface ContextMenuButtonProps {
+  buttonId: string;
+  label: string;
+  icon?: string;
+  menu?: ContextMenuButtonResponse[];
+}
+
+const { icon, label, buttonId, menu }: ContextMenuButtonProps = $props();
+
+let submenuVisible = $state(false);
+let isMouseOverMenu = $state(false);
+let parentRef: HTMLElement | null = $state(null);
+
+function buttonClick(e: MouseEvent) {
+  e.stopImmediatePropagation();
+
+  fetchNui('contextMenuClick', { itemId: contextMenu.itemId, buttonId });
+
+  contextMenu.close();
+}
+
+function onMouseEnterButton() {
+  if (!menu) return;
+  submenuVisible = true;
+}
+
+function onMouseLeaveButton() {
+  if (!menu) return;
+
+  if (isMouseOverMenu) {
+    return;
   }
 
-  const { icon, label, buttonId, menu }: ContextMenuButtonProps = $props();
+  submenuVisible = false;
+}
 
-  let submenuVisible = $state(false);
-  let isMouseOverMenu = $state(false);
-  let parentRef: HTMLElement | null = $state(null);
+function onMouseEnterMenu() {
+  if (!menu) return;
 
-  function buttonClick(e: MouseEvent) {
-    e.stopImmediatePropagation();
+  isMouseOverMenu = true;
+}
 
-    fetchNui('contextMenuClick', { itemId: contextMenu.itemId, buttonId });
+function onMouseLeaveMenu() {
+  if (!menu) return;
 
-    contextMenu.close();
-  }
-
-  function onMouseEnterButton() {
-    if (!menu) return;
-    submenuVisible = true;
-  }
-
-  function onMouseLeaveButton() {
-    if (!menu) return;
-
-    if (isMouseOverMenu) {
-      return;
-    }
-
-    submenuVisible = false;
-  }
-
-  function onMouseEnterMenu() {
-    if (!menu) return;
-
-    isMouseOverMenu = true;
-  }
-
-  function onMouseLeaveMenu() {
-    if (!menu) return;
-
-    isMouseOverMenu = false;
-    submenuVisible = false;
-  }
+  isMouseOverMenu = false;
+  submenuVisible = false;
+}
 </script>
 
 <div class="relative" bind:this={parentRef}>
@@ -74,7 +74,7 @@
   </button>
   {#if menu && submenuVisible}
     <div
-      class="absolute -top-2 bg-background p-2 min-w-[120px] w-fit shadow-lg flex-col gap-2 z-[54]"
+      class="absolute -top-2 bg-background/90 p-2 min-w-[120px] w-fit shadow-lg flex-col gap-2 z-[54]"
       style={`left: ${parentRef.clientWidth}px`}
       onmouseenter={onMouseEnterMenu}
       onmouseleave={onMouseLeaveMenu}
