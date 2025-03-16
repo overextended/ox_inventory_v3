@@ -3,7 +3,9 @@ import type { InventoryItem } from '@common/item';
 import type { Action } from 'svelte/action';
 
 export const itemTooltip: Action<HTMLElement, { item: InventoryItem }> = (node, { item }) => {
-  node.addEventListener('mouseenter', () => {
+  let timer: NodeJS.Timeout | null = null;
+
+  const openTooltip = () => {
     const element = node.getBoundingClientRect();
 
     const x = element.x + element.width;
@@ -14,9 +16,18 @@ export const itemTooltip: Action<HTMLElement, { item: InventoryItem }> = (node, 
       y,
       item,
     });
+  };
+
+  node.addEventListener('mouseenter', () => {
+    timer = setTimeout(openTooltip, 100);
   });
 
   node.addEventListener('mouseleave', () => {
     tooltip.close();
+
+    if (!timer) return;
+
+    clearTimeout(timer);
+    timer = null;
   });
 };
