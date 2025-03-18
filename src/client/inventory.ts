@@ -69,3 +69,10 @@ onNet('ox_inventory:updateItem', (...args: InventoryItem[]) => {
     data: args,
   });
 });
+
+onNet('ox_inventory:clearInventory', (data: { inventoryId: string; keepItems?: number[] }) => {
+  SendNUIMessage({
+    action: 'clearInventory',
+    data,
+  });
+});

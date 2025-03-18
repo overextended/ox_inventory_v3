@@ -191,6 +191,15 @@ useNuiEvent('updateItem', async (items: InventoryItem[]) => {
   }
 });
 
+useNuiEvent('clearInventory', (data: { inventoryId: string; keepItems?: number[] }) => {
+  const inventory = InventoryState.FromId(data.inventoryId);
+
+  if (!inventory) return;
+
+  inventory.clear(data.keepItems);
+  inventory.refreshSlots();
+});
+
 useNuiEvent('closeInventory', (inventoryId: string) => {
   if (inventoryId) {
     openInventories = openInventories.filter((openInventory) => openInventory.inventory.inventoryId !== inventoryId);
