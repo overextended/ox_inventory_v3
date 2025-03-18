@@ -169,9 +169,8 @@ export class Inventory extends BaseInventory {
    * Clears this inventory of all items that don't match the given itemIds.
    */
   public clear(keepItems?: number[]) {
-    const items = keepItems ? this.mapItems().filter((item) => !keepItems.includes(item.uniqueId)) : this.mapItems();
-
-    for (const item of items) item.delete();
+    super.clear(keepItems);
+    this.emit('ox_inventory:clearInventory', { inventoryId: this.inventoryId, keepItems });
   }
 
   /** Gives an item from one player's inventory to another player's inventory. */

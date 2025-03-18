@@ -1,5 +1,5 @@
 import Config from '@common/config';
-import { GetInventoryItem, type ItemProperties, type InventoryItem, BaseItem } from '@common/item';
+import { GetInventoryItem, type ItemProperties, type InventoryItem } from '@common/item';
 
 export class BaseInventory {
   static instances: Record<string, BaseInventory> = {};
@@ -207,5 +207,14 @@ export class BaseInventory {
    */
   public getItemCount(properties: Partial<ItemProperties>) {
     return this.mapItems().reduce((total, item) => (item.match(properties) ? total + item.quantity : total), 0);
+  }
+
+  /**
+   * Clears this inventory of all items that don't match the given itemIds.
+   */
+  public clear(keepItems?: number[]) {
+    const items = keepItems ? this.mapItems().filter((item) => !keepItems.includes(item.uniqueId)) : this.mapItems();
+
+    for (const item of items) item.delete();
   }
 }
