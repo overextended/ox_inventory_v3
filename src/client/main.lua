@@ -68,3 +68,12 @@ exports('getNearbyInventories', function()
         ---@param point CPoint
         function(point) return point.currentDistance < 1 and point.inventoryId end)
 end)
+
+exports.ox_target:addGlobalPlayer({
+    label = 'Search items',
+    icon = 'fas fa-search',
+    onSelect = function(data)
+        local targetId = GetPlayerServerId(NetworkGetEntityOwner(data.entity))
+        TriggerServerEvent('ox_inventory:requestOpenInventory', { targetId });
+    end
+})
