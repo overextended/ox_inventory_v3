@@ -161,9 +161,13 @@ useNuiEvent('openInventory', async (data: { inventory: InventoryState; items: In
 });
 
 useNuiEvent('updateItem', async (items: InventoryItem[]) => {
+  const inventories: Set<InventoryState> = new Set();
+
   for (const data of items) {
     const item = GetInventoryItem(data.uniqueId);
     const inventory = InventoryState.FromId(data.inventoryId);
+
+    inventories.add(inventory);
 
     if (!item) {
       const newItem: InventoryItem = await CreateItem(data);
@@ -184,11 +188,11 @@ useNuiEvent('updateItem', async (items: InventoryItem[]) => {
       ClearObject(item);
       Object.assign(item, data);
       item.move(inventory, data.anchorSlot);
-
-      oldInventory.refreshSlots();
-      inventory.refreshSlots();
+      inventories.add(oldInventory);
     }
   }
+
+  for (const inventory of inventories) inventory.refreshSlots();
 });
 
 useNuiEvent('clearInventory', (data: { inventoryId: string; keepItems?: number[] }) => {
