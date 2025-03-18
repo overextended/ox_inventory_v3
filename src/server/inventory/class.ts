@@ -31,8 +31,8 @@ export class Inventory extends BaseInventory {
   /**
    * Emits an event to all players who are using this inventory.
    */
-  public emit(event: string, args?: any) {
-    this.#openedBy.forEach((playerId) => emitNet(event, playerId, args));
+  public emit(event: string, ...args: any) {
+    this.#openedBy.forEach((playerId) => emitNet(event, playerId, ...args));
   }
 
   /**
