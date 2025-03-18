@@ -6,7 +6,7 @@ const itemMove = BaseItem.prototype.move;
 const itemSplit = BaseItem.prototype.split;
 const itemDelete = BaseItem.prototype.delete;
 
-BaseItem.prototype.CreateUniqueId = (item: InventoryItem): number => db.updateInventoryItem(item);
+BaseItem.CreateUniqueId = (item: InventoryItem): number => db.updateInventoryItem(item);
 
 BaseItem.prototype.move = function (inventory: Inventory) {
   if (!this.uniqueId) {
