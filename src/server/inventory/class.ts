@@ -64,6 +64,8 @@ export class Inventory extends BaseInventory {
    * Opens this inventory for a player.
    */
   public open(playerId: number) {
+    if (this.isOpen(playerId)) return;
+
     this.#openedBy.add(playerId);
     emitNet('ox_inventory:openInventory', playerId, { inventory: this, items: this.mapItems() });
   }
@@ -96,6 +98,13 @@ export class Inventory extends BaseInventory {
     this.#openedBy.clear();
 
     if (this.type === 'drop' && Object.keys(this.items).length === 0) this.remove(false);
+  }
+
+  /**
+   * Checks if the inventory is open for the given player.
+   */
+  public isOpen(playerId: number) {
+    return this.#openedBy.has(playerId);
   }
 
   /**
