@@ -5,18 +5,22 @@ import { Inventory } from './inventory/class';
 import './commands';
 import Config from '@common/config';
 
-onNet('ox_inventory:requestOpenInventory', async (nearbyInventories: string[]) => {
+onNet('ox_inventory:requestOpenInventory', async (inventories?: string[]) => {
   const playerId = source;
   const inventory = GetInventory(playerId, 'player');
 
-  if (inventory) inventory.open(playerId);
+  if (!inventory) return;
 
-  nearbyInventories.forEach((inventoryId) => {
-    const nearbyInventory = Inventory.FromId(inventoryId);
+  inventory.open(playerId);
+
+  if (!inventories || !inventories.length) return;
+
+  for (const inventoryId of inventories) {
+    const secondary = GetInventory(inventoryId);
 
     // todo: validation
-    if (nearbyInventory) nearbyInventory.open(playerId);
-  });
+    if (secondary) secondary.open(playerId);
+  }
 });
 
 onNet('ox_inventory:closeInventory', async (inventoryId?: string) => {
