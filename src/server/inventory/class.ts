@@ -5,7 +5,7 @@ import { GetItemClass } from '../item';
 
 const drops: string[] = [];
 
-on('playerJoining', () => emitNet('ox_inventory:createDrop', -1, drops));
+on('playerJoining', () => drops.length && emitNet('ox_inventory:createDrop', -1, drops));
 
 export class Inventory extends BaseInventory {
   #openedBy: Set<number>;
