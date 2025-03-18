@@ -13,6 +13,7 @@ import { fetchNui } from '$lib/utils/fetchNui';
 import { isEnvBrowser } from '$lib/utils/misc';
 import type { BaseInventory } from '@common/inventory/class';
 import { GetInventoryItem, type InventoryItem } from '@common/item';
+import { ClearObject } from '~/src/common/utils';
 
 let visible = $state(false);
 const keyPressed = { shift: false, control: false, alt: false };
@@ -101,12 +102,12 @@ debugData<Record<string, string>>([
   },
 ]);
 
-debugData<{ item: Partial<InventoryItem> }>(
+debugData<Partial<InventoryItem>[]>(
   [
     {
       action: 'updateItem',
-      data: {
-        item: {
+      data: [
+        {
           name: 'HeavyRifle',
           quantity: 1,
           inventoryId: 'player:0',
@@ -117,7 +118,7 @@ debugData<{ item: Partial<InventoryItem> }>(
           description: 'A high-caliber rifle with devastating power, perfect for mid-to-long-range combat.',
           plate: 'XYZ123XD',
         },
-      },
+      ],
     },
   ],
   1500,
@@ -135,7 +136,7 @@ useNuiEvent('openInventory', async (data: { inventory: InventoryState; items: In
   }
 
   for (const value of data.items) {
-    let item = GetInventoryItem(value.uniqueId);
+    let item: InventoryItem = GetInventoryItem(value.uniqueId);
 
     if (item) {
       // todo: figure out why this is so scuffed
@@ -147,7 +148,7 @@ useNuiEvent('openInventory', async (data: { inventory: InventoryState; items: In
       if (oldInventory) oldInventory.refreshSlots();
     }
 
-    item = (await CreateItem(value)) as InventoryItem;
+    item = await CreateItem(value);
 
     if (typeof item.ammoName === 'string') {
       await CreateItem({ name: item.ammoName });
@@ -159,30 +160,34 @@ useNuiEvent('openInventory', async (data: { inventory: InventoryState; items: In
   inventory.refreshSlots();
 });
 
-useNuiEvent('updateItem', (data: { item: InventoryItem }) => {
-  const item = GetInventoryItem(data.item.uniqueId);
-  const newItem = data.item;
+useNuiEvent('updateItem', async (items: InventoryItem[]) => {
+  for (const data of items) {
+    const item = GetInventoryItem(data.uniqueId);
+    const inventory = InventoryState.FromId(data.inventoryId);
 
-  if (!item) return;
-
-  if (
-    item.inventoryId !== newItem.inventoryId ||
-    item.rotate !== newItem.rotate ||
-    item.anchorSlot !== newItem.anchorSlot
-  ) {
-    const oldInventory = InventoryState.FromId(item.inventoryId);
-    const newInventory = InventoryState.FromId(newItem.inventoryId);
-
-    if (!newInventory) {
-      oldInventory.refreshSlots();
-      item.delete();
-      return;
+    if (!item) {
+      const newItem: InventoryItem = await CreateItem(data);
+      newItem.move(inventory, newItem.anchorSlot);
+      inventory.refreshSlots();
+      continue;
     }
 
-    item.move(newInventory, newItem.anchorSlot);
+    if (item.inventoryId !== data.inventoryId || item.rotate !== data.rotate || item.anchorSlot !== data.anchorSlot) {
+      const oldInventory = InventoryState.FromId(item.inventoryId);
 
-    oldInventory.refreshSlots();
-    newInventory.refreshSlots();
+      if (!inventory) {
+        oldInventory.refreshSlots();
+        item.delete();
+        continue;
+      }
+
+      ClearObject(item);
+      Object.assign(item, data);
+      item.move(inventory, data.anchorSlot);
+
+      oldInventory.refreshSlots();
+      inventory.refreshSlots();
+    }
   }
 });
 

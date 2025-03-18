@@ -63,7 +63,9 @@ onNet('ox_inventory:openInventory', OpenInventory);
 
 onNet('ox_inventory:closeInventory', CloseInventory);
 
-onNet('ox_inventory:moveItem', () => {
-  // todo: refresh only updated slots. for now, re-open inventory to force a refresh
-  ExecuteCommand('openInventory');
+onNet('ox_inventory:updateItem', (...args: InventoryItem[]) => {
+  SendNUIMessage({
+    action: 'updateItem',
+    data: args,
+  });
 });

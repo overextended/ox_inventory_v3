@@ -21,11 +21,11 @@ BaseItem.prototype.move = function (inventory: Inventory) {
   if (success) {
     // todo: don't trigger save on initial item movement
     db.updateInventoryItem(this);
-    currentInventory.emit('ox_inventory:moveItem');
+    currentInventory.emit('ox_inventory:updateItem', this);
     currentInventory.invalidateCache();
 
     if (currentInventory !== targetInventory) {
-      targetInventory.emit('ox_inventory:moveItem');
+      targetInventory.emit('ox_inventory:updateItem', this);
       targetInventory.invalidateCache();
     }
   }
@@ -42,11 +42,11 @@ BaseItem.prototype.split = function (inventory: Inventory) {
     db.updateInventoryItem(this);
     db.updateInventoryItem(newItem);
     newItem.cache();
-    currentInventory.emit('ox_inventory:moveItem');
+    currentInventory.emit('ox_inventory:updateItem', this, newItem);
     currentInventory.invalidateCache();
 
     if (currentInventory !== targetInventory) {
-      targetInventory.emit('ox_inventory:moveItem');
+      targetInventory.emit('ox_inventory:updateItem', this, newItem);
       targetInventory.invalidateCache();
     }
   }
@@ -60,7 +60,7 @@ BaseItem.prototype.delete = function () {
   itemDelete.apply(this);
   db.updateInventoryItem(this);
 
-  currentInventory.emit('ox_inventory:moveItem');
+  currentInventory.emit('ox_inventory:updateItem', this);
   currentInventory.invalidateCache();
 };
 
