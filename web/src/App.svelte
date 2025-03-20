@@ -6,6 +6,7 @@ import Tooltip from '$lib/components/tooltip/Tooltip.svelte';
 import { SLOT_SIZE } from '$lib/constants/inventory';
 import { CreateItem } from '$lib/helpers/create-item';
 import { useNuiEvent } from '$lib/hooks/useNuiEvents';
+import { contextMenu } from '$lib/state/context-menu.svelte';
 import { type DragItemType, InventoryState } from '$lib/state/inventory';
 import { tooltip } from '$lib/state/tooltip.svelte';
 import { debugData } from '$lib/utils/debugData';
@@ -19,6 +20,13 @@ const keyPressed = { shift: false, control: false, alt: false };
 let openInventories = $state<{ inventory: InventoryState; items: Partial<InventoryItem>[] }[]>([]);
 const inventoryCount = $derived(openInventories.length - 1);
 let playerId = $state(0);
+
+$effect(() => {
+  if (visible) return;
+  if (tooltip.visible) tooltip.close();
+  if (contextMenu.visible) contextMenu.close();
+  if (isDragging) resetDragState();
+});
 
 debugData<{ inventory: Partial<BaseInventory>; items: Partial<InventoryItem>[] }>(
   [
@@ -157,6 +165,7 @@ useNuiEvent('openInventory', async (data: { inventory: InventoryState; items: In
   }
 
   inventory.refreshSlots();
+  visible = true;
 });
 
 useNuiEvent('updateItem', async (items: InventoryItem[]) => {
