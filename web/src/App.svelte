@@ -13,7 +13,6 @@ import { fetchNui } from '$lib/utils/fetchNui';
 import { isEnvBrowser } from '$lib/utils/misc';
 import type { BaseInventory } from '@common/inventory/class';
 import { GetInventoryItem, type InventoryItem } from '@common/item';
-import { ClearObject } from '~/src/common/utils';
 
 let visible = $state(false);
 const keyPressed = { shift: false, control: false, alt: false };
@@ -167,28 +166,26 @@ useNuiEvent('updateItem', async (items: InventoryItem[]) => {
     const item = GetInventoryItem(data.uniqueId);
     const inventory = InventoryState.FromId(data.inventoryId);
 
-    inventories.add(inventory);
+    if (inventory) inventories.add(inventory);
 
     if (!item) {
       const newItem: InventoryItem = await CreateItem(data);
       newItem.move(inventory, newItem.anchorSlot);
-      inventory.refreshSlots();
       continue;
     }
 
     if (item.inventoryId !== data.inventoryId || item.rotate !== data.rotate || item.anchorSlot !== data.anchorSlot) {
       const oldInventory = InventoryState.FromId(item.inventoryId);
 
-      if (!inventory) {
-        oldInventory.refreshSlots();
-        item.delete();
-        continue;
-      }
+      if (oldInventory) inventories.add(oldInventory);
 
-      ClearObject(item);
-      Object.assign(item, data);
-      item.move(inventory, data.anchorSlot);
-      inventories.add(oldInventory);
+      item.delete();
+
+      if (!inventory) continue;
+
+      // todo: figure out why we can't reuse the existing item :sadge:
+      const newItem: InventoryItem = await CreateItem(data);
+      newItem.move(inventory, newItem.anchorSlot);
     }
   }
 
