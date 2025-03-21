@@ -1,6 +1,6 @@
 {
   "Inventory": {
-    "SlotSize": "small",
+    "SlotSize": "medium",
     "BlurScreen": true,
     "EnableKeys": [249],
     "ImagePath": "./images",
