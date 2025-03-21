@@ -15,13 +15,13 @@ const { width, height, rotate, icon, dragImg = $bindable() }: ItemImageProps = $
 
 <div
   class={cn(
-    'w-full h-full absolute pointer-events-none top-0 left-0 bg-no-repeat bg-[length:75%] bg-center',
+    'w-full h-full absolute pointer-events-none top-0 left-0 bg-no-repeat bg-center bg-contain',
     rotate && 'origin-bottom'
   )}
   style={`
     background-image: url('${icon}');
     width: ${SLOT_SIZE * (rotate ? height : width) - 1}px;
     height: ${SLOT_SIZE * (rotate ? width : height) - SLOT_GAP}px;
-    transform: rotate(${rotate ? '-90deg' : '0deg'}) ${rotate ? `translate(-${SLOT_SIZE / 2}px, -${SLOT_SIZE / 2}px)` : ''};
+    transform: rotate(${rotate ? '-90deg' : '0deg'}) ${rotate ? `translate(-${SLOT_SIZE / 2}px, -${SLOT_SIZE / 2}px)` : ''} scale(${height === 1 ? 0.8 : 0.9});
  `}
 ></div>
