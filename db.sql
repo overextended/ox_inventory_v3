@@ -1,26 +1,153 @@
-CREATE TABLE items (
-  name TEXT PRIMARY KEY,
-  category TEXT,
-  data BLOB NOT NULL
-) WITHOUT ROWID;
+CREATE TABLE
+  items (name TEXT PRIMARY KEY, category TEXT, data BLOB NOT NULL) WITHOUT ROWID;
 
-CREATE TABLE inventories (
-  inventoryId TEXT PRIMARY KEY,
-  type TEXT,
-  data BLOB NOT NULL
-) WITHOUT ROWID;
+CREATE TABLE
+  inventories (inventoryId TEXT PRIMARY KEY, type TEXT, data BLOB NOT NULL) WITHOUT ROWID;
 
-CREATE TABLE inventory_items (
-  uniqueId INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-  inventoryId TEXT NULL,
-  data BLOB NOT NULL
-);
+CREATE TABLE
+  inventory_items (uniqueId INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, inventoryId TEXT NULL, data BLOB NOT NULL);
 
-CREATE INDEX category ON items(category);
-CREATE INDEX type ON inventories(type);
-CREATE INDEX inventoryId ON inventory_items(inventoryId);
+CREATE INDEX category ON items (category);
 
-INSERT INTO items (name, category, data) VALUES
-  ('ammo_9', 'ammo', jsonb('{ label: "9mm", weight: 7 }')),
-  ('HeavyPistol', 'weapon', jsonb('{ label: "Heavy Pistol", weight: 1100, width: 2, height: 2 }')),
-  ('HeavyRifle', 'weapon', jsonb('{ label: "Heavy Rifle", weight: 3300, width: 7, height: 3 }'));
+CREATE INDEX type ON inventories (type);
+
+CREATE INDEX inventoryId ON inventory_items (inventoryId);
+
+INSERT INTO
+  items (name, category, data)
+VALUES
+  ('ammo_9', 'ammo', jsonb ('{ "label": "9mm", "weight": 7 }')),
+  ('ammo_22', 'ammo', jsonb ('{ "label": ".22 LR", "weight": 3 }')),
+  ('ammo_38', 'ammo', jsonb ('{ "label": ".38 LC", "weight": 15 }')),
+  ('ammo_44', 'ammo', jsonb ('{ "label": ".44 Magnum", "weight": 16 }')),
+  ('ammo_45', 'ammo', jsonb ('{ "label": ".45 ACP", "weight": 15 }')),
+  ('ammo_50', 'ammo', jsonb ('{ "label": ".50 AE", "weight": 45 }')),
+  ('ammo_50bmg', 'ammo', jsonb ('{ "label": ".50 BMG", "weight": 51 }')),
+  ('ammo_308', 'ammo', jsonb ('{ "label": ".308 Winchester", "weight": 9 }')),
+  ('ammo_556', 'ammo', jsonb ('{ "label": "5.56x45", "weight": 4 }')),
+  ('ammo_762', 'ammo', jsonb ('{ "label": "7.62x39", "weight": 8 }')),
+  ('ammo_firework', 'ammo', jsonb ('{ "label": "Firework", "weight": 200, "height": 2 }')),
+  ('ammo_flare', 'ammo', jsonb ('{ "label": "Flare round", "weight": 38 }')),
+  ('ammo_grenade', 'ammo', jsonb ('{ "label": "40mm Explosive", "weight": 400 }')),
+  ('ammo_laser', 'ammo', jsonb ('{ "label": "Laser charge", "weight": 1 }')),
+  ('ammo_musket', 'ammo', jsonb ('{ "label": ".50 Ball", "weight": 38 }')),
+  ('ammo_railgun', 'ammo', jsonb ('{ "label": "Railgun charge", "weight": 150 }')),
+  ('ammo_rocket', 'ammo', jsonb ('{ "label": "Rocket", "weight": 500, "height": 2 }')),
+  ('ammo_shotgun', 'ammo', jsonb ('{ "label": "12 Gauge", "weight": 38 }')),
+  ('ammo_emp', 'ammo', jsonb ('{ "label": "EMP round", "weight": 400 }'));
+
+INSERT INTO
+  items (name, category, data)
+VALUES
+  ('Ball', 'throwable', jsonb ('{ label: "Ball", weight: 149 }')),
+  ('BZGas', 'throwable', jsonb ('{ label: "BZ Gas", weight: 600 }')),
+  ('Flare', 'throwable', jsonb ('{ label: "Flare", weight: 250 }')),
+  ('Grenade', 'throwable', jsonb ('{ label: "Grenade", weight: 400 }')),
+  ('Molotov', 'throwable', jsonb ('{ label: "Molotov", weight: 1800 }')),
+  ('ProxMine', 'throwable', jsonb ('{ label: "Proximity Mine", weight: 2500 }')),
+  ('PipeBomb', 'throwable', jsonb ('{ label: "Pipe Bomb", weight: 1800 }')),
+  ('SnowBall', 'throwable', jsonb ('{ label: "Snow Ball", weight: 5 }')),
+  ('StickyBomb', 'throwable', jsonb ('{ label: "Sticky Bomb", weight: 1000 }')),
+  ('TearGas', 'throwable', jsonb ('{ label: "Tear Gas", weight: 600 }'));
+
+INSERT INTO
+  items (name, category, data)
+VALUES
+  ('BattleRifle', 'weapon', jsonb ('{ label: "Battle Rifle", weight: 3300, width: 6, height: 2 }')),
+  ('SnowLauncher', 'weapon', jsonb ('{ label: "Snowball Launcher", weight: 1000, width: 6, height: 3 }')),
+  ('TacticalSMG', 'weapon', jsonb ('{ label: "Tactical SMG", weight: 1500, width: 3, height: 2 }')),
+  ('AdvancedRifle', 'weapon', jsonb ('{ label: "Advanced Rifle", weight: 3100, width: 6, height: 2 }')),
+  ('APPistol', 'weapon', jsonb ('{ label: "AP Pistol", weight: 1400, width: 2, height: 1 }')),
+  ('AssaultRifle', 'weapon', jsonb ('{ label: "Assault Rifle", weight: 4500, width: 6, height: 2 }')),
+  ('AssaultRifleMK2', 'weapon', jsonb ('{ label: "Assault Rifle MK2", weight: 2950, width: 6, height: 2 }')),
+  ('AssaultShotgun', 'weapon', jsonb ('{ label: "Assault Shotgun", weight: 5200, width: 6, height: 2 }')),
+  ('AssaultSMG', 'weapon', jsonb ('{ label: "Assault SMG", weight: 2900, width: 5, height: 2 }')),
+  ('Bat', 'weapon', jsonb ('{ label: "Bat", weight: 1134, width: 1, height: 2 }')),
+  ('BattleAxe', 'weapon', jsonb ('{ label: "Battle Axe", weight: 6500, width: 6, height: 3 }')),
+  ('Bottle', 'weapon', jsonb ('{ label: "Bottle", weight: 350 }')),
+  ('BullpupRifle', 'weapon', jsonb ('{ label: "Bullpup Rifle", weight: 2900, width: 5, height: 2 }')),
+  ('BullpupRifleMK2', 'weapon', jsonb ('{ label: "Bullpup Rifle MK2", weight: 2900, width: 5, height: 2 }')),
+  ('BullpupShotgun', 'weapon', jsonb ('{ label: "Bullpup Shotgun", weight: 3100, width: 6, height: 2 }')),
+  ('CarbineRifle', 'weapon', jsonb ('{ label: "Carbine Rifle", weight: 3100, width: 6, height: 2 }')),
+  ('CarbineRifleMK2', 'weapon', jsonb ('{ label: "Carbine Rifle MK2", weight: 3000, width: 6, height: 2 }')),
+  ('CeramicPistol', 'weapon', jsonb ('{ label: "Ceramic Pistol", weight: 800, width: 2, height: 1 }')),
+  ('WM29Pistol', 'weapon', jsonb ('{ label: "WM 29 Pistol", weight: 969, width: 2, height: 1 }')),
+  ('CombatMG', 'weapon', jsonb ('{ label: "Combat MG", weight: 7500, width: 6, height: 3 }')),
+  ('CombatMGMK2', 'weapon', jsonb ('{ label: "Combat MG MK2", weight: 8000, width: 6, height: 3 }')),
+  ('CombatPDW', 'weapon', jsonb ('{ label: "Combat PDW", weight: 2300, width: 4, height: 2 }')),
+  ('CombatPistol', 'weapon', jsonb ('{ label: "Combat Pistol", weight: 785, width: 2, height: 1 }')),
+  ('CombatShotgun', 'weapon', jsonb ('{ label: "Combat Shotgun", weight: 4400, width: 6, height: 2 }')),
+  ('CompactLauncher', 'weapon', jsonb ('{ label: "Compact Grenade Launcher", weight: 2500, width: 5, height: 2 }')),
+  ('CompactRifle', 'weapon', jsonb ('{ label: "Compact Rifle", weight: 3600, width: 6, height: 2 }')),
+  ('Crowbar', 'weapon', jsonb ('{ label: "Crowbar", weight: 2500, width: 5, height: 2 }')),
+  ('Dagger', 'weapon', jsonb ('{ label: "Dagger", weight: 800, width: 2, height: 1 }')),
+  ('DoubleBarrelShotgun', 'weapon', jsonb ('{ label: "Double Barrel Shotgun", weight: 3175, width: 6, height: 2 }')),
+  ('DoubleActionRevolver', 'weapon', jsonb ('{ label: "Double Action Revolver", weight: 940, width: 2, height: 1 }')),
+  ('CompactEMPLauncher', 'weapon', jsonb ('{ label: "Compact EMP Launcher", weight: 2750, width: 5, height: 2 }')),
+  ('FireExtinguisher', 'weapon', jsonb ('{ label: "Fire Extinguisher", weight: 8616, width: 6, height: 3 }')),
+  ('FireworkLauncher', 'weapon', jsonb ('{ label: "Firework Launcher", weight: 1000, width: 2, height: 1 }')),
+  ('FlareGun', 'weapon', jsonb ('{ label: "Flare Gun", weight: 1000, width: 2, height: 1 }')),
+  ('Flashlight', 'weapon', jsonb ('{ label: "Flashlight", weight: 125 }')),
+  ('GolfClub', 'weapon', jsonb ('{ label: "Golf Club", weight: 330, width: 1, height: 2 }')),
+  ('GrenadeLauncher', 'weapon', jsonb ('{ label: "Grenade Launcher", weight: 6500, width: 6, height: 3 }')),
+  ('Gusenberg', 'weapon', jsonb ('{ label: "Gusenberg", weight: 4900, width: 6, height: 2 }')),
+  ('Hammer', 'weapon', jsonb ('{ label: "Hammer", weight: 1200, width: 2, height: 1 }')),
+  ('Hatchet', 'weapon', jsonb ('{ label: "Hatchet", weight: 1000, width: 2, height: 1 }')),
+  ('HeavyRifle', 'weapon', jsonb ('{ label: "Heavy Rifle", weight: 3300, width: 6, height: 2 }')),
+  ('HazardCan', 'weapon', jsonb ('{ label: "Hazard Can", weight: 12000, width: 6, height: 3 }')),
+  ('MetalDetector', 'weapon', jsonb ('{ label: "Metal Detector", weight: 1200, width: 2, height: 1 }')),
+  ('HomingLauncher', 'weapon', jsonb ('{ label: "Homing Launcher", weight: 10000, width: 6, height: 3 }')),
+  ('FertilizerCan', 'weapon', jsonb ('{ label: "Fertilizer Can", weight: 12000, width: 6, height: 3 }')),
+  ('HeavyPistol', 'weapon', jsonb ('{ label: "Heavy Pistol", weight: 1100, width: 2, height: 1 }')),
+  ('HeavyShotgun', 'weapon', jsonb ('{ label: "Heavy Shotgun", weight: 3600, width: 6, height: 2 }')),
+  ('HeavySniper', 'weapon', jsonb ('{ label: "Heavy Sniper", weight: 12700, width: 6, height: 3 }')),
+  ('HeavySniperMK2', 'weapon', jsonb ('{ label: "Heavy Sniper MK2", weight: 14000, width: 6, height: 3 }')),
+  ('Knife', 'weapon', jsonb ('{ label: "Knife", weight: 300 }')),
+  ('KnuckleDusters', 'weapon', jsonb ('{ label: "Knuckle Dusters", weight: 300 }')),
+  ('Machete', 'weapon', jsonb ('{ label: "Machete", weight: 1000, width: 2, height: 1 }')),
+  ('MachinePistol', 'weapon', jsonb ('{ label: "Machine Pistol", weight: 1400, width: 2, height: 1 }')),
+  ('MarksmanPistol', 'weapon', jsonb ('{ label: "Marksman Pistol", weight: 1588, width: 3, height: 1 }')),
+  ('MarksmanRifle', 'weapon', jsonb ('{ label: "Marksman Rifle", weight: 7500, width: 6, height: 3 }')),
+  ('MarksmanRifleMK2', 'weapon', jsonb ('{ label: "Marksman Rifle MK2", weight: 4000, width: 6, height: 2 }')),
+  ('MachineGun', 'weapon', jsonb ('{ label: "Machine Gun", weight: 9000, width: 6, height: 3 }')),
+  ('Minigun', 'weapon', jsonb ('{ label: "Minigun", weight: 38500, width: 6, height: 4 }')),
+  ('MicroSMG', 'weapon', jsonb ('{ label: "Micro SMG", weight: 3000, width: 5, height: 2 }')),
+  ('MilitaryRifle', 'weapon', jsonb ('{ label: "Military Rifle", weight: 3600, width: 6, height: 2 }')),
+  ('MiniSMG', 'weapon', jsonb ('{ label: "Mini SMG", weight: 1270, width: 2, height: 1 }')),
+  ('Musket', 'weapon', jsonb ('{ label: "Musket", weight: 4500, width: 6, height: 2 }')),
+  ('NavyRevolver', 'weapon', jsonb ('{ label: "Navy Revolver", weight: 4000, width: 6, height: 2 }')),
+  ('Nightstick', 'weapon', jsonb ('{ label: "Nightstick", weight: 1000, width: 2, height: 1 }')),
+  ('JerryCan', 'weapon', jsonb ('{ label: "Jerry Can", weight: 4000, width: 6, height: 2 }')),
+  ('PericoPistol', 'weapon', jsonb ('{ label: "Perico Pistol", weight: 1750, width: 3, height: 1 }')),
+  ('Pistol', 'weapon', jsonb ('{ label: "Pistol", weight: 1130, width: 2, height: 1 }')),
+  ('Pistol50', 'weapon', jsonb ('{ label: "Pistol .50", weight: 2000, width: 3, height: 1 }')),
+  ('PistolMK2', 'weapon', jsonb ('{ label: "Pistol MK2", weight: 1000, width: 2, height: 1 }')),
+  ('PoolCue', 'weapon', jsonb ('{ label: "Pool Cue", weight: 146 }')),
+  ('CandyCane', 'weapon', jsonb ('{ label: "Candy Cane", weight: 85 }')),
+  ('PumpShotgun', 'weapon', jsonb ('{ label: "Pump Shotgun", weight: 3400, width: 6, height: 2 }')),
+  ('PumpShotgunMK2', 'weapon', jsonb ('{ label: "Pump Shotgun MK2", weight: 3200, width: 6, height: 2 }')),
+  ('Railgun', 'weapon', jsonb ('{ label: "Railgun", weight: 3570, width: 6, height: 2 }')),
+  ('RailgunXM3', 'weapon', jsonb ('{ label: "Railgun XM3", weight: 3570, width: 6, height: 2 }')),
+  ('UnholyHellbringer', 'weapon', jsonb ('{ label: "Unholy Hellbringer", weight: 3620, width: 6, height: 2 }')),
+  ('UpNAtomizer', 'weapon', jsonb ('{ label: "Up-n-Atomizer", weight: 1540, width: 3, height: 1 }')),
+  ('Revolver', 'weapon', jsonb ('{ label: "Revolver", weight: 2260, width: 4, height: 2 }')),
+  ('RevolverMK2', 'weapon', jsonb ('{ label: "Revolver MK2", weight: 2600, width: 5, height: 2 }')),
+  ('RPG', 'weapon', jsonb ('{ label: "RPG", weight: 5000, width: 6, height: 3 }')),
+  ('SawnOffShotgun', 'weapon', jsonb ('{ label: "Sawn Off Shotgun", weight: 2380, width: 5, height: 2 }')),
+  ('SMG', 'weapon', jsonb ('{ label: "SMG", weight: 3084, width: 6, height: 2 }')),
+  ('SMGMK2', 'weapon', jsonb ('{ label: "SMG Mk2", weight: 2700, width: 5, height: 2 }')),
+  ('SmokeGrenade', 'weapon', jsonb ('{ label: "Smoke Grenade", weight: 600, width: 2, height: 1 }')),
+  ('SniperRifle', 'weapon', jsonb ('{ label: "Sniper Rifle", weight: 5000, width: 6, height: 3 }')),
+  ('SNSPistol', 'weapon', jsonb ('{ label: "SNS Pistol", weight: 465 }')),
+  ('SNSPistolMK2', 'weapon', jsonb ('{ label: "SNS Pistol MK2", weight: 465 }')),
+  ('SpecialCarbine', 'weapon', jsonb ('{ label: "Special Carbine", weight: 3000, width: 6, height: 2 }')),
+  ('SpecialCarbineMK2', 'weapon', jsonb ('{ label: "Special Carbine MK2", weight: 3370, width: 6, height: 2 }')),
+  ('StoneHatchet', 'weapon', jsonb ('{ label: "Stone Hatchet", weight: 800, width: 2, height: 1 }')),
+  ('Tazer', 'weapon', jsonb ('{ label: "Tazer", weight: 227, width: 2, height: 1 }')),
+  ('SweeperShotgun', 'weapon', jsonb ('{ label: "Sweeper Shotgun", weight: 4400, width: 6, height: 2 }')),
+  ('Switchblade', 'weapon', jsonb ('{ label: "Switchblade", weight: 300 }')),
+  ('VintagePistol', 'weapon', jsonb ('{ label: "Vintage Pistol", weight: 700, width: 2, height: 1 }')),
+  ('Widowmaker', 'weapon', jsonb ('{ label: "Widowmaker", weight: 7000, width: 6, height: 3 }')),
+  ('Wrench', 'weapon', jsonb ('{ label: "Wrench", weight: 2500, width: 5, height: 2 }')),
+  ('PrecisionRifle', 'weapon', jsonb ('{ label: "Precision Rifle", weight: 4800, width: 6, height: 3 }')),
+  ('TacticalRifle', 'weapon', jsonb ('{ label: "Tactical Rifle", weight: 3400, width: 6, height: 2 }'));
