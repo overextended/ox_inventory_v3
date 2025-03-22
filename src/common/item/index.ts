@@ -3,29 +3,7 @@ import { BaseInventory } from '@common/inventory/class';
 import fetch from 'sync-fetch';
 import { isBrowser, resourceContext, resourceName } from '..';
 
-export interface ItemMetadata {
-  icon?: string;
-  value?: number;
-  label?: string;
-  weight?: number;
-  width?: number;
-  rarity?: string;
-  height?: number;
-  category?: string;
-  decay?: boolean;
-  degrade?: number;
-  tradeable?: boolean;
-  itemLimit?: number;
-  stackSize?: number;
-  description?: string;
-  inventoryId?: string;
-  durability?: number;
-  rotate?: boolean;
-
-  [key: string]: unknown;
-}
-
-export interface WeaponMetadata extends ItemMetadata {
+export interface WeaponProperties extends BaseItem {
   category: 'weapon';
   ammoName: string;
   ammoCount: number;
@@ -35,14 +13,15 @@ export interface WeaponMetadata extends ItemMetadata {
 export type ItemProperties = {
   name: string;
   quantity: number;
-} & (ItemMetadata | WeaponMetadata);
+} & (Partial<BaseItem> | WeaponProperties);
 
 export type Item = ReturnType<typeof ItemFactory>;
-export type InventoryItem = InstanceType<Item>;
-export type Weapon = ItemProperties & WeaponMetadata;
+export type InventoryItem = InstanceType<Item> | WeaponProperties;
+export type Weapon = Item & WeaponProperties;
 
 const Items: Record<string, Item> = {};
 const InventoryItems: Record<string, InventoryItem> = {};
+
 const excludeKeysForComparison: Record<string, true> = {
   uniqueId: true,
   quantity: true,
@@ -86,7 +65,7 @@ const itemProxy: ProxyHandler<BaseItem> = {
   },
 };
 
-export abstract class BaseItem implements ItemMetadata {
+export abstract class BaseItem {
   /** A unique name to identify the item type and inherit data. */
   readonly name: string;
 
@@ -102,6 +81,24 @@ export abstract class BaseItem implements ItemMetadata {
   /** The slotId for the top-left of the item. */
   public anchorSlot?: number;
 
+  public icon?: string;
+  public value?: number;
+  public label?: string;
+  public weight?: number;
+  public rarity?: string;
+  public category?: string;
+  public decay?: boolean;
+  public degrade?: number;
+  public tradeable?: boolean;
+  public itemLimit?: number;
+  public stackSize?: number;
+  public description?: string;
+  public durability?: number;
+  public rotate?: boolean;
+  public ammoName?: string;
+  public ammoCount?: number;
+  public hash?: number;
+
   [key: string]: unknown;
 
   static CreateUniqueId(item: BaseItem): number {
@@ -114,17 +111,17 @@ export abstract class BaseItem implements ItemMetadata {
     return new Proxy(this, itemProxy);
   }
 
-  get width() {
+  get width(): number {
     const properties = (this.constructor as Item).properties;
     return (Config.Inventory_MultiSlotItems && (this.rotate ? properties.height : properties.width)) || 1;
   }
 
-  get height() {
+  get height(): number {
     const properties = (this.constructor as Item).properties;
     return (Config.Inventory_MultiSlotItems && (this.rotate ? properties.width : properties.height)) || 1;
   }
 
-  protected addToInventory(inventory: BaseInventory, slots: number[]) {
+  private addToInventory(inventory: BaseInventory, slots: number[]) {
     inventory.setSlotRefs(slots, this.uniqueId);
 
     this.anchorSlot = slots[0];
@@ -133,7 +130,7 @@ export abstract class BaseItem implements ItemMetadata {
     return true;
   }
 
-  protected removeFromInventory(inventory: BaseInventory) {
+  private removeFromInventory(inventory: BaseInventory) {
     if (!inventory || this.inventoryId !== inventory.inventoryId) return false;
 
     const slots = inventory.getSlotsForItem(this, this.anchorSlot);
@@ -147,7 +144,7 @@ export abstract class BaseItem implements ItemMetadata {
     return slots;
   }
 
-  protected swapItems(
+  private swapItems(
     fromInventory: BaseInventory,
     toInventory: BaseInventory,
     toItem: InventoryItem,
@@ -226,7 +223,7 @@ export abstract class BaseItem implements ItemMetadata {
     return true;
   }
 
-  public move(inventory: BaseInventory, startSlot?: number) {
+  public move(inventory: BaseInventory, startSlot?: number): boolean {
     startSlot = startSlot ?? inventory.findAvailableSlot(this);
     const existingItem = inventory.getItemInSlot(startSlot);
     const currentInventory = this.inventoryId && BaseInventory.FromId(this.inventoryId);
@@ -274,7 +271,7 @@ export abstract class BaseItem implements ItemMetadata {
     return this.addToInventory(inventory, slots);
   }
 
-  public split(inventory: BaseInventory, quantity: number, startSlot?: number) {
+  public split(inventory: BaseInventory, quantity: number, startSlot?: number): InventoryItem | null {
     const existingItem = inventory.getItemInSlot(startSlot);
     const currentInventory = BaseInventory.FromId(this.inventoryId);
     quantity = Math.max(1, Math.ceil(quantity));
@@ -285,7 +282,7 @@ export abstract class BaseItem implements ItemMetadata {
       delete this.tempRotate;
       const canHoldItem = inventory.canHoldItem(this, startSlot, this.quantity + (existingItem?.quantity ?? 0));
 
-      if (!canHoldItem) return false;
+      if (!canHoldItem) return null;
 
       existingItem.quantity += quantity;
       this.quantity -= quantity;
@@ -303,7 +300,7 @@ export abstract class BaseItem implements ItemMetadata {
 
     const slots = inventory.canHoldItem(clone, startSlot);
 
-    if (!slots) return false;
+    if (!slots) return null;
 
     this.quantity -= clone.quantity;
 

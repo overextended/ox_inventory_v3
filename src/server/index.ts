@@ -1,6 +1,6 @@
-import { GetInventoryItem, type ItemProperties } from '@common/item';
-import { GetInventory } from './inventory';
+import { GetInventoryItem, type ItemProperties, type Weapon } from '@common/item';
 import { onClientCallback } from '@overextended/ox_lib/server';
+import { GetInventory } from './inventory';
 import { Inventory } from './inventory/class';
 import './commands';
 import Config from '@common/config';
@@ -95,7 +95,7 @@ onClientCallback('ox_inventory:findInventoryItem', async (playerId, data: ItemPr
 onNet('ox_inventory:updateWeapon', (ammoCount: number, durability: number) => {
   const playerId = source;
   const inventory = GetInventory(playerId);
-  const weapon = inventory && GetInventoryItem(inventory.currentWeapon);
+  const weapon = inventory && (GetInventoryItem(inventory.currentWeapon) as Weapon);
 
   if (!weapon || ammoCount > weapon.ammoCount || durability > weapon.durability) return;
 
