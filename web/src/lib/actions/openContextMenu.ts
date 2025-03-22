@@ -1,6 +1,7 @@
-import type { Action } from 'svelte/action';
 import { contextMenu } from '$lib/state/context-menu.svelte';
+import { tooltip } from '$lib/state/tooltip.svelte';
 import { fetchNui } from '$lib/utils/fetchNui';
+import type { Action } from 'svelte/action';
 
 export interface ContextMenuButtonResponse {
   buttonId: string;
@@ -47,6 +48,8 @@ export const openContextMenu: Action<HTMLElement, { itemId: string }> = (node, {
 
     const x = e.clientX;
     const y = e.clientY;
+
+    if (tooltip.visible) tooltip.close();
 
     contextMenu.open({
       x,
