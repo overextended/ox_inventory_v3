@@ -9,6 +9,7 @@ import type { DragItemType, InventoryState } from '$lib/state/inventory';
 import { cn } from '$lib/utils.js';
 import { fetchNui } from '$lib/utils/fetchNui';
 import { GetItemData } from '@common/item';
+import Icon from '@iconify/svelte';
 
 interface Props {
   visible: boolean;
@@ -27,22 +28,22 @@ const { inventory, visible, itemState, isDragging, dragItem, onMouseDown, invent
 <div class={cn("absolute top-1/4 left-1/4 z-[50]", !visible && "hidden")} id={`inventory-${inventory.inventoryId}`}>
   <div class="flex flex-col">
     <!-- svelte-ignore a11y_no_static_element_interactions -->
-    <div class="w-full bg-background p-2 text-foreground hover:cursor-move" use:draggableWindow={{ inventory }}>
+    <div class="w-full bg-background p-2 text-foreground hover:cursor-move flex items-center justify-between" use:draggableWindow={{ inventory }}>
       <p>
         {inventory.label}
 
         {#if inventory.playerId}({inventory.playerId === playerId ? "you" : inventory.playerId}){/if}
-
-        {#if inventory.playerId !== playerId}
-          <button
-            type="button"
-            class="cursor-pointer float-end font-bold"
-            onclick={() =>
-              fetchNui(`closeInventory`, { inventoryId: inventory.inventoryId, inventoryCount: inventoryCount })}
-            >X</button
-          >
-        {/if}
       </p>
+      {#if inventory.playerId !== playerId}
+        <button
+          type="button"
+          class="cursor-pointer flex items-center justify-center text-xl text-destructive"
+          onclick={() =>
+              fetchNui(`closeInventory`, { inventoryId: inventory.inventoryId, inventoryCount: inventoryCount })}
+        >
+          <Icon icon="material-symbols:close" width={24} height={24} />
+        </button>
+      {/if}
     </div>
     <div
       id="inv-grid"
