@@ -72,6 +72,9 @@ export abstract class BaseItem {
   /** The number of items stored in the stack. */
   public quantity: number;
 
+  /** The item's type, defaulting to miscellaneous. */
+  public category: 'ammo' | 'weapon' | 'weapon_attachment' | 'throwable' | 'miscellaneous';
+
   /** A unique identifier used to reference the item and save it in the database. */
   public uniqueId?: number;
 
@@ -86,7 +89,6 @@ export abstract class BaseItem {
   public label?: string;
   public weight?: number;
   public rarity?: string;
-  public category?: string;
   public decay?: boolean;
   public degrade?: number;
   public tradeable?: boolean;
@@ -99,6 +101,7 @@ export abstract class BaseItem {
   public ammoCount?: number;
   public hash?: number;
 
+  static [key: string]: unknown;
   [key: string]: unknown;
 
   static CreateUniqueId(item: BaseItem): number {
@@ -322,7 +325,6 @@ export function ItemFactory(item: ItemProperties) {
   item.value = item.value ?? 0;
 
   if (item.category === 'weapon') {
-    item.hash = isBrowser ? 0 : GetHashKey(`weapon_${item.name}`.toUpperCase());
     item.ammoName = item.ammoName || 'ammo_9';
   }
 

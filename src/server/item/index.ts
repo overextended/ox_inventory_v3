@@ -1,6 +1,11 @@
 import { BaseItem, GetItemData, type InventoryItem, ItemFactory, type ItemProperties } from '@common/item';
+import { LoadJsonFile } from '@common/utils';
 import db from '../db';
 import { Inventory } from '../inventory/class';
+
+Object.entries(LoadJsonFile<Record<string, ItemProperties>>('data/items.json')).forEach((value) =>
+  CreateItemClass({ ...value[1], name: value[0] }),
+);
 
 const itemMove = BaseItem.prototype.move;
 const itemSplit = BaseItem.prototype.split;
@@ -63,8 +68,6 @@ BaseItem.prototype.delete = function () {
   currentInventory.emit('ox_inventory:updateItem', this);
   currentInventory.invalidateCache();
 };
-
-db.getItems('ammo').forEach(CreateItemClass);
 
 function CreateItemClass(data: ItemProperties) {
   const Item = ItemFactory(data);
