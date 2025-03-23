@@ -10,7 +10,8 @@
     "build": "node scripts/build.js",
     "watch": "node scripts/build.js --watch",
     "format": "pnpm biome format --write",
-    "lint": "pnpm biome lint --write"
+    "lint": "pnpm biome lint --write",
+    "parseweapons": "node --experimental-strip-types --experimental-webstorage --localstorage-file=.cache scripts/weapons.ts"
   },
   "keywords": [
     "fivem"
@@ -53,5 +54,8 @@
     "@overextended/ox_lib": "^3.29.0",
     "@overextended/oxmysql": "^1.4.2",
     "sync-fetch": "0.6.0-2"
+  },
+  "engines": {
+    "node": ">=22.4.0"
   }
 }
