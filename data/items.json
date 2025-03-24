@@ -929,5 +929,11 @@
     "height": 2,
     "label": "Pipe Wrench",
     "weight": 2500
+  },
+  "clothing": {
+    "category": "clothing"
+  },
+  "accessory": {
+    "category": "clothing"
   }
 }

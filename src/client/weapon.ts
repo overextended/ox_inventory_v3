@@ -57,7 +57,7 @@ export function GetValidWeaponComponent(weapon: Weapon, name: string) {
   return null;
 }
 
-export function EquipWeapon(item: Weapon) {
+export async function EquipWeapon(item: Weapon) {
   if (item.category !== 'weapon') return;
 
   // todo: animations
@@ -88,7 +88,7 @@ export function EquipWeapon(item: Weapon) {
   setTimeout(() => RefillAmmoInstantly(cache.ped));
 }
 
-export function DisarmWeapon() {
+export async function DisarmWeapon() {
   if (!currentWeapon.name) return;
 
   // todo: animations

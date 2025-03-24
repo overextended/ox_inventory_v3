@@ -1,12 +1,13 @@
 import './keybinds';
 import './item';
 import './weapon';
-import { cache } from '@overextended/ox_lib/client';
-import { inventoryState, InventoryState } from './inventory';
 import Config from '@common/config';
+import { GROUP_FIREEXTINGUISHER, GROUP_PETROLCAN } from '@common/hash';
+import { cache } from '@overextended/ox_lib/client';
+import { InventoryState, inventoryState } from './inventory';
 import { isUsingItem } from './item';
 import { currentWeapon, weaponWheelEnabled } from './weapon';
-import { GROUP_FIREEXTINGUISHER, GROUP_PETROLCAN } from '@common/hash';
+import './clothing';
 
 setTick(() => {
   DisablePlayerVehicleRewards(cache.playerId);

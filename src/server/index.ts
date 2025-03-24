@@ -11,6 +11,35 @@ onNet('ox_inventory:requestOpenInventory', async (inventories?: string[]) => {
 
   if (!inventory) return;
 
+  if (inventory.itemIds().length === 0) {
+    inventory.addItem({
+      name: 'accessory',
+      quantity: 1,
+      componentId: 0,
+      collection: 'mp_m_bikerdlc_01',
+      drawableId: 0,
+      textureId: 0,
+    });
+
+    inventory.addItem({
+      name: 'accessory',
+      quantity: 1,
+      componentId: 0,
+      collection: 'mp_m_bikerdlc_01',
+      drawableId: 2,
+      textureId: 0,
+    });
+
+    inventory.addItem({
+      name: 'accessory',
+      quantity: 1,
+      componentId: 0,
+      collection: 'mp_f_bikerdlc_01',
+      drawableId: 0,
+      textureId: 0,
+    });
+  }
+
   inventory.open(playerId);
 
   if (!inventories || !inventories.length) return;

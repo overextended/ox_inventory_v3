@@ -2,6 +2,7 @@ import type { BaseInventory } from '@common/inventory/class';
 import type { InventoryItem } from '@common/item/index';
 import { cache, triggerServerCallback } from '@overextended/ox_lib/client';
 import './context';
+import { ValidateItemData } from './item';
 
 export enum InventoryState {
   Closed = 0,
@@ -12,8 +13,10 @@ export enum InventoryState {
 
 export let inventoryState: InventoryState = InventoryState.Closed;
 
-export function OpenInventory(data: { inventory: BaseInventory; items: InventoryItem[]; playerId: number }) {
+export async function OpenInventory(data: { inventory: BaseInventory; items: InventoryItem[]; playerId: number }) {
   data.playerId = cache.serverId;
+
+  await Promise.all(data.items.map(ValidateItemData));
 
   SetNuiFocus(true, true);
   SendNUIMessage({
@@ -63,7 +66,9 @@ onNet('ox_inventory:openInventory', OpenInventory);
 
 onNet('ox_inventory:closeInventory', CloseInventory);
 
-onNet('ox_inventory:updateItem', (...args: InventoryItem[]) => {
+onNet('ox_inventory:updateItem', async (...args: InventoryItem[]) => {
+  await Promise.all(args.map(ValidateItemData));
+
   SendNUIMessage({
     action: 'updateItem',
     data: args,

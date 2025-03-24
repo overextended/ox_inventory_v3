@@ -1,9 +1,20 @@
-import type { ItemProperties } from '@common/item/index';
+import type { Clothing, ItemProperties, Weapon } from '@common/item/index';
 import { triggerServerCallback } from '@overextended/ox_lib/client';
-import { currentWeapon, DisarmWeapon, EquipWeapon, LoadAmmo } from './weapon';
+import { GetClothingLabel, UseClothing } from './clothing';
+import { DisarmWeapon, EquipWeapon, LoadAmmo, currentWeapon } from './weapon';
 
 function GetItemData(item: ItemProperties): ItemProperties {
   return Object.assign(GlobalState[`Item:${item.name}`], item);
+}
+
+export async function ValidateItemData(item: ItemProperties) {
+  if (item.category === 'clothing') {
+    if (item.name === item.label) {
+      const label = await GetClothingLabel(item as Clothing);
+      item.label = label || item.name;
+    }
+    return;
+  }
 }
 
 export let isUsingItem = false;
@@ -23,27 +34,30 @@ export async function GetInventoryItem(itemId: number) {
 }
 
 export async function UseItem(itemId: number) {
-  if (isUsingItem) return;
+  try {
+    isUsingItem = true;
+    const response = await triggerServerCallback<ItemProperties | [string]>('ox_inventory:requestUseItem', 50, itemId);
 
-  isUsingItem = true;
-  const response = await triggerServerCallback<ItemProperties | [string]>('ox_inventory:requestUseItem', 50, itemId);
+    if (!response) return;
 
-  if (!response) return;
+    if (Array.isArray(response)) throw new Error(`requestUseItem failed: ${response}`);
 
-  if (Array.isArray(response)) throw new Error(`requestUseItem failed: ${response}`);
+    const item = GetItemData(response);
 
-  const item = GetItemData(response);
-
-  switch (item.category) {
-    case 'ammo':
-      LoadAmmo(item);
-      break;
-    case 'weapon':
-      currentWeapon.uniqueId === item.uniqueId ? DisarmWeapon() : EquipWeapon(item);
-      break;
+    switch (item.category) {
+      case 'ammo':
+        return await LoadAmmo(item);
+      case 'weapon':
+        return await (currentWeapon.uniqueId === item.uniqueId ? DisarmWeapon() : EquipWeapon(item as Weapon));
+      case 'clothing':
+        return await UseClothing(item as Clothing);
+    }
+  } catch (err) {
+    console.error(err);
+    return false;
+  } finally {
+    isUsingItem = false;
   }
-
-  isUsingItem = false;
 }
 
 onNet('ox_inventory:useItem', UseItem);
