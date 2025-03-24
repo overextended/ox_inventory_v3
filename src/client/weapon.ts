@@ -1,14 +1,16 @@
 import Config from '@common/config';
 import type { ItemProperties, Weapon } from '@common/item';
 import { ClearObject } from '@common/utils';
+import { GetWeaponAttachment } from '@common/weapon';
 import { cache, sleep, waitFor } from '@overextended/ox_lib';
+import { notify } from '@overextended/ox_lib/client';
 
 const SuppressPickupRewardType = N_0xf92099527db8e2a7;
 const ClearPickupRewardTypeSuppression = N_0x762db2d380b48d04;
 const pickups = (1 << 0) | (1 << 1) | (1 << 2) | (1 << 3) | (1 << 7) | (1 << 10);
 export let weaponWheelEnabled = false;
 
-export function SetweaponWheelEnabledState(disabled = Config.Weapon_Enabled) {
+export function SetWeaponWheelDisabled(disabled = Config.Weapon_Enabled) {
   weaponWheelEnabled = !disabled;
 
   SetWeaponsNoAutoswap(disabled);
@@ -21,7 +23,41 @@ export function SetweaponWheelEnabledState(disabled = Config.Weapon_Enabled) {
 
 export const currentWeapon = {} as Weapon & { group: number; timer: number; isMelee: boolean; shotDelay: number };
 
-export function EquipWeapon(item: ItemProperties) {
+export function GetValidWeaponComponent(weapon: Weapon, name: string) {
+  const attachment = GetWeaponAttachment(name);
+
+  if (!attachment) return null;
+
+  for (const component of attachment) {
+    if (!DoesWeaponTakeWeaponComponent(weapon.hash, component)) continue;
+
+    if (HasPedGotWeaponComponent(cache.ped, weapon.hash, component)) {
+      const notification = 'weapon_has_component';
+
+      notify({
+        id: notification,
+        description: notification,
+        type: 'error',
+      });
+
+      return null;
+    }
+
+    return component;
+  }
+
+  const notification = 'invalid_weapon_component';
+
+  notify({
+    id: notification,
+    description: notification,
+    type: 'error',
+  });
+
+  return null;
+}
+
+export function EquipWeapon(item: Weapon) {
   if (item.category !== 'weapon') return;
 
   // todo: animations
@@ -34,12 +70,20 @@ export function EquipWeapon(item: ItemProperties) {
 
   GiveWeaponToPed(cache.ped, currentWeapon.hash, 0, false, true);
 
-  // todo: support weapon components, tints, special ammo
+  // todo: support weapon components, special ammo
+  if (currentWeapon.components) {
+    for (const key of currentWeapon.components) {
+      const component = GetValidWeaponComponent(currentWeapon, key);
+
+      if (component) GiveWeaponComponentToPed(cache.ped, currentWeapon.hash, component);
+    }
+  }
 
   SetCurrentPedWeapon(cache.ped, currentWeapon.hash, true);
   SetPedCurrentWeaponVisible(cache.ped, true, false, false, false);
   SetWeaponsNoAutoswap(true);
   SetPedAmmo(cache.ped, currentWeapon.hash, currentWeapon.ammoCount);
+  SetPedWeaponTintIndex(cache.ped, currentWeapon.hash, currentWeapon.tint ?? 0);
 
   setTimeout(() => RefillAmmoInstantly(cache.ped));
 }
@@ -49,12 +93,10 @@ export function DisarmWeapon() {
 
   // todo: animations
 
-  SetweaponWheelEnabledState();
+  SetWeaponWheelDisabled();
   SetPedAmmo(cache.ped, currentWeapon.hash, 0);
-  RemoveAllPedWeapons(cache.ped, true);
+  RemoveWeaponFromPed(cache.ped, currentWeapon.hash);
   ClearObject(currentWeapon);
-
-  // todo: return parachute to player
 }
 
 export async function LoadAmmo(item: ItemProperties) {

@@ -8,12 +8,19 @@ export interface WeaponProperties extends BaseItem {
   ammoName: string;
   ammoCount: number;
   hash: number;
+  tint?: number;
+  components?: string[];
+}
+
+export interface WeaponAttachmentProperties extends BaseItem {
+  category: 'weapon_attachment';
+  components: string[];
 }
 
 export type ItemProperties = {
   name: string;
   quantity: number;
-} & (Partial<BaseItem> | WeaponProperties);
+} & (Partial<BaseItem> | WeaponProperties | WeaponAttachmentProperties);
 
 export type Item = ReturnType<typeof ItemFactory>;
 export type InventoryItem = InstanceType<Item> | WeaponProperties;
