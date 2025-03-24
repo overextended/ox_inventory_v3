@@ -1,12 +1,14 @@
 {
   "acidpackage": {
     "category": "throwable",
+    "hash": -135142818,
     "height": 2,
-    "label": "Ball",
+    "label": "Acid Package",
     "weight": 120
   },
   "advancedrifle": {
     "category": "weapon",
+    "hash": -1357824103,
     "height": 2,
     "label": "Advanced Rifle",
     "weight": 3100,
@@ -111,13 +113,14 @@
   },
   "appistol": {
     "category": "weapon",
-    "height": 1,
+    "hash": 584646201,
     "label": "AP Pistol",
     "weight": 1400,
     "width": 2
   },
   "assaultrifle": {
     "category": "weapon",
+    "hash": -1074790547,
     "height": 2,
     "label": "Assault Rifle",
     "weight": 4500,
@@ -125,13 +128,15 @@
   },
   "assaultriflemk2": {
     "category": "weapon",
+    "hash": 961495388,
     "height": 2,
-    "label": "Assault Rifle Mk2",
+    "label": "Assault Rifle Mk II",
     "weight": 2950,
     "width": 4
   },
   "assaultshotgun": {
     "category": "weapon",
+    "hash": -494615257,
     "height": 2,
     "label": "Assault Shotgun",
     "weight": 5200,
@@ -139,6 +144,7 @@
   },
   "assaultsmg": {
     "category": "weapon",
+    "hash": -270015777,
     "height": 2,
     "label": "Assault SMG",
     "weight": 2900,
@@ -146,6 +152,7 @@
   },
   "autoshotgun": {
     "category": "weapon",
+    "hash": 317205821,
     "height": 2,
     "label": "Sweeper Shotgun",
     "weight": 4400,
@@ -153,18 +160,20 @@
   },
   "ball": {
     "category": "throwable",
+    "hash": 600439132,
     "label": "Ball",
     "weight": 149
   },
   "bat": {
     "category": "weapon",
+    "hash": -1786099057,
     "height": 2,
-    "label": "Bat",
-    "weight": 1134,
-    "width": 1
+    "label": "Baseball Bat",
+    "weight": 1134
   },
   "battleaxe": {
     "category": "weapon",
+    "hash": -853065399,
     "height": 3,
     "label": "Battle Axe",
     "weight": 6500,
@@ -172,6 +181,7 @@
   },
   "battlerifle": {
     "category": "weapon",
+    "hash": 1924557585,
     "height": 2,
     "label": "Battle Rifle",
     "weight": 3300,
@@ -179,11 +189,14 @@
   },
   "bottle": {
     "category": "weapon",
+    "hash": -102323637,
+    "height": 2,
     "label": "Bottle",
     "weight": 350
   },
   "bullpuprifle": {
     "category": "weapon",
+    "hash": 2132975508,
     "height": 2,
     "label": "Bullpup Rifle",
     "weight": 2900,
@@ -191,13 +204,15 @@
   },
   "bullpupriflemk2": {
     "category": "weapon",
+    "hash": -2066285827,
     "height": 2,
-    "label": "Bullpup Rifle Mk2",
+    "label": "Bullpup Rifle Mk II",
     "weight": 2900,
     "width": 5
   },
   "bullpupshotgun": {
     "category": "weapon",
+    "hash": -1654528753,
     "height": 2,
     "label": "Bullpup Shotgun",
     "weight": 3100,
@@ -205,16 +220,20 @@
   },
   "bzgas": {
     "category": "throwable",
+    "hash": -1600701090,
     "label": "BZ Gas",
     "weight": 600
   },
   "candycane": {
     "category": "weapon",
+    "hash": 1703483498,
+    "height": 2,
     "label": "Candy Cane",
     "weight": 85
   },
   "carbinerifle": {
     "category": "weapon",
+    "hash": -2084633992,
     "height": 2,
     "label": "Carbine Rifle",
     "weight": 3100,
@@ -222,20 +241,22 @@
   },
   "carbineriflemk2": {
     "category": "weapon",
+    "hash": -86904375,
     "height": 2,
-    "label": "Carbine Rifle Mk2",
+    "label": "Carbine Rifle Mk II",
     "weight": 3000,
     "width": 4
   },
   "ceramicpistol": {
     "category": "weapon",
-    "height": 1,
+    "hash": 727643628,
     "label": "Ceramic Pistol",
     "weight": 800,
     "width": 2
   },
   "combatmg": {
     "category": "weapon",
+    "hash": 2144741730,
     "height": 3,
     "label": "Combat MG",
     "weight": 7500,
@@ -243,13 +264,15 @@
   },
   "combatmgmk2": {
     "category": "weapon",
+    "hash": -608341376,
     "height": 3,
-    "label": "Combat MG Mk2",
+    "label": "Combat MG Mk II",
     "weight": 8000,
     "width": 4
   },
   "combatpdw": {
     "category": "weapon",
+    "hash": 171789620,
     "height": 2,
     "label": "Combat PDW",
     "weight": 2300,
@@ -257,13 +280,14 @@
   },
   "combatpistol": {
     "category": "weapon",
-    "height": 1,
+    "hash": 1593441988,
     "label": "Combat Pistol",
     "weight": 785,
     "width": 2
   },
   "combatshotgun": {
     "category": "weapon",
+    "hash": 94989220,
     "height": 2,
     "label": "Combat Shotgun",
     "weight": 4400,
@@ -271,6 +295,7 @@
   },
   "compactlauncher": {
     "category": "weapon",
+    "hash": 125959754,
     "height": 2,
     "label": "Compact Grenade Launcher",
     "weight": 2500,
@@ -278,6 +303,7 @@
   },
   "compactrifle": {
     "category": "weapon",
+    "hash": 1649403952,
     "height": 2,
     "label": "Compact Rifle",
     "weight": 3600,
@@ -285,6 +311,7 @@
   },
   "crowbar": {
     "category": "weapon",
+    "hash": -2067956739,
     "height": 2,
     "label": "Crowbar",
     "weight": 2500,
@@ -292,13 +319,14 @@
   },
   "dagger": {
     "category": "weapon",
-    "height": 1,
-    "label": "Dagger",
+    "hash": -1834847097,
+    "label": "Antique Cavalry Dagger",
     "weight": 800,
     "width": 2
   },
   "dbshotgun": {
     "category": "weapon",
+    "hash": -275439685,
     "height": 2,
     "label": "Double Barrel Shotgun",
     "weight": 3175,
@@ -306,13 +334,14 @@
   },
   "doubleaction": {
     "category": "weapon",
-    "height": 1,
-    "label": "Double Action Revolver",
+    "hash": -1746263880,
+    "label": "Double-Action Revolver",
     "weight": 940,
     "width": 2
   },
   "emplauncher": {
     "category": "weapon",
+    "hash": -618237638,
     "height": 2,
     "label": "Compact EMP Launcher",
     "weight": 2750,
@@ -320,6 +349,7 @@
   },
   "fertilizercan": {
     "category": "weapon",
+    "hash": 406929569,
     "height": 3,
     "label": "Fertilizer Can",
     "weight": 12000,
@@ -327,6 +357,7 @@
   },
   "fireextinguisher": {
     "category": "weapon",
+    "hash": 101631238,
     "height": 3,
     "label": "Fire Extinguisher",
     "weight": 8616,
@@ -334,6 +365,7 @@
   },
   "firework": {
     "category": "weapon",
+    "hash": 2138347493,
     "height": 2,
     "label": "Firework Launcher",
     "weight": 1000,
@@ -341,42 +373,47 @@
   },
   "flare": {
     "category": "throwable",
+    "hash": 1233104067,
     "label": "Flare",
     "weight": 250
   },
   "flaregun": {
     "category": "weapon",
-    "height": 1,
+    "hash": 1198879012,
     "label": "Flare Gun",
     "weight": 1000,
     "width": 2
   },
   "flashlight": {
     "category": "weapon",
+    "hash": -1951375401,
+    "height": 2,
     "label": "Flashlight",
     "weight": 125
   },
   "gadgetpistol": {
     "category": "weapon",
-    "height": 1,
+    "hash": 1470379660,
     "label": "Perico Pistol",
     "weight": 1750,
     "width": 3
   },
   "golfclub": {
     "category": "weapon",
+    "hash": 1141786504,
     "height": 2,
     "label": "Golf Club",
-    "weight": 330,
-    "width": 1
+    "weight": 330
   },
   "grenade": {
     "category": "throwable",
+    "hash": -1813897027,
     "label": "Grenade",
     "weight": 400
   },
   "grenadelauncher": {
     "category": "weapon",
+    "hash": -1568386805,
     "height": 2,
     "label": "Grenade Launcher",
     "weight": 6500,
@@ -392,41 +429,44 @@
   },
   "gusenberg": {
     "category": "weapon",
+    "hash": 1627465347,
     "height": 2,
-    "label": "Gusenberg",
+    "label": "Gusenberg Sweeper",
     "weight": 4900,
     "width": 4
   },
   "hammer": {
     "category": "weapon",
-    "height": 1,
+    "hash": 1317494643,
     "label": "Hammer",
     "weight": 1200,
     "width": 2
   },
   "hatchet": {
     "category": "weapon",
-    "height": 1,
+    "hash": -102973651,
     "label": "Hatchet",
     "weight": 1000,
     "width": 2
   },
   "hazardcan": {
     "category": "weapon",
+    "hash": -1168940174,
     "height": 3,
-    "label": "Hazard Can",
+    "label": "Hazardous Jerry Can",
     "weight": 12000,
     "width": 4
   },
   "heavypistol": {
     "category": "weapon",
-    "height": 1,
+    "hash": -771403250,
     "label": "Heavy Pistol",
     "weight": 1100,
     "width": 2
   },
   "heavyrifle": {
     "category": "weapon",
+    "hash": -947031628,
     "height": 2,
     "label": "Heavy Rifle",
     "weight": 3300,
@@ -434,6 +474,7 @@
   },
   "heavyshotgun": {
     "category": "weapon",
+    "hash": 984333226,
     "height": 2,
     "label": "Heavy Shotgun",
     "weight": 3600,
@@ -441,6 +482,7 @@
   },
   "heavysniper": {
     "category": "weapon",
+    "hash": 205991906,
     "height": 3,
     "label": "Heavy Sniper",
     "weight": 12700,
@@ -448,13 +490,15 @@
   },
   "heavysnipermk2": {
     "category": "weapon",
+    "hash": 177293209,
     "height": 3,
-    "label": "Heavy Sniper Mk2",
+    "label": "Heavy Sniper Mk II",
     "weight": 14000,
     "width": 4
   },
   "hominglauncher": {
     "category": "weapon",
+    "hash": 1672152130,
     "height": 2,
     "label": "Homing Launcher",
     "weight": 10000,
@@ -462,37 +506,41 @@
   },
   "knife": {
     "category": "weapon",
+    "hash": -1716189206,
+    "height": 2,
     "label": "Knife",
     "weight": 300
   },
   "knuckle": {
     "category": "weapon",
-    "label": "Knuckle Dusters",
+    "hash": -656458692,
+    "label": "Knuckle Duster",
     "weight": 300
   },
   "machete": {
     "category": "weapon",
-    "height": 1,
+    "hash": -581044007,
     "label": "Machete",
     "weight": 1000,
     "width": 2
   },
   "machinepistol": {
     "category": "weapon",
-    "height": 1,
+    "hash": -619010992,
     "label": "Machine Pistol",
     "weight": 1400,
     "width": 2
   },
   "marksmanpistol": {
     "category": "weapon",
-    "height": 1,
+    "hash": -598887786,
     "label": "Marksman Pistol",
     "weight": 1588,
     "width": 3
   },
   "marksmanrifle": {
     "category": "weapon",
+    "hash": -952879014,
     "height": 3,
     "label": "Marksman Rifle",
     "weight": 7500,
@@ -500,27 +548,29 @@
   },
   "marksmanriflemk2": {
     "category": "weapon",
+    "hash": 1785463520,
     "height": 2,
-    "label": "Marksman Rifle Mk2",
+    "label": "Marksman Rifle Mk II",
     "weight": 4000,
     "width": 4
   },
   "metaldetector": {
     "category": "weapon",
-    "height": 1,
     "label": "Metal Detector",
     "weight": 1200,
     "width": 2
   },
   "mg": {
     "category": "weapon",
+    "hash": -1660422300,
     "height": 3,
-    "label": "Machine Gun",
+    "label": "MG",
     "weight": 9000,
     "width": 4
   },
   "microsmg": {
     "category": "weapon",
+    "hash": 324215364,
     "height": 2,
     "label": "Micro SMG",
     "weight": 3000,
@@ -528,6 +578,7 @@
   },
   "militaryrifle": {
     "category": "weapon",
+    "hash": -1658906650,
     "height": 2,
     "label": "Military Rifle",
     "weight": 3600,
@@ -535,6 +586,7 @@
   },
   "minigun": {
     "category": "weapon",
+    "hash": 1119849093,
     "height": 4,
     "label": "Minigun",
     "weight": 38500,
@@ -542,18 +594,20 @@
   },
   "minismg": {
     "category": "weapon",
-    "height": 1,
+    "hash": -1121678507,
     "label": "Mini SMG",
     "weight": 1270,
     "width": 3
   },
   "molotov": {
     "category": "throwable",
+    "hash": 615608432,
     "label": "Molotov",
     "weight": 1800
   },
   "musket": {
     "category": "weapon",
+    "hash": -1466123874,
     "height": 2,
     "label": "Musket",
     "weight": 4500,
@@ -561,6 +615,7 @@
   },
   "navyrevolver": {
     "category": "weapon",
+    "hash": -1853920116,
     "height": 2,
     "label": "Navy Revolver",
     "weight": 4000,
@@ -568,13 +623,14 @@
   },
   "nightstick": {
     "category": "weapon",
-    "height": 1,
+    "hash": 1737195953,
     "label": "Nightstick",
     "weight": 1000,
     "width": 2
   },
   "petrolcan": {
     "category": "weapon",
+    "hash": 883325847,
     "height": 2,
     "label": "Jerry Can",
     "weight": 4000,
@@ -582,44 +638,48 @@
   },
   "pipebomb": {
     "category": "throwable",
+    "hash": -1169823560,
     "label": "Pipe Bomb",
     "weight": 1800
   },
   "pistol": {
     "category": "weapon",
-    "height": 1,
+    "hash": 453432689,
     "label": "Pistol",
     "weight": 1130,
     "width": 2
   },
   "pistol50": {
     "category": "weapon",
-    "height": 1,
+    "hash": -1716589765,
     "label": "Pistol .50",
     "weight": 2000,
     "width": 3
   },
   "pistolmk2": {
     "category": "weapon",
-    "height": 1,
-    "label": "Pistol Mk2",
+    "hash": -1075685676,
+    "label": "Pistol Mk II",
     "weight": 1000,
     "width": 2
   },
   "pistolxm3": {
     "category": "weapon",
-    "height": 1,
+    "hash": 465894841,
     "label": "WM 29 Pistol",
     "weight": 850,
     "width": 2
   },
   "poolcue": {
     "category": "weapon",
+    "hash": -1810795771,
+    "height": 2,
     "label": "Pool Cue",
     "weight": 146
   },
   "precisionrifle": {
     "category": "weapon",
+    "hash": 1853742572,
     "height": 3,
     "label": "Precision Rifle",
     "weight": 4800,
@@ -627,11 +687,13 @@
   },
   "proxmine": {
     "category": "throwable",
+    "hash": -1420407917,
     "label": "Proximity Mine",
     "weight": 2500
   },
   "pumpshotgun": {
     "category": "weapon",
+    "hash": 487013001,
     "height": 2,
     "label": "Pump Shotgun",
     "weight": 3400,
@@ -639,13 +701,15 @@
   },
   "pumpshotgunmk2": {
     "category": "weapon",
+    "hash": 1432025498,
     "height": 2,
-    "label": "Pump Shotgun Mk2",
+    "label": "Pump Shotgun Mk II",
     "weight": 3200,
     "width": 4
   },
   "railgun": {
     "category": "weapon",
+    "hash": 1834241177,
     "height": 2,
     "label": "Railgun",
     "weight": 3570,
@@ -653,13 +717,15 @@
   },
   "railgunxm3": {
     "category": "weapon",
+    "hash": -22923932,
     "height": 2,
-    "label": "Railgun XM3",
+    "label": "Railgun",
     "weight": 3570,
     "width": 4
   },
   "raycarbine": {
     "category": "weapon",
+    "hash": 1198256469,
     "height": 2,
     "label": "Unholy Hellbringer",
     "weight": 3620,
@@ -667,6 +733,7 @@
   },
   "rayminigun": {
     "category": "weapon",
+    "hash": -1238556825,
     "height": 3,
     "label": "Widowmaker",
     "weight": 7000,
@@ -674,27 +741,30 @@
   },
   "raypistol": {
     "category": "weapon",
-    "height": 1,
+    "hash": -1355376991,
     "label": "Up-n-Atomizer",
     "weight": 1540,
     "width": 3
   },
   "revolver": {
     "category": "weapon",
+    "hash": -1045183535,
     "height": 2,
-    "label": "Revolver",
+    "label": "Heavy Revolver",
     "weight": 2260,
     "width": 4
   },
   "revolvermk2": {
     "category": "weapon",
+    "hash": -879347409,
     "height": 2,
-    "label": "Revolver Mk2",
+    "label": "Heavy Revolver Mk II",
     "weight": 2600,
     "width": 5
   },
   "rpg": {
     "category": "weapon",
+    "hash": -1312131151,
     "height": 3,
     "label": "RPG",
     "weight": 5000,
@@ -702,13 +772,15 @@
   },
   "sawnoffshotgun": {
     "category": "weapon",
+    "hash": 2017895192,
     "height": 2,
-    "label": "Sawn Off Shotgun",
+    "label": "Sawed-Off Shotgun",
     "weight": 2380,
     "width": 5
   },
   "smg": {
     "category": "weapon",
+    "hash": 736523883,
     "height": 2,
     "label": "SMG",
     "weight": 3084,
@@ -716,18 +788,21 @@
   },
   "smgmk2": {
     "category": "weapon",
+    "hash": 2024373456,
     "height": 2,
-    "label": "SMG Mk2",
+    "label": "SMG Mk II",
     "weight": 2700,
     "width": 3
   },
   "smokegrenade": {
     "category": "throwable",
+    "hash": -37975472,
     "label": "Tear Gas",
     "weight": 600
   },
   "sniperrifle": {
     "category": "weapon",
+    "hash": 100416529,
     "height": 3,
     "label": "Sniper Rifle",
     "weight": 5000,
@@ -735,11 +810,13 @@
   },
   "snowball": {
     "category": "throwable",
-    "label": "Snow Ball",
+    "hash": 126349499,
+    "label": "Snowball",
     "weight": 5
   },
   "snowlauncher": {
     "category": "weapon",
+    "hash": 62870901,
     "height": 2,
     "label": "Snowball Launcher",
     "weight": 1000,
@@ -747,16 +824,21 @@
   },
   "snspistol": {
     "category": "weapon",
+    "hash": -1076751822,
     "label": "SNS Pistol",
-    "weight": 465
+    "weight": 465,
+    "width": 2
   },
   "snspistolmk2": {
     "category": "weapon",
-    "label": "SNS Pistol Mk2",
-    "weight": 465
+    "hash": -2009644972,
+    "label": "SNS Pistol Mk II",
+    "weight": 465,
+    "width": 2
   },
   "specialcarbine": {
     "category": "weapon",
+    "hash": -1063057011,
     "height": 2,
     "label": "Special Carbine",
     "weight": 3000,
@@ -764,25 +846,28 @@
   },
   "specialcarbinemk2": {
     "category": "weapon",
+    "hash": -1768145561,
     "height": 2,
-    "label": "Special Carbine Mk2",
+    "label": "Special Carbine Mk II",
     "weight": 3370,
     "width": 4
   },
   "stickybomb": {
     "category": "throwable",
+    "hash": 741814745,
     "label": "Sticky Bomb",
     "weight": 1000
   },
   "stonehatchet": {
     "category": "weapon",
-    "height": 1,
+    "hash": 940833800,
     "label": "Stone Hatchet",
     "weight": 800,
     "width": 2
   },
   "strickler": {
     "category": "weapon",
+    "hash": -1916886713,
     "height": 2,
     "label": "El Strickler",
     "weight": 3800,
@@ -790,7 +875,7 @@
   },
   "stungun": {
     "category": "weapon",
-    "height": 1,
+    "hash": 911657153,
     "label": "Stun Gun",
     "weight": 227,
     "width": 2
@@ -798,49 +883,51 @@
   "stungunmp": {
     "category": "weapon",
     "hash": 1171102963,
-    "height": 1,
     "label": "Stun Gun",
     "weight": 230,
     "width": 2
   },
   "stunrod": {
     "category": "weapon",
+    "hash": -624951259,
     "height": 2,
     "label": "The Shocker",
-    "weight": 1200,
-    "width": 1
+    "weight": 1200
   },
   "switchblade": {
     "category": "weapon",
+    "hash": -538741184,
+    "height": 2,
     "label": "Switchblade",
     "weight": 300
   },
   "tacticalrifle": {
     "category": "weapon",
+    "hash": -774507221,
     "height": 2,
-    "label": "Tactical Rifle",
+    "label": "Service Carbine",
     "weight": 3400,
     "width": 4
   },
   "tecpistol": {
     "category": "weapon",
-    "height": 1,
+    "hash": 350597077,
     "label": "Tactical SMG",
     "weight": 1500,
     "width": 2
   },
   "vintagepistol": {
     "category": "weapon",
-    "height": 1,
+    "hash": 137902532,
     "label": "Vintage Pistol",
     "weight": 700,
     "width": 2
   },
   "wrench": {
     "category": "weapon",
+    "hash": 419712736,
     "height": 2,
-    "label": "Wrench",
-    "weight": 2500,
-    "width": 1
+    "label": "Pipe Wrench",
+    "weight": 2500
   }
 }
