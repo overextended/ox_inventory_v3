@@ -10,5 +10,4 @@ declare interface MoveItem {
   coords?: [number, number, number];
 }
 
-
 declare type NuiCb = (value: unknown) => void;

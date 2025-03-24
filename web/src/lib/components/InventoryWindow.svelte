@@ -25,21 +25,24 @@ interface Props {
 const { inventory, visible, itemState, isDragging, dragItem, onMouseDown, inventoryCount, playerId }: Props = $props();
 </script>
 
-<div class={cn("absolute top-1/4 left-1/4 z-[50]", !visible && "hidden")} id={`inventory-${inventory.inventoryId}`}>
+<div class={cn('absolute top-1/4 left-1/4 z-[50]', !visible && 'hidden')} id={`inventory-${inventory.inventoryId}`}>
   <div class="flex flex-col">
     <!-- svelte-ignore a11y_no_static_element_interactions -->
-    <div class="w-full bg-background p-2 text-foreground hover:cursor-move flex items-center justify-between" use:draggableWindow={{ inventory }}>
+    <div
+      class="w-full bg-background p-2 text-foreground hover:cursor-move flex items-center justify-between"
+      use:draggableWindow={{ inventory }}
+    >
       <p>
         {inventory.label}
 
-        {#if inventory.playerId}({inventory.playerId === playerId ? "you" : inventory.playerId}){/if}
+        {#if inventory.playerId}({inventory.playerId === playerId ? 'you' : inventory.playerId}){/if}
       </p>
       {#if inventory.playerId !== playerId}
         <button
           type="button"
           class="cursor-pointer flex items-center justify-center text-xl text-destructive"
           onclick={() =>
-              fetchNui(`closeInventory`, { inventoryId: inventory.inventoryId, inventoryCount: inventoryCount })}
+            fetchNui(`closeInventory`, { inventoryId: inventory.inventoryId, inventoryCount: inventoryCount })}
         >
           <Icon icon="material-symbols:close" width={24} height={24} />
         </button>
@@ -54,7 +57,7 @@ const { inventory, visible, itemState, isDragging, dragItem, onMouseDown, invent
       {#each $itemState as item, index (item ? `${item.anchorSlot}-${index}` : `empty-${index}`)}
         <!-- svelte-ignore a11y_no_static_element_interactions -->
         <div
-          class={"bg-gradient-to-b from-black/20 to-black/50 flex text-primary-foreground items-center justify-center relative border-r border-b border-white/10"}
+          class={'bg-gradient-to-b from-black/20 to-black/50 flex text-primary-foreground items-center justify-center relative border-r border-b border-white/10'}
           style={`width: ${SLOT_SIZE}px;height: ${SLOT_SIZE}px;`}
           data-slot={index}
           onmousedown={onMouseDown}
@@ -66,11 +69,12 @@ const { inventory, visible, itemState, isDragging, dragItem, onMouseDown, invent
               data-slot={index}
               data-anchorSlot={item.anchorSlot === index}
               use:openContextMenu={{ itemId: item.uniqueId }}
-              use:itemTooltip={{item}}
+              use:itemTooltip={{ item }}
               class={cn(
-                "absolute top-0 left-0 z-50 bg-black/50 text-right text-xs px-1 flex",
-                isDragging && "pointer-events-none",
-                dragItem?.uniqueId === item.uniqueId && "opacity-80 brightness-50 grayscale-[0.8]",
+                'absolute top-0 left-0 z-50 bg-black/50 text-right text-xs px-1 flex border border-transparent border-dashed',
+                isDragging && 'pointer-events-none',
+                dragItem?.uniqueId === item.uniqueId && 'opacity-80 brightness-50 grayscale-[0.8]',
+                'hover:bg-black/40 hover:border-zinc-500',
               )}
               style={`
                 width: ${SLOT_SIZE * w - 1}px;
@@ -81,14 +85,17 @@ const { inventory, visible, itemState, isDragging, dragItem, onMouseDown, invent
               <div
                 class="h-full w-full flex flex-col justify-between font-semibold text-foreground pointer-events-none z-[51]"
               >
-                <p class="text-[0.65rem]">{item.label}</p>
-                {#if item.ammoName}
-                  <p class="flex items-end justify-end">
-                    <img src={GetItemData(item.ammoName)?.properties?.icon} alt="" class="h-5" />{item.ammoCount}
-                  </p>
-                {:else}
-                  <p>x{item.quantity}</p>
-                {/if}
+                <p class="flex items-end justify-end text-[0.7rem] h-full">
+                  {#if item.durability}
+                    <img
+                      src={GetItemData(item.ammoName)?.properties?.icon}
+                      alt=""
+                      class="h-4 w-auto inline align-middle"
+                    />{item.ammoCount}
+                  {:else}
+                    x{item.quantity}
+                  {/if}
+                </p>
 
                 {#if item.durability}
                   <DurabilityCircle durability={item.durability} />
