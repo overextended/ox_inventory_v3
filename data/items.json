@@ -10,7 +10,7 @@
     "height": 2,
     "label": "Advanced Rifle",
     "weight": 3100,
-    "width": 6
+    "width": 4
   },
   "ammo_22": {
     "category": "ammo",
@@ -121,35 +121,35 @@
     "height": 2,
     "label": "Assault Rifle",
     "weight": 4500,
-    "width": 6
+    "width": 4
   },
   "assaultriflemk2": {
     "category": "weapon",
     "height": 2,
     "label": "Assault Rifle Mk2",
     "weight": 2950,
-    "width": 6
+    "width": 4
   },
   "assaultshotgun": {
     "category": "weapon",
     "height": 2,
     "label": "Assault Shotgun",
     "weight": 5200,
-    "width": 6
+    "width": 4
   },
   "assaultsmg": {
     "category": "weapon",
     "height": 2,
     "label": "Assault SMG",
     "weight": 2900,
-    "width": 5
+    "width": 3
   },
   "autoshotgun": {
     "category": "weapon",
     "height": 2,
     "label": "Sweeper Shotgun",
     "weight": 4400,
-    "width": 6
+    "width": 4
   },
   "ball": {
     "category": "throwable",
@@ -168,14 +168,14 @@
     "height": 3,
     "label": "Battle Axe",
     "weight": 6500,
-    "width": 6
+    "width": 4
   },
   "battlerifle": {
     "category": "weapon",
     "height": 2,
     "label": "Battle Rifle",
     "weight": 3300,
-    "width": 6
+    "width": 4
   },
   "bottle": {
     "category": "weapon",
@@ -201,7 +201,7 @@
     "height": 2,
     "label": "Bullpup Shotgun",
     "weight": 3100,
-    "width": 6
+    "width": 4
   },
   "bzgas": {
     "category": "throwable",
@@ -218,14 +218,14 @@
     "height": 2,
     "label": "Carbine Rifle",
     "weight": 3100,
-    "width": 6
+    "width": 4
   },
   "carbineriflemk2": {
     "category": "weapon",
     "height": 2,
     "label": "Carbine Rifle Mk2",
     "weight": 3000,
-    "width": 6
+    "width": 4
   },
   "ceramicpistol": {
     "category": "weapon",
@@ -239,14 +239,14 @@
     "height": 3,
     "label": "Combat MG",
     "weight": 7500,
-    "width": 6
+    "width": 4
   },
   "combatmgmk2": {
     "category": "weapon",
     "height": 3,
     "label": "Combat MG Mk2",
     "weight": 8000,
-    "width": 6
+    "width": 4
   },
   "combatpdw": {
     "category": "weapon",
@@ -267,21 +267,21 @@
     "height": 2,
     "label": "Combat Shotgun",
     "weight": 4400,
-    "width": 6
+    "width": 4
   },
   "compactlauncher": {
     "category": "weapon",
     "height": 2,
     "label": "Compact Grenade Launcher",
     "weight": 2500,
-    "width": 5
+    "width": 3
   },
   "compactrifle": {
     "category": "weapon",
     "height": 2,
     "label": "Compact Rifle",
     "weight": 3600,
-    "width": 6
+    "width": 3
   },
   "crowbar": {
     "category": "weapon",
@@ -302,7 +302,7 @@
     "height": 2,
     "label": "Double Barrel Shotgun",
     "weight": 3175,
-    "width": 6
+    "width": 4
   },
   "doubleaction": {
     "category": "weapon",
@@ -316,28 +316,28 @@
     "height": 2,
     "label": "Compact EMP Launcher",
     "weight": 2750,
-    "width": 5
+    "width": 3
   },
   "fertilizercan": {
     "category": "weapon",
     "height": 3,
     "label": "Fertilizer Can",
     "weight": 12000,
-    "width": 6
+    "width": 4
   },
   "fireextinguisher": {
     "category": "weapon",
     "height": 3,
     "label": "Fire Extinguisher",
     "weight": 8616,
-    "width": 6
+    "width": 4
   },
   "firework": {
     "category": "weapon",
-    "height": 1,
+    "height": 2,
     "label": "Firework Launcher",
     "weight": 1000,
-    "width": 2
+    "width": 5
   },
   "flare": {
     "category": "throwable",
@@ -377,10 +377,10 @@
   },
   "grenadelauncher": {
     "category": "weapon",
-    "height": 3,
+    "height": 2,
     "label": "Grenade Launcher",
     "weight": 6500,
-    "width": 6
+    "width": 4
   },
   "grenadelaunchersmoke": {
     "category": "weapon",
@@ -388,14 +388,14 @@
     "height": 2,
     "label": "Tear Gas Launcher",
     "weight": 6000,
-    "width": 6
+    "width": 4
   },
   "gusenberg": {
     "category": "weapon",
     "height": 2,
     "label": "Gusenberg",
     "weight": 4900,
-    "width": 6
+    "width": 4
   },
   "hammer": {
     "category": "weapon",
@@ -416,7 +416,7 @@
     "height": 3,
     "label": "Hazard Can",
     "weight": 12000,
-    "width": 6
+    "width": 4
   },
   "heavypistol": {
     "category": "weapon",
@@ -430,35 +430,35 @@
     "height": 2,
     "label": "Heavy Rifle",
     "weight": 3300,
-    "width": 6
+    "width": 4
   },
   "heavyshotgun": {
     "category": "weapon",
     "height": 2,
     "label": "Heavy Shotgun",
     "weight": 3600,
-    "width": 6
+    "width": 4
   },
   "heavysniper": {
     "category": "weapon",
     "height": 3,
     "label": "Heavy Sniper",
     "weight": 12700,
-    "width": 6
+    "width": 4
   },
   "heavysnipermk2": {
     "category": "weapon",
     "height": 3,
     "label": "Heavy Sniper Mk2",
     "weight": 14000,
-    "width": 6
+    "width": 4
   },
   "hominglauncher": {
     "category": "weapon",
-    "height": 3,
+    "height": 2,
     "label": "Homing Launcher",
     "weight": 10000,
-    "width": 6
+    "width": 5
   },
   "knife": {
     "category": "weapon",
@@ -496,14 +496,14 @@
     "height": 3,
     "label": "Marksman Rifle",
     "weight": 7500,
-    "width": 6
+    "width": 4
   },
   "marksmanriflemk2": {
     "category": "weapon",
     "height": 2,
     "label": "Marksman Rifle Mk2",
     "weight": 4000,
-    "width": 6
+    "width": 4
   },
   "metaldetector": {
     "category": "weapon",
@@ -517,35 +517,35 @@
     "height": 3,
     "label": "Machine Gun",
     "weight": 9000,
-    "width": 6
+    "width": 4
   },
   "microsmg": {
     "category": "weapon",
     "height": 2,
     "label": "Micro SMG",
     "weight": 3000,
-    "width": 5
+    "width": 3
   },
   "militaryrifle": {
     "category": "weapon",
     "height": 2,
     "label": "Military Rifle",
     "weight": 3600,
-    "width": 6
+    "width": 4
   },
   "minigun": {
     "category": "weapon",
     "height": 4,
     "label": "Minigun",
     "weight": 38500,
-    "width": 6
+    "width": 4
   },
   "minismg": {
     "category": "weapon",
     "height": 1,
     "label": "Mini SMG",
     "weight": 1270,
-    "width": 2
+    "width": 3
   },
   "molotov": {
     "category": "throwable",
@@ -557,14 +557,14 @@
     "height": 2,
     "label": "Musket",
     "weight": 4500,
-    "width": 6
+    "width": 4
   },
   "navyrevolver": {
     "category": "weapon",
     "height": 2,
     "label": "Navy Revolver",
     "weight": 4000,
-    "width": 6
+    "width": 4
   },
   "nightstick": {
     "category": "weapon",
@@ -578,7 +578,7 @@
     "height": 2,
     "label": "Jerry Can",
     "weight": 4000,
-    "width": 6
+    "width": 4
   },
   "pipebomb": {
     "category": "throwable",
@@ -623,7 +623,7 @@
     "height": 3,
     "label": "Precision Rifle",
     "weight": 4800,
-    "width": 6
+    "width": 4
   },
   "proxmine": {
     "category": "throwable",
@@ -635,42 +635,42 @@
     "height": 2,
     "label": "Pump Shotgun",
     "weight": 3400,
-    "width": 6
+    "width": 4
   },
   "pumpshotgunmk2": {
     "category": "weapon",
     "height": 2,
     "label": "Pump Shotgun Mk2",
     "weight": 3200,
-    "width": 6
+    "width": 4
   },
   "railgun": {
     "category": "weapon",
     "height": 2,
     "label": "Railgun",
     "weight": 3570,
-    "width": 6
+    "width": 4
   },
   "railgunxm3": {
     "category": "weapon",
     "height": 2,
     "label": "Railgun XM3",
     "weight": 3570,
-    "width": 6
+    "width": 4
   },
   "raycarbine": {
     "category": "weapon",
     "height": 2,
     "label": "Unholy Hellbringer",
     "weight": 3620,
-    "width": 6
+    "width": 4
   },
   "rayminigun": {
     "category": "weapon",
     "height": 3,
     "label": "Widowmaker",
     "weight": 7000,
-    "width": 6
+    "width": 4
   },
   "raypistol": {
     "category": "weapon",
@@ -698,7 +698,7 @@
     "height": 3,
     "label": "RPG",
     "weight": 5000,
-    "width": 6
+    "width": 4
   },
   "sawnoffshotgun": {
     "category": "weapon",
@@ -712,14 +712,14 @@
     "height": 2,
     "label": "SMG",
     "weight": 3084,
-    "width": 6
+    "width": 3
   },
   "smgmk2": {
     "category": "weapon",
     "height": 2,
     "label": "SMG Mk2",
     "weight": 2700,
-    "width": 5
+    "width": 3
   },
   "smokegrenade": {
     "category": "throwable",
@@ -731,7 +731,7 @@
     "height": 3,
     "label": "Sniper Rifle",
     "weight": 5000,
-    "width": 6
+    "width": 4
   },
   "snowball": {
     "category": "throwable",
@@ -740,10 +740,10 @@
   },
   "snowlauncher": {
     "category": "weapon",
-    "height": 3,
+    "height": 2,
     "label": "Snowball Launcher",
     "weight": 1000,
-    "width": 6
+    "width": 5
   },
   "snspistol": {
     "category": "weapon",
@@ -760,14 +760,14 @@
     "height": 2,
     "label": "Special Carbine",
     "weight": 3000,
-    "width": 6
+    "width": 4
   },
   "specialcarbinemk2": {
     "category": "weapon",
     "height": 2,
     "label": "Special Carbine Mk2",
     "weight": 3370,
-    "width": 6
+    "width": 4
   },
   "stickybomb": {
     "category": "throwable",
@@ -786,7 +786,7 @@
     "height": 2,
     "label": "El Strickler",
     "weight": 3800,
-    "width": 6
+    "width": 4
   },
   "stungun": {
     "category": "weapon",
@@ -820,14 +820,14 @@
     "height": 2,
     "label": "Tactical Rifle",
     "weight": 3400,
-    "width": 6
+    "width": 4
   },
   "tecpistol": {
     "category": "weapon",
-    "height": 2,
+    "height": 1,
     "label": "Tactical SMG",
     "weight": 1500,
-    "width": 3
+    "width": 2
   },
   "vintagepistol": {
     "category": "weapon",
@@ -836,18 +836,11 @@
     "weight": 700,
     "width": 2
   },
-  "wm29pistol": {
-    "category": "weapon",
-    "height": 1,
-    "label": "WM 29 Pistol",
-    "weight": 970,
-    "width": 2
-  },
   "wrench": {
     "category": "weapon",
     "height": 2,
     "label": "Wrench",
     "weight": 2500,
-    "width": 5
+    "width": 1
   }
 }
