@@ -24,7 +24,14 @@ export type ItemProperties = {
 
 export type Item = ReturnType<typeof ItemFactory>;
 export type InventoryItem = InstanceType<Item> | WeaponProperties;
-export type Weapon = Item & WeaponProperties;
+export type Weapon = InventoryItem & WeaponProperties;
+export type Clothing = InventoryItem & {
+  componentId: number;
+  collection: string;
+  drawableId: number;
+  textureId: number;
+  palleteId?: number;
+};
 
 const Items: Record<string, Item> = {};
 const InventoryItems: Record<string, InventoryItem> = {};
@@ -80,7 +87,7 @@ export abstract class BaseItem {
   public quantity: number;
 
   /** The item's type, defaulting to miscellaneous. */
-  public category: 'ammo' | 'weapon' | 'weapon_attachment' | 'throwable' | 'miscellaneous';
+  public category: 'ammo' | 'weapon' | 'weapon_attachment' | 'throwable' | 'clothing' | 'miscellaneous';
 
   /** A unique identifier used to reference the item and save it in the database. */
   public uniqueId?: number;
@@ -108,8 +115,8 @@ export abstract class BaseItem {
   public ammoCount?: number;
   public hash?: number;
 
-  static [key: string]: unknown;
-  [key: string]: unknown;
+  static [key: string]: any;
+  [key: string]: any;
 
   static CreateUniqueId(item: BaseItem): number {
     // Temporary value used in the browser only.
