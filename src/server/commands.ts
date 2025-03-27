@@ -1,5 +1,5 @@
-import { GetInventory } from './inventory';
 import { Command } from '@nativewrappers/server';
+import { GetInventory } from './inventory';
 
 new Command(
   'additem',
@@ -82,6 +82,76 @@ new Command(
     {
       name: 'keep',
       type: 'longString',
+    },
+  ] as const,
+);
+
+new Command(
+  'testclothing',
+  'Adds some clothing items to the target.',
+  (args) => {
+    const inventory = GetInventory(args.target);
+
+    if (!inventory) return;
+
+    inventory.addItem({
+      name: 'ped_prop',
+      quantity: 1,
+      componentId: 0,
+      collection: 'mp_m_bikerdlc_01',
+      drawableId: 0,
+      textureId: 0,
+    });
+
+    inventory.addItem({
+      name: 'ped_prop',
+      quantity: 1,
+      componentId: 0,
+      collection: 'mp_m_bikerdlc_01',
+      drawableId: 2,
+      textureId: 0,
+    });
+
+    inventory.addItem({
+      name: 'ped_prop',
+      quantity: 1,
+      componentId: 0,
+      collection: 'mp_f_bikerdlc_01',
+      drawableId: 0,
+      textureId: 0,
+    });
+
+    inventory.addItem({
+      name: 'ped_component',
+      quantity: 1,
+      componentId: 11,
+      collection: '',
+      drawableId: 0,
+      textureId: 0,
+    });
+
+    inventory.addItem({
+      name: 'ped_component',
+      quantity: 1,
+      componentId: 11,
+      collection: '',
+      drawableId: 4,
+      textureId: 0,
+    });
+
+    inventory.addItem({
+      name: 'ped_component',
+      quantity: 1,
+      componentId: 11,
+      collection: 'mp_m_bikerdlc_01',
+      drawableId: 0,
+      textureId: 0,
+    });
+  },
+  [
+    {
+      name: 'target',
+      type: 'playerId',
     },
   ] as const,
 );
