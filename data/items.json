@@ -930,10 +930,10 @@
     "label": "Pipe Wrench",
     "weight": 2500
   },
-  "clothing": {
+  "ped_component": {
     "category": "clothing"
   },
-  "accessory": {
+  "ped_prop": {
     "category": "clothing"
   }
 }
