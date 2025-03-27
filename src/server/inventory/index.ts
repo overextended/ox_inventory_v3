@@ -1,8 +1,8 @@
-import db from '../db';
-import { Inventory } from './class';
-import { CreateItem } from '../item';
-import { GetPlayer } from '@overextended/ox_core/server';
 import Config from '@common/config';
+import { GetPlayer } from '@overextended/ox_core/server';
+import db from '../db';
+import { CreateItem } from '../item';
+import { Inventory } from './class';
 
 export function GetInventory(inventoryId: string | number, data?: string | Partial<Inventory>) {
   let inventory = typeof inventoryId === 'string' && Inventory.FromId(inventoryId);
@@ -53,7 +53,14 @@ export function GetInventory(inventoryId: string | number, data?: string | Parti
   const items = db.getInventoryItems(inventory.inventoryId);
 
   for (const data of items) {
-    CreateItem(data);
+    try {
+      CreateItem(data);
+    } catch (e) {
+      data.quantity = 0;
+
+      db.updateInventoryItem(data);
+      console.error(`Invalid item '${data.name}' in inventory '${inventoryId}' was deleted.`);
+    }
   }
 
   return inventory;
