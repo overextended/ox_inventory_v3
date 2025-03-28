@@ -7,7 +7,7 @@ import Config from '@common/config';
 
 onNet('ox_inventory:requestOpenInventory', async (inventories?: string[]) => {
   const playerId = source;
-  const inventory = GetInventory(playerId, 'player');
+  const inventory = await GetInventory(playerId, 'player');
 
   if (!inventory) return;
 
@@ -16,7 +16,7 @@ onNet('ox_inventory:requestOpenInventory', async (inventories?: string[]) => {
   if (!inventories || !inventories.length) return;
 
   for (const inventoryId of inventories) {
-    const secondary = GetInventory(inventoryId);
+    const secondary = await GetInventory(inventoryId);
 
     // todo: validation
     if (secondary) secondary.open(playerId);
@@ -32,11 +32,11 @@ onNet('ox_inventory:closeInventory', async (inventoryId?: string) => {
 });
 
 onClientCallback('ox_inventory:requestMoveItem', async (playerId, data: MoveItem) => {
-  const fromInventory = GetInventory(data.fromId, data.fromType);
+  const fromInventory = await GetInventory(data.fromId, data.fromType);
   const toInventory =
     data.fromId === data.toId
       ? fromInventory
-      : GetInventory(data.toId ?? Date.now().toString(), { type: data.toType, coords: data.coords });
+      : await GetInventory(data.toId ?? Date.now().toString(), { type: data.toType, coords: data.coords });
 
   if (!fromInventory || !toInventory) return console.error('Invalid·inventory');
 
@@ -61,7 +61,7 @@ onClientCallback('ox_inventory:requestMoveItem', async (playerId, data: MoveItem
 });
 
 onClientCallback('ox_inventory:requestUseItem', async (playerId, itemId: number) => {
-  const inventory = GetInventory(playerId);
+  const inventory = await GetInventory(playerId);
   const item = inventory && GetInventoryItem(itemId);
 
   if (!item) return ['invalid_item'];
@@ -85,16 +85,16 @@ onClientCallback('ox_inventory:getInventoryItem', async (playerId, itemId: numbe
 });
 
 onClientCallback('ox_inventory:findInventoryItem', async (playerId, data: ItemProperties) => {
-  const inventory = GetInventory(playerId);
+  const inventory = await GetInventory(playerId);
 
   if (!inventory) return;
 
   return inventory.mapItems().find((item) => item.match(data, false));
 });
 
-onNet('ox_inventory:updateWeapon', (ammoCount: number, durability: number) => {
+onNet('ox_inventory:updateWeapon', async (ammoCount: number, durability: number) => {
   const playerId = source;
-  const inventory = GetInventory(playerId);
+  const inventory = await GetInventory(playerId);
   const weapon = inventory && (GetInventoryItem(inventory.currentWeapon) as Weapon);
 
   if (!weapon || ammoCount > weapon.ammoCount || durability > weapon.durability) return;
@@ -114,9 +114,9 @@ onNet('ox_inventory:updateWeapon', (ammoCount: number, durability: number) => {
   }
 });
 
-onNet('ox_inventory:loadWeaponAmmo', (addAmmo: number) => {
+onNet('ox_inventory:loadWeaponAmmo', async (addAmmo: number) => {
   const playerId = source;
-  const inventory = GetInventory(playerId);
+  const inventory = await GetInventory(playerId);
   const weapon = inventory && GetInventoryItem(inventory.currentWeapon);
 
   if (!weapon || typeof weapon.ammoName !== 'string') return;

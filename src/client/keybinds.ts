@@ -1,9 +1,11 @@
-import { cache } from '@overextended/ox_lib';
-import { CloseInventory } from './inventory';
-import { triggerServerCallback } from '@overextended/ox_lib/client';
-import { currentWeapon } from './weapon';
-import { UseItem } from './item';
+import config from '@common/config';
 import type { InventoryItem } from '@common/item';
+import { cache } from '@overextended/ox_lib';
+import { triggerServerCallback } from '@overextended/ox_lib/client';
+import vehicleClasses from '~/static/vehicleClasses.json';
+import { CloseInventory } from './inventory';
+import { UseItem } from './item';
+import { currentWeapon } from './weapon';
 
 RegisterCommand(
   'openInventory',
@@ -11,8 +13,21 @@ RegisterCommand(
     // todo: hotbar
     // const isTabDown = IsRawKeyDown(0x09);
 
-    const nearbyInventories = exports[cache.resource].getNearbyInventories();
-    emitNet('ox_inventory:requestOpenInventory', nearbyInventories);
+    const inventories = exports[cache.resource].getNearbyInventories();
+
+    const { vehicle, seat } = cache;
+
+    if (vehicle && seat && seat < 2) {
+      const vehicleClass = vehicleClasses[GetVehicleClass(vehicle)];
+      const configKey = `Vehicle_${vehicleClass}_Glovebox_Weight`;
+      const hasGlovebox = config[configKey as any];
+
+      if (hasGlovebox) {
+        inventories.push(`glovebox:${NetworkGetNetworkIdFromEntity(vehicle)}`);
+      }
+    }
+
+    emitNet('ox_inventory:requestOpenInventory', inventories);
   },
   false,
 );

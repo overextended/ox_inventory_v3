@@ -3,11 +3,13 @@ import './item';
 import './weapon';
 import Config from '@common/config';
 import { GROUP_FIREEXTINGUISHER, GROUP_PETROLCAN } from '@common/hash';
-import { cache } from '@overextended/ox_lib/client';
+import { cache, onServerCallback } from '@overextended/ox_lib/client';
 import { InventoryState, inventoryState } from './inventory';
 import { isUsingItem } from './item';
 import { currentWeapon, weaponWheelEnabled } from './weapon';
 import './clothing';
+
+onServerCallback('ox_inventory:getVehicleClass', (netId) => GetVehicleClass(NetworkGetEntityFromNetworkId(netId)));
 
 setTick(() => {
   DisablePlayerVehicleRewards(cache.playerId);

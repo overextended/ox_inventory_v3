@@ -1,7 +1,7 @@
 import { BaseInventory } from '@common/inventory/class';
 import type { InventoryItem, ItemProperties } from '@common/item';
 import db from '../db';
-import { GetItemClass } from '../item';
+import { CreateItem, GetItemClass } from '../item';
 
 const drops: string[] = [];
 
@@ -17,6 +17,19 @@ export class Inventory extends BaseInventory {
     if (data.type === 'drop') {
       drops.push(this.inventoryId);
       emitNet('ox_inventory:createDrop', -1, data);
+    }
+
+    const items = db.getInventoryItems(this.inventoryId);
+
+    for (const data of items) {
+      try {
+        CreateItem(data);
+      } catch (e) {
+        data.quantity = 0;
+
+        db.updateInventoryItem(data);
+        console.error(`Invalid item '${data.name}' in inventory '${this.inventoryId}' was deleted.`);
+      }
     }
   }
 

@@ -1,33 +1,247 @@
 {
+  "Drop": {
+    "Height": 4,
+    "MaxWeight": 50000,
+    "Model": "prop_med_bag_01b",
+    "UseTargeting": true,
+    "Width": 8
+  },
   "Inventory": {
-    "SlotSize": "medium",
     "BlurScreen": true,
-    "EnableKeys": [249],
+    "EnableKeys": [
+      249
+    ],
     "ImagePath": "./images",
     "ItemNotifications": true,
-    "MultiSlotItems": true
+    "MultiSlotItems": true,
+    "SlotSize": "medium"
   },
+  "LogLevel": "error",
   "Player": {
-    "MaxWeight": 50000,
-    "Width": 12,
     "Height": 8,
-    "UseTargeting": true
-  },
-  "Drop": {
     "MaxWeight": 50000,
-    "Width": 8,
-    "Height": 4,
-    "Model": "prop_med_bag_01b",
-    "UseTargeting": true
-  },
-  "Weapon": {
-    "Enabled": true,
-    "AutoReload": false,
-    "AimedFiring": false,
-    "CheckModelMismatch": true,
-    "IgnoreWeapons": ["WEAPON_UNARMED", "WEAPON_HANDCUFFS", "WEAPON_GARBAGEBAG", "OBJECT", "WEAPON_HOSE"],
-    "DisarmNotification": true
+    "UseTargeting": true,
+    "Width": 6
   },
   "SuppressPickups": true,
-  "LogLevel": "error"
+  "Vehicle": {
+    "BOAT": {
+      "Glovebox": null,
+      "Trunk": null
+    },
+    "COMMERCIAL": {
+      "Glovebox": {
+        "Height": 2,
+        "Weight": 10000,
+        "Width": 4
+      },
+      "Trunk": {
+        "Height": 16,
+        "Weight": 160000,
+        "Width": 19
+      }
+    },
+    "COMPACT": {
+      "Glovebox": {
+        "Height": 2,
+        "Weight": 10000,
+        "Width": 4
+      },
+      "Trunk": {
+        "Height": 10,
+        "Weight": 100000,
+        "Width": 12
+      }
+    },
+    "COUPE": {
+      "Glovebox": {
+        "Height": 2,
+        "Weight": 10000,
+        "Width": 4
+      },
+      "Trunk": {
+        "Height": 10,
+        "Weight": 100000,
+        "Width": 12
+      }
+    },
+    "CYCLE": {
+      "Glovebox": null,
+      "Trunk": null
+    },
+    "EMERGENCY": {
+      "Glovebox": {
+        "Height": 2,
+        "Weight": 10000,
+        "Width": 4
+      },
+      "Trunk": {
+        "Height": 11,
+        "Weight": 110000,
+        "Width": 13
+      }
+    },
+    "HELICOPTER": {
+      "Glovebox": null,
+      "Trunk": null
+    },
+    "INDUSTRIAL": {
+      "Glovebox": null,
+      "Trunk": {
+        "Height": 15,
+        "Weight": 150000,
+        "Width": 18
+      }
+    },
+    "MILITARY": {
+      "Glovebox": null,
+      "Trunk": null
+    },
+    "MOTORCYCLE": {
+      "Glovebox": null,
+      "Trunk": null
+    },
+    "MUSCLE": {
+      "Glovebox": {
+        "Height": 2,
+        "Weight": 10000,
+        "Width": 4
+      },
+      "Trunk": {
+        "Height": 12,
+        "Weight": 120000,
+        "Width": 14
+      }
+    },
+    "OFFROAD": {
+      "Glovebox": {
+        "Height": 5,
+        "Weight": 12000,
+        "Width": 3
+      },
+      "Trunk": {
+        "Height": 13,
+        "Weight": 130000,
+        "Width": 16
+      }
+    },
+    "OPENWHEEL": {
+      "Glovebox": {
+        "Height": 2,
+        "Weight": 10000,
+        "Width": 4
+      },
+      "Trunk": null
+    },
+    "PLANE": {
+      "Glovebox": null,
+      "Trunk": null
+    },
+    "SEDAN": {
+      "Glovebox": {
+        "Height": 2,
+        "Weight": 10000,
+        "Width": 4
+      },
+      "Trunk": {
+        "Height": 11,
+        "Weight": 110000,
+        "Width": 13
+      }
+    },
+    "SERVICE": {
+      "Glovebox": {
+        "Height": 2,
+        "Weight": 10000,
+        "Width": 4
+      },
+      "Trunk": {
+        "Height": 11,
+        "Weight": 110000,
+        "Width": 13
+      }
+    },
+    "SPORTS": {
+      "Glovebox": {
+        "Height": 2,
+        "Weight": 10000,
+        "Width": 4
+      },
+      "Trunk": null
+    },
+    "SPORTSCLASSIC": {
+      "Glovebox": {
+        "Height": 2,
+        "Weight": 10000,
+        "Width": 4
+      },
+      "Trunk": {
+        "Height": 11,
+        "Weight": 110000,
+        "Width": 13
+      }
+    },
+    "SUPER": {
+      "Glovebox": {
+        "Height": 2,
+        "Weight": 10000,
+        "Width": 4
+      },
+      "Trunk": null
+    },
+    "SUV": {
+      "Glovebox": {
+        "Height": 3,
+        "Weight": 12000,
+        "Width": 5
+      },
+      "Trunk": {
+        "Height": 13,
+        "Weight": 130000,
+        "Width": 16
+      }
+    },
+    "TRAIN": {
+      "Glovebox": null,
+      "Trunk": null
+    },
+    "UTILITY": {
+      "Glovebox": {
+        "Height": 3,
+        "Weight": 12000,
+        "Width": 5
+      },
+      "Trunk": {
+        "Height": 14,
+        "Weight": 140000,
+        "Width": 17
+      }
+    },
+    "VAN": {
+      "Glovebox": {
+        "Height": 3,
+        "Weight": 12000,
+        "Width": 5
+      },
+      "Trunk": {
+        "Height": 18,
+        "Weight": 180000,
+        "Width": 42
+      }
+    }
+  },
+  "Weapon": {
+    "AimedFiring": false,
+    "AutoReload": false,
+    "CheckModelMismatch": true,
+    "DisarmNotification": true,
+    "Enabled": true,
+    "IgnoreWeapons": [
+      "WEAPON_UNARMED",
+      "WEAPON_HANDCUFFS",
+      "WEAPON_GARBAGEBAG",
+      "OBJECT",
+      "WEAPON_HOSE"
+    ]
+  }
 }

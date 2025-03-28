@@ -4,8 +4,8 @@ import { GetInventory } from './inventory';
 new Command(
   'additem',
   'Create a new item and grant it to the target player.',
-  (args) => {
-    const inventory = GetInventory(args.target);
+  async (args) => {
+    const inventory = await GetInventory(args.target);
 
     if (!inventory) return;
 
@@ -31,8 +31,8 @@ new Command(
 new Command(
   'removeitem',
   'Reduce the quantity of an item from the target player.',
-  (args) => {
-    const inventory = GetInventory(args.target);
+  async (args) => {
+    const inventory = await GetInventory(args.target);
 
     if (!inventory) return;
 
@@ -58,8 +58,8 @@ new Command(
 new Command(
   'clearitems',
   "Clears all items from the target player's inventory.",
-  (args) => {
-    const inventory = GetInventory(args.target);
+  async (args) => {
+    const inventory = await GetInventory(args.target);
 
     if (!inventory) return;
 
@@ -89,8 +89,8 @@ new Command(
 new Command(
   'testclothing',
   'Adds some clothing items to the target.',
-  (args) => {
-    const inventory = GetInventory(args.target);
+  async (args) => {
+    const inventory = await GetInventory(args.target);
 
     if (!inventory) return;
 

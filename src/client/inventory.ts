@@ -40,6 +40,12 @@ export function CloseInventory(data?: { inventoryId: string; inventoryCount: num
   if (cb) cb(1);
 }
 
+export function OpenVehicleTrunk({ entity }: { entity: number }) {
+  const netId = NetworkGetNetworkIdFromEntity(entity);
+
+  emitNet('ox_inventory:requestOpenInventory', [`trunk:${netId}`]);
+}
+
 RegisterNuiCallback('closeInventory', CloseInventory);
 
 RegisterNuiCallback('getStateKeyValue', ([state, key]: [state: string, key: string], cb: (value: unknown) => void) => {
@@ -81,3 +87,5 @@ onNet('ox_inventory:clearInventory', (data: { inventoryId: string; keepItems?: n
     data,
   });
 });
+
+exports('openVehicleTrunk', OpenVehicleTrunk);
