@@ -74,7 +74,7 @@ const { inventory, visible, itemState, isDragging, dragItem, onMouseDown, invent
                 'absolute top-0 left-0 z-50 bg-black/50 text-right text-xs px-1 flex border border-transparent border-dashed',
                 isDragging && 'pointer-events-none',
                 dragItem?.uniqueId === item.uniqueId && 'opacity-80 brightness-50 grayscale-[0.8]',
-                'hover:bg-black/40 hover:border-zinc-500',
+                'hover:bg-black/40',
               )}
               style={`
                 width: ${SLOT_SIZE * w - 1}px;

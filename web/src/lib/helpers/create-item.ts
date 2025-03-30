@@ -1,6 +1,6 @@
-import { GetItemData, ItemFactory, type ItemProperties } from '~/src/common/item';
-import { isEnvBrowser } from '$lib/utils/misc';
 import { fetchNui } from '$lib/utils/fetchNui';
+import { isEnvBrowser } from '$lib/utils/misc';
+import { GetItemData, ItemFactory, type ItemProperties } from '~/src/common/item';
 
 export async function CreateItem(data: Partial<ItemProperties>) {
   const name = data.name!;
@@ -8,18 +8,18 @@ export async function CreateItem(data: Partial<ItemProperties>) {
 
   if (!Item) {
     const data = isEnvBrowser()
-      ? name === 'HeavyPistol'
+      ? name === 'heavypistol'
         ? {
             name,
-            width: 2,
-            height: 2,
+            width: 1,
+            height: 1,
             category: 'weapon',
           }
-        : name === 'HeavyRifle'
+        : name === 'heavyrifle'
           ? {
               name,
-              width: 7,
-              height: 3,
+              width: 1,
+              height: 1,
               category: 'weapon',
             }
           : {

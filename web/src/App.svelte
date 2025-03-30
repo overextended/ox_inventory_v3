@@ -2,6 +2,7 @@
 import DragPreview from '$lib/components/DragPreview.svelte';
 import InventoryWindow from '$lib/components/InventoryWindow.svelte';
 import ContextMenu from '$lib/components/context-menu/ContextMenu.svelte';
+import ShopInventory from '$lib/components/shop/ShopInventory.svelte';
 import Tooltip from '$lib/components/tooltip/Tooltip.svelte';
 import { SLOT_SIZE } from '$lib/constants/inventory';
 import { CreateItem } from '$lib/helpers/create-item';
@@ -14,10 +15,17 @@ import { fetchNui } from '$lib/utils/fetchNui';
 import { isEnvBrowser } from '$lib/utils/misc';
 import type { BaseInventory } from '@common/inventory/class';
 import { GetInventoryItem, type InventoryItem } from '@common/item';
+import { data } from 'autoprefixer';
+import type { Component } from 'svelte';
+
+type OpenInventories = {
+  inventory: InventoryState;
+  items: Partial<InventoryItem>[];
+}[];
 
 let visible = $state(false);
 const keyPressed = { shift: false, control: false, alt: false };
-let openInventories = $state<{ inventory: InventoryState; items: Partial<InventoryItem>[] }[]>([]);
+let openInventories = $state<OpenInventories>([]);
 const inventoryCount = $derived(openInventories.length - 1);
 let playerId = $state(0);
 
@@ -54,7 +62,7 @@ debugData<{ inventory: Partial<BaseInventory>; items: Partial<InventoryItem>[] }
             description: 'Standard ammunition for pistols and SMGs, offering balanced power and reliability.',
           },
           {
-            name: 'HeavyPistol',
+            name: 'heavypistol',
             quantity: 1,
             inventoryId: 'player:0',
             uniqueId: 8,
@@ -72,25 +80,38 @@ debugData<{ inventory: Partial<BaseInventory>; items: Partial<InventoryItem>[] }
       action: 'openInventory',
       data: {
         inventory: {
-          inventoryId: 'trunk',
+          inventoryId: 'some-shop',
+          type: 'shop',
           items: {
             0: 11,
+            1: 12,
           },
           height: 5,
           width: 8,
-          label: 'Trunk',
+          label: "Joe's 24/7 Convenience Store",
         },
         items: [
           {
-            name: 'HeavyRifle',
+            name: 'heavyrifle',
             quantity: 1,
-            inventoryId: 'trunk',
+            inventoryId: 'some-shop',
             uniqueId: 11,
             anchorSlot: 0,
             durability: 90,
             label: 'Heavy Rifle',
             description: 'A high-caliber rifle with devastating power, perfect for mid-to-long-range combat.',
             plate: 'XYZ123XD',
+            price: 1500,
+          },
+          {
+            name: 'ammo_9',
+            quantity: 1,
+            inventoryId: 'some-shop',
+            uniqueId: 12,
+            anchorSlot: 1,
+            label: '9mm',
+            description: 'The usual refreshing drink.',
+            price: 12,
           },
         ],
       },
@@ -109,27 +130,27 @@ debugData<Record<string, string>>([
   },
 ]);
 
-debugData<Partial<InventoryItem>[]>(
-  [
-    {
-      action: 'updateItem',
-      data: [
-        {
-          name: 'HeavyRifle',
-          quantity: 1,
-          inventoryId: 'player:0',
-          uniqueId: 11,
-          anchorSlot: 37,
-          durability: 90,
-          label: 'Heavy Rifle',
-          description: 'A high-caliber rifle with devastating power, perfect for mid-to-long-range combat.',
-          plate: 'XYZ123XD',
-        },
-      ],
-    },
-  ],
-  1500,
-);
+// debugData<Partial<InventoryItem>[]>(
+//   [
+//     {
+//       action: 'updateItem',
+//       data: [
+//         {
+//           name: 'HeavyRifle',
+//           quantity: 1,
+//           inventoryId: 'player:0',
+//           uniqueId: 11,
+//           anchorSlot: 37,
+//           durability: 90,
+//           label: 'Heavy Rifle',
+//           description: 'A high-caliber rifle with devastating power, perfect for mid-to-long-range combat.',
+//           plate: 'XYZ123XD',
+//         },
+//       ],
+//     },
+//   ],
+//   1500,
+// );
 
 useNuiEvent('openInventory', async (data: { inventory: InventoryState; items: InventoryItem[]; playerId: number }) => {
   if (!playerId) playerId = data.playerId;
@@ -445,6 +466,25 @@ function onKeyUp(event: KeyboardEvent) {
 }
 
 const preventDefault = (event: KeyboardEvent | MouseEvent) => event.preventDefault();
+
+const SPECIAL_INVENTORIES: Record<string, Component> = {
+  // @ts-ignore TODO: figure out later
+  shop: ShopInventory,
+};
+
+function getSpecialInventory(data: OpenInventories | InventoryState) {
+  const inventories = Array.isArray(data) ? data.map(({ inventory }) => inventory) : [data];
+  let specialInventory = null;
+
+  for (const inventory of inventories) {
+    if (SPECIAL_INVENTORIES[inventory.type as keyof typeof SPECIAL_INVENTORIES]) {
+      specialInventory = inventory;
+      break;
+    }
+  }
+
+  return specialInventory;
+}
 </script>
 
 <svelte:window onmouseup={onMouseUp} onkeydown={onKeyDown} onkeyup={onKeyUp} ondragstart={preventDefault} />
@@ -453,15 +493,28 @@ const preventDefault = (event: KeyboardEvent | MouseEvent) => event.preventDefau
 <DragPreview bind:dragImg bind:dropIndicator {dragItem} />
 <ContextMenu />
 
-{#each openInventories as { inventory }}
-  <InventoryWindow
-    visible
-    {isDragging}
-    {dragItem}
-    {inventory}
-    itemState={inventory.itemState}
-    {onMouseDown}
-    {inventoryCount}
-    {playerId}
-  />
-{/each}
+
+{#if getSpecialInventory(openInventories)}
+  {@const inventory = getSpecialInventory(openInventories)}
+
+  {#if inventory}
+    {@const Component = SPECIAL_INVENTORIES[inventory.type]};
+    <Component {inventory} itemState={inventory.itemState}/>
+  {/if}
+{:else}
+  {#each openInventories as { inventory }}
+    <InventoryWindow
+      visible
+      {isDragging}
+      {dragItem}
+      {inventory}
+      itemState={inventory.itemState}
+      {onMouseDown}
+      {inventoryCount}
+      {playerId}
+    />
+  {/each}
+{/if}
+
+
+

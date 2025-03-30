@@ -61,8 +61,8 @@ importers:
         specifier: ^10.4.20
         version: 10.4.20(postcss@8.5.3)
       bits-ui:
-        specifier: 1.0.0-next.77
-        version: 1.0.0-next.77(svelte@5.20.4)
+        specifier: ^1.0.0-next.98
+        version: 1.3.14(svelte@5.20.4)
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -874,8 +874,8 @@ packages:
     resolution: {integrity: sha512-Ceh+7ox5qe7LJuLHoY0feh3pHuUDHAcRUeyL2VYghZwfpkNIy/+8Ocg0a3UuSoYzavmylwuLWQOf3hl0jjMMIw==}
     engines: {node: '>=8'}
 
-  bits-ui@1.0.0-next.77:
-    resolution: {integrity: sha512-IV0AyVEvsRkXv4s/fl4iea5E9W2b9EBf98s9mRMKMc1xHxM9MmtM2r6MZMqftHQ/c+gHTIt3A9EKuTlh7uay8w==}
+  bits-ui@1.3.14:
+    resolution: {integrity: sha512-T4ClhH0eQmrhZ8uMfC8Q4WBcpygnfdVTfb/1Y/6PrYA5Fqv7HTLmK3B9NSv4DUbDXpuG4SiC2cPSXVUqsEA/aw==}
     engines: {node: '>=18', pnpm: '>=8.7.0'}
     peerDependencies:
       svelte: ^5.11.0
@@ -1607,11 +1607,6 @@ packages:
   run-parallel@1.2.0:
     resolution: {integrity: sha512-5l4VyZR86LZ/lDxZTR6jqL8AFE2S0IFLMP26AbjsLVADxHdhB/c0GUsH+y39UfCi3dzz8OlQuPmnaJOMoDHQBA==}
 
-  runed@0.22.0:
-    resolution: {integrity: sha512-ZWVXWhOr0P5xdNgtviz6D1ivLUDWKLCbeC5SUEJ3zBkqLReVqWHenFxMNFeFaiC5bfxhFxyxzyzB+98uYFtwdA==}
-    peerDependencies:
-      svelte: ^5.7.0
-
   runed@0.23.4:
     resolution: {integrity: sha512-9q8oUiBYeXIDLWNK5DfCWlkL0EW3oGbk845VdKlPeia28l751VpfesaB/+7pI6rnbx1I6rqoZ2fZxptOJLxILA==}
     peerDependencies:
@@ -1706,6 +1701,9 @@ packages:
   sync-fetch@0.6.0-2:
     resolution: {integrity: sha512-c7AfkZ9udatCuAy9RSfiGPpeOKKUAUK5e1cXadLOGUjasdxqYqAK0jTNkM/FSEyJ3a5Ra27j/tw/PS0qLmaF/A==}
     engines: {node: '>=18'}
+
+  tabbable@6.2.0:
+    resolution: {integrity: sha512-Cat63mxsVJlzYvN51JmVXIgNoUokrIaT2zLclCXjRd8boZ0004U4KCs/sToJ75C6sdlByWxpYnb5Boif1VSFew==}
 
   tailwind-merge@2.5.4:
     resolution: {integrity: sha512-0q8cfZHMu9nuYP/b5Shb7Y7Sh1B7Nnl5GqNr1U+n2p6+mybvRtayrQ+0042Z5byvTA8ihjlP8Odo8/VnHbZu4Q==}
@@ -2472,15 +2470,16 @@ snapshots:
 
   binary-extensions@2.3.0: {}
 
-  bits-ui@1.0.0-next.77(svelte@5.20.4):
+  bits-ui@1.3.14(svelte@5.20.4):
     dependencies:
       '@floating-ui/core': 1.6.9
       '@floating-ui/dom': 1.6.13
       '@internationalized/date': 3.7.0
       esm-env: 1.2.2
-      runed: 0.22.0(svelte@5.20.4)
+      runed: 0.23.4(svelte@5.20.4)
       svelte: 5.20.4
       svelte-toolbelt: 0.7.1(svelte@5.20.4)
+      tabbable: 6.2.0
 
   brace-expansion@1.1.11:
     dependencies:
@@ -3216,11 +3215,6 @@ snapshots:
     dependencies:
       queue-microtask: 1.2.3
 
-  runed@0.22.0(svelte@5.20.4):
-    dependencies:
-      esm-env: 1.2.2
-      svelte: 5.20.4
-
   runed@0.23.4(svelte@5.20.4):
     dependencies:
       esm-env: 1.2.2
@@ -3329,6 +3323,8 @@ snapshots:
       node-fetch: 3.3.2
       timeout-signal: 2.0.0
       whatwg-mimetype: 4.0.0
+
+  tabbable@6.2.0: {}
 
   tailwind-merge@2.5.4: {}
 
