@@ -1,5 +1,6 @@
 import Config from '@common/config';
-import { GetInventoryItem, type ItemProperties, type InventoryItem } from '@common/item';
+import { GetInventoryItem, type InventoryItem, type ItemProperties } from '@common/item';
+import type { Vector3 } from '@nativewrappers/common';
 
 export class BaseInventory {
   static instances: Record<string, BaseInventory> = {};
@@ -21,7 +22,8 @@ export class BaseInventory {
   public isTemporary?: boolean;
   public netId?: number;
   public ownerId?: string;
-  public coords?: [number, number, number];
+  public coords?: number[] | Vector3;
+  public radius?: number;
   public currentWeapon?: number;
 
   #itemCache: number[] = [];
