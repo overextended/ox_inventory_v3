@@ -1,3 +1,5 @@
+import { Vector3 } from '@nativewrappers/common';
+
 type Vector = { x: number; y: number; [key: string]: any };
 
 export interface GridEntry {
@@ -114,6 +116,8 @@ export class Grid<T extends GridEntry> {
   public addEntry(entry: T, identifier: keyof T): void {
     if (!entry[identifier])
       throw new Error(`Attempted to add new Grid Entry with invalid identifier '${identifier as string}'`);
+
+    if (entry.coords! instanceof Vector3) entry.coords = Vector3.fromObject(entry.coords);
 
     entry.length ??= entry.radius ? entry.radius * 2 : 1;
     entry.width ??= entry.radius ? entry.radius * 2 : 1;
