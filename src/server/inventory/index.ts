@@ -1,7 +1,7 @@
 import Config from '@common/config';
 import { GetPlayer } from '@overextended/ox_core/server';
 import { triggerClientCallback } from '@overextended/ox_lib/server';
-import vehicleClasses from '~/static/vehicleClasses.json';
+import vehicleClasses from '@static/vehicleClasses.json';
 import db from '../db';
 import { Inventory } from './class';
 

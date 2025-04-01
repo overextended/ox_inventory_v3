@@ -3,9 +3,10 @@ import type { InventoryItem } from '@common/item/index';
 import { cache, triggerServerCallback } from '@overextended/ox_lib/client';
 import './context';
 import config from '@common/config';
-import vehicleClasses from '~/static/vehicleClasses.json';
+import { Grid, type GridEntry } from '@common/grid';
+import { Vector3 } from '@nativewrappers/fivem';
+import vehicleClasses from '@static/vehicleClasses.json';
 import { ValidateItemData } from './item';
-import { GetClosestInventory } from './points';
 
 export enum InventoryState {
   Closed = 0,
@@ -14,7 +15,44 @@ export enum InventoryState {
   Busy = 3,
 }
 
+type InventoryGridEntry = GridEntry & { inventoryId: string; type: string; label: string };
+
 export let inventoryState: InventoryState = InventoryState.Closed;
+
+const grid = new Grid<InventoryGridEntry>();
+let nearbyInventories: InventoryGridEntry[] = [];
+
+function AddGridEntry(data: InventoryGridEntry) {
+  data.width = 1;
+  data.length = 1;
+  data.coords = Vector3.fromObject(data.coords);
+
+  grid.addEntry(data, 'inventoryId');
+}
+
+function RemoveGridEntry(inventoryId: string) {
+  const entry = grid.getEntry(inventoryId);
+
+  if (entry) grid.removeEntry(entry, 'inventoryId');
+}
+
+export function GetClosestInventory(type: string, distance: number = 1) {
+  if (nearbyInventories.length === 0) return;
+
+  const closest = nearbyInventories.reduce((acc, value) => {
+    if (!type || type !== value.type) return acc;
+
+    return value.distance < acc.distance ? value : acc;
+  });
+
+  return closest.distance <= distance && (!type || type === closest.type) ? closest.inventoryId : null;
+}
+
+export function GetNearbyInventories() {
+  if (nearbyInventories.length === 0) return;
+
+  return nearbyInventories.filter((entry) => entry.distance <= 1).map((entry) => entry.inventoryId);
+}
 
 export async function OpenInventory(data: { inventory: BaseInventory; items: InventoryItem[]; playerId: number }) {
   data.playerId = cache.serverId;
@@ -95,6 +133,60 @@ onNet('ox_inventory:clearInventory', (data: { inventoryId: string; keepItems?: n
     action: 'clearInventory',
     data,
   });
+});
+
+onNet('ox_inventory:addInventoryGrid', (data: InventoryGridEntry | InventoryGridEntry[]) => {
+  if (!Array.isArray(data)) return AddGridEntry(data);
+
+  for (const inventory of data) AddGridEntry(inventory);
+});
+
+onNet('ox_inventory:removeInventoryGrid', RemoveGridEntry);
+
+setInterval(() => {
+  const playerCoords = cache.coords as Vector3;
+  nearbyInventories = grid.getNearbyEntries(playerCoords);
+
+  if (nearbyInventories.length) console.log('nearbyInventories', nearbyInventories.length);
+
+  for (const entry of nearbyInventories) {
+    entry.distance = playerCoords.distance(entry.coords);
+  }
+}, 500);
+
+setTick(() => {
+  for (const entry of nearbyInventories) {
+    if (entry.distance > 50) continue;
+
+    const { x, y, z } = entry.coords;
+
+    DrawMarker(
+      2,
+      x,
+      y,
+      z,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0.3,
+      0.2,
+      0.15,
+      150,
+      30,
+      30,
+      222,
+      false,
+      false,
+      0,
+      true,
+      null,
+      null,
+      false,
+    );
+  }
 });
 
 exports('openVehicleTrunk', OpenVehicleTrunk);

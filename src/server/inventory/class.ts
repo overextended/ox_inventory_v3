@@ -5,7 +5,7 @@ import { CreateItem, GetItemClass } from '../item';
 
 const drops: string[] = [];
 
-on('playerJoining', () => drops.length && emitNet('ox_inventory:createDrop', -1, drops));
+on('playerJoining', () => drops.length && emitNet('ox_inventory:addInventoryGrid', -1, drops));
 
 export class Inventory extends BaseInventory {
   #openedBy: Set<number>;
@@ -16,7 +16,7 @@ export class Inventory extends BaseInventory {
 
     if (data.type === 'drop') {
       drops.push(this.inventoryId);
-      emitNet('ox_inventory:createDrop', -1, data);
+      emitNet('ox_inventory:addInventoryGrid', -1, data);
     }
 
     const items = db.getInventoryItems(this.inventoryId);
@@ -52,14 +52,14 @@ export class Inventory extends BaseInventory {
    * Optionally closes this inventory for all players and unloads it from the server.
    */
   public remove(closeAll = true) {
-    if (closeAll) this.closeAll();
-
     if (this.type === 'drop') {
       const index = drops.indexOf(this.inventoryId);
       if (index > -1) drops.splice(index, 1);
 
-      emitNet('ox_inventory:removeDrop', -1, this.inventoryId);
+      emitNet('ox_inventory:removeInventoryGrid', -1, this.inventoryId);
     }
+
+    if (closeAll) this.closeAll();
 
     Inventory.Remove(this.inventoryId);
   }

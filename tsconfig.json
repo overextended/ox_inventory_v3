@@ -11,7 +11,12 @@
     "noImplicitAny": true,
     "noImplicitThis": true,
     "noUnusedLocals": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "paths": {
+      "~/*": ["./*"],
+      "@static/*": ["./static/*"],
+      "@common/*": ["./src/common/*"]
+    },
   },
   "include": ["./src", "./web"]
 }

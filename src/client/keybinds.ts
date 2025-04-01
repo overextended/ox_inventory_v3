@@ -2,10 +2,9 @@ import config from '@common/config';
 import type { InventoryItem } from '@common/item';
 import { cache } from '@overextended/ox_lib';
 import { triggerServerCallback } from '@overextended/ox_lib/client';
-import vehicleClasses from '~/static/vehicleClasses.json';
-import { CloseInventory } from './inventory';
+import vehicleClasses from '@static/vehicleClasses.json';
+import { CloseInventory, GetNearbyInventories } from './inventory';
 import { UseItem } from './item';
-import { GetNearbyInventories } from './points';
 import { currentWeapon } from './weapon';
 
 RegisterCommand(

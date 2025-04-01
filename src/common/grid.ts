@@ -28,7 +28,7 @@ export class Grid<T extends GridEntry> {
   private entries: Map<keyof T, T> = new Map();
 
   constructor(
-    private readonly cellWidth: number = 64,
+    private readonly cellWidth: number = 128,
     private readonly cellHeight = cellWidth,
   ) {}
 
@@ -81,10 +81,12 @@ export class Grid<T extends GridEntry> {
 
     for (let yIndex = minY; yIndex <= maxY; yIndex++) {
       const row = this.grid.get(yIndex);
+
       if (!row) continue;
 
       for (let xIndex = minX; xIndex <= maxX; xIndex++) {
         const cell = row.get(xIndex);
+
         if (!cell) continue;
 
         for (const entry of cell) {
@@ -113,8 +115,8 @@ export class Grid<T extends GridEntry> {
     if (!entry[identifier])
       throw new Error(`Attempted to add new Grid Entry with invalid identifier '${identifier as string}'`);
 
-    entry.length ??= entry.radius ? entry.radius * 2 : 0;
-    entry.width ??= entry.radius ? entry.radius * 2 : 0;
+    entry.length ??= entry.radius ? entry.radius * 2 : 1;
+    entry.width ??= entry.radius ? entry.radius * 2 : 1;
 
     const [minX, maxX, minY, maxY] = this.getDimensions(entry.coords, entry.length, entry.width);
 

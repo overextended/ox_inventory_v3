@@ -4,6 +4,7 @@
     "baseUrl": "./",
     "paths": {
       "~/*": ["../../*"],
+      "@static/*": ["../../static/*"],
       "@common/*": ["../common/*"]
     },
     "types": ["@types/node", "@citizenfx/server", "@citizenfx/client"]
