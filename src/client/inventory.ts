@@ -4,7 +4,7 @@ import { cache, triggerServerCallback } from '@overextended/ox_lib/client';
 import './context';
 import config from '@common/config';
 import { Grid, type GridEntry } from '@common/grid';
-import { Vector3 } from '@nativewrappers/fivem';
+import { Vector3 } from '@nativewrappers/common';
 import vehicleClasses from '@static/vehicleClasses.json';
 import { ValidateItemData } from './item';
 
@@ -18,6 +18,7 @@ export enum InventoryState {
 type InventoryGridEntry = GridEntry & { inventoryId: string; type: string; label: string };
 
 export let inventoryState: InventoryState = InventoryState.Closed;
+export const openInventories = new Map<string, BaseInventory>();
 
 const grid = new Grid<InventoryGridEntry>();
 let nearbyInventories: InventoryGridEntry[] = [];
@@ -25,7 +26,6 @@ let nearbyInventories: InventoryGridEntry[] = [];
 function AddGridEntry(data: InventoryGridEntry) {
   data.width = 1;
   data.length = 1;
-  data.coords = Vector3.fromObject(data.coords);
 
   grid.addEntry(data, 'inventoryId');
 }
@@ -49,7 +49,7 @@ export function GetClosestInventory(type: string, distance: number = 1) {
 }
 
 export function GetNearbyInventories() {
-  if (nearbyInventories.length === 0) return;
+  if (nearbyInventories.length === 0) return [];
 
   return nearbyInventories.filter((entry) => entry.distance <= 1).map((entry) => entry.inventoryId);
 }
@@ -58,6 +58,12 @@ export async function OpenInventory(data: { inventory: BaseInventory; items: Inv
   data.playerId = cache.serverId;
 
   await Promise.all(data.items.map(ValidateItemData));
+
+  if (data.inventory.coords) {
+    data.inventory.coords = data.inventory.netId ? null : Vector3.fromObject(data.inventory.coords);
+  }
+
+  openInventories.set(data.inventory.inventoryId, data.inventory);
 
   SetNuiFocus(true, true);
   SendNUIMessage({
@@ -68,6 +74,9 @@ export async function OpenInventory(data: { inventory: BaseInventory; items: Inv
 
 export function CloseInventory(data?: { inventoryId: string; inventoryCount: number }, cb?: NuiCb) {
   emitNet('ox_inventory:closeInventory', data?.inventoryId);
+
+  if (data?.inventoryId) openInventories.delete(data.inventoryId);
+  else openInventories.clear();
 
   SendNUIMessage({
     action: 'closeInventory',
@@ -151,6 +160,28 @@ setInterval(() => {
 
   for (const entry of nearbyInventories) {
     entry.distance = playerCoords.distance(entry.coords);
+  }
+
+  for (const inventory of openInventories.values()) {
+    let distance = 0;
+
+    if (!inventory.coords && !inventory.netId) continue;
+
+    if (inventory.netId) {
+      if (!NetworkDoesEntityExistWithNetworkId(inventory.netId)) {
+        distance = 100;
+      } else {
+        const entityId = NetworkGetEntityFromNetworkId(inventory.netId);
+        const coords = Vector3.fromArray(GetEntityCoords(entityId, true));
+        distance = playerCoords.distance(coords);
+      }
+    } else if (inventory.coords) {
+      distance = playerCoords.distance(inventory.coords as Vector3);
+    }
+
+    if (distance > (inventory.radius || 10)) {
+      CloseInventory({ inventoryId: inventory.inventoryId, inventoryCount: openInventories.size - 1 });
+    }
   }
 }, 500);
 
