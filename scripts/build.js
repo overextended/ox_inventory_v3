@@ -9,7 +9,6 @@ const web = await exists('./web');
 createBuilder(
   watch,
   {
-    dropLabels: ['$BROWSER'],
   },
   [
     {
@@ -18,6 +17,7 @@ createBuilder(
         platform: 'node',
         target: ['node22'],
         format: 'cjs',
+        dropLabels: ['$BROWSER', '$CLIENT'],
       },
     },
     {
@@ -26,6 +26,7 @@ createBuilder(
         platform: 'browser',
         target: ['es2023'],
         format: 'iife',
+        dropLabels: ['$BROWSER', '$SERVER'],
       },
     },
   ],
