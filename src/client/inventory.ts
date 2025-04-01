@@ -90,6 +90,26 @@ export function CloseInventory(data?: { inventoryId: string; inventoryCount: num
   if (cb) cb(1);
 }
 
+export function RequestOpenInventory(inventories: string[] = []) {
+  if (!CanAccessInventory()) return;
+
+  inventories = [...inventories, ...GetNearbyInventories()];
+
+  const { vehicle, seat } = cache;
+
+  if (vehicle && seat && seat < 2) {
+    const vehicleClass = vehicleClasses[GetVehicleClass(vehicle)];
+    const configKey = `Vehicle_${vehicleClass}_Glovebox_Weight`;
+    const hasGlovebox = config[configKey as any];
+
+    if (hasGlovebox) {
+      inventories.push(`glovebox:${NetworkGetNetworkIdFromEntity(vehicle)}`);
+    }
+  }
+
+  emitNet('ox_inventory:requestOpenInventory', inventories);
+}
+
 export function OpenVehicleTrunk({ entity }: { entity: number }) {
   const netId = NetworkGetNetworkIdFromEntity(entity);
 
@@ -99,7 +119,7 @@ export function OpenVehicleTrunk({ entity }: { entity: number }) {
 
   if (!hasTrunk) return;
 
-  emitNet('ox_inventory:requestOpenInventory', [`trunk:${netId}`]);
+  RequestOpenInventory([`trunk:${netId}`]);
 }
 
 RegisterNuiCallback('closeInventory', CloseInventory);
@@ -152,6 +172,38 @@ onNet('ox_inventory:addInventoryGrid', (data: InventoryGridEntry | InventoryGrid
 
 onNet('ox_inventory:removeInventoryGrid', RemoveGridEntry);
 
+export function CanAccessInventory(inventory?: BaseInventory) {
+  if (
+    !IsPlayerControlOn(cache.playerId) ||
+    IsPedFatallyInjured(cache.ped) ||
+    IsPedCuffed(cache.ped) ||
+    IsPauseMenuActive() ||
+    GetPedConfigFlag(cache.ped, 180, true)
+  )
+    return false;
+
+  if (!inventory) return true;
+
+  const playerCoords = cache.coords as Vector3;
+  let distance = 0;
+
+  if (inventory.netId) {
+    if (!NetworkDoesEntityExistWithNetworkId(inventory.netId)) {
+      distance = 100;
+    } else {
+      const entityId = NetworkGetEntityFromNetworkId(inventory.netId);
+      const coords = Vector3.fromArray(GetEntityCoords(entityId, true));
+      distance = playerCoords.distance(coords);
+    }
+  } else if (inventory.coords) {
+    distance = playerCoords.distance(inventory.coords as Vector3);
+  }
+
+  if (distance > (inventory.radius || 10)) return false;
+
+  return true;
+}
+
 setInterval(() => {
   const playerCoords = cache.coords as Vector3;
   nearbyInventories = grid.getNearbyEntries(playerCoords);
@@ -163,23 +215,7 @@ setInterval(() => {
   }
 
   for (const inventory of openInventories.values()) {
-    let distance = 0;
-
-    if (!inventory.coords && !inventory.netId) continue;
-
-    if (inventory.netId) {
-      if (!NetworkDoesEntityExistWithNetworkId(inventory.netId)) {
-        distance = 100;
-      } else {
-        const entityId = NetworkGetEntityFromNetworkId(inventory.netId);
-        const coords = Vector3.fromArray(GetEntityCoords(entityId, true));
-        distance = playerCoords.distance(coords);
-      }
-    } else if (inventory.coords) {
-      distance = playerCoords.distance(inventory.coords as Vector3);
-    }
-
-    if (distance > (inventory.radius || 10)) {
+    if (!CanAccessInventory(inventory)) {
       CloseInventory({ inventoryId: inventory.inventoryId, inventoryCount: openInventories.size - 1 });
     }
   }
@@ -221,3 +257,4 @@ setTick(() => {
 });
 
 exports('openVehicleTrunk', OpenVehicleTrunk);
+exports('requestOpenInventory', RequestOpenInventory);
