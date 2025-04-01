@@ -33,7 +33,7 @@ createBuilder(
   async (outfiles) => {
     const files = await getFiles('dist/web', 'static', 'locales');
     await createFxmanifest({
-      client_scripts: [outfiles.client, '@ox_lib/init.lua', 'src/client/main.lua'],
+      client_scripts: [outfiles.client],
       server_scripts: [outfiles.server],
       files: ['locales/*.json', ...files],
       dependencies: ['/server:13019', '/onesync', 'oxmysql', 'ox_lib', 'ox_target'],

@@ -4,6 +4,7 @@ import { cache, triggerServerCallback } from '@overextended/ox_lib/client';
 import './context';
 import config from '@common/config';
 import { Grid, type GridEntry } from '@common/grid';
+import locale from '@common/locale';
 import { Vector3 } from '@nativewrappers/common';
 import vehicleClasses from '@static/vehicleClasses.json';
 import { ValidateItemData } from './item';
@@ -90,8 +91,8 @@ export function CloseInventory(data?: { inventoryId: string; inventoryCount: num
   if (cb) cb(1);
 }
 
-export function RequestOpenInventory(inventories: string[] = []) {
-  if (!CanAccessInventory()) return;
+export function RequestOpenInventory(inventories: (string | number)[] = []) {
+  if (!CanAccessInventory()) return false;
 
   inventories = [...inventories, ...GetNearbyInventories()];
 
@@ -108,18 +109,19 @@ export function RequestOpenInventory(inventories: string[] = []) {
   }
 
   emitNet('ox_inventory:requestOpenInventory', inventories);
+
+  return true;
 }
 
 export function OpenVehicleTrunk({ entity }: { entity: number }) {
   const netId = NetworkGetNetworkIdFromEntity(entity);
-
   const vehicleClass = vehicleClasses[GetVehicleClass(entity)];
   const configKey = `Vehicle_${vehicleClass}_Glovebox_Weight`;
   const hasTrunk = config[configKey as any];
 
-  if (!hasTrunk) return;
+  if (!hasTrunk || !RequestOpenInventory([`trunk:${netId}`])) return;
 
-  RequestOpenInventory([`trunk:${netId}`]);
+  // todo: anim
 }
 
 RegisterNuiCallback('closeInventory', CloseInventory);
@@ -258,3 +260,27 @@ setTick(() => {
 
 exports('openVehicleTrunk', OpenVehicleTrunk);
 exports('requestOpenInventory', RequestOpenInventory);
+
+if (GetResourceState('ox_target') === 'started') {
+  exports.ox_target.addGlobalPlayer({
+    label: locale('access_inventory'),
+    icon: 'fas fa-search',
+    onSelect: ({ entity }: { entity: number }) => {
+      const targetId = GetPlayerServerId(NetworkGetEntityOwner(entity));
+
+      RequestOpenInventory([targetId]);
+    },
+  });
+
+  exports.ox_target.addGlobalVehicle({
+    label: locale('access_trunk'),
+    icon: 'fas fa-truck-ramp-box',
+    export: 'openVehicleTrunk',
+    canInteract: (entity: number) => {
+      const vehicleClass = vehicleClasses[GetVehicleClass(entity)];
+      const configKey = `Vehicle_${vehicleClass}_Glovebox_Weight`;
+
+      return config[configKey as any];
+    },
+  });
+}
