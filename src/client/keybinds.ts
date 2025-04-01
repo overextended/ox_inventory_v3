@@ -5,6 +5,7 @@ import { triggerServerCallback } from '@overextended/ox_lib/client';
 import vehicleClasses from '~/static/vehicleClasses.json';
 import { CloseInventory } from './inventory';
 import { UseItem } from './item';
+import { GetNearbyInventories } from './points';
 import { currentWeapon } from './weapon';
 
 RegisterCommand(
@@ -13,7 +14,7 @@ RegisterCommand(
     // todo: hotbar
     // const isTabDown = IsRawKeyDown(0x09);
 
-    const inventories = exports[cache.resource].getNearbyInventories();
+    const inventories = GetNearbyInventories();
 
     const { vehicle, seat } = cache;
 

@@ -2,7 +2,10 @@ import type { BaseInventory } from '@common/inventory/class';
 import type { InventoryItem } from '@common/item/index';
 import { cache, triggerServerCallback } from '@overextended/ox_lib/client';
 import './context';
+import config from '@common/config';
+import vehicleClasses from '~/static/vehicleClasses.json';
 import { ValidateItemData } from './item';
+import { GetClosestInventory } from './points';
 
 export enum InventoryState {
   Closed = 0,
@@ -43,6 +46,12 @@ export function CloseInventory(data?: { inventoryId: string; inventoryCount: num
 export function OpenVehicleTrunk({ entity }: { entity: number }) {
   const netId = NetworkGetNetworkIdFromEntity(entity);
 
+  const vehicleClass = vehicleClasses[GetVehicleClass(entity)];
+  const configKey = `Vehicle_${vehicleClass}_Glovebox_Weight`;
+  const hasTrunk = config[configKey as any];
+
+  if (!hasTrunk) return;
+
   emitNet('ox_inventory:requestOpenInventory', [`trunk:${netId}`]);
 }
 
@@ -56,7 +65,7 @@ RegisterNuiCallback('getStateKeyValue', ([state, key]: [state: string, key: stri
 
 RegisterNuiCallback('moveItem', async (data: MoveItem, cb: NuiCb) => {
   if (data.toType === 'drop' && !data.toId) {
-    const nearestDrop = exports[cache.resource].getClosestInventory('drop');
+    const nearestDrop = GetClosestInventory('drop');
 
     if (nearestDrop) {
       data.toId = nearestDrop;
