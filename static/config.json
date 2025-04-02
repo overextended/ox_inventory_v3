@@ -167,7 +167,11 @@
         "Weight": 10000,
         "Width": 4
       },
-      "Trunk": null
+      "Trunk": {
+        "Height": 6,
+        "Weight": 110000,
+        "Width": 8
+      }
     },
     "SPORTSCLASSIC": {
       "Glovebox": {
@@ -176,9 +180,9 @@
         "Width": 4
       },
       "Trunk": {
-        "Height": 11,
+        "Height": 6,
         "Weight": 110000,
-        "Width": 13
+        "Width": 8
       }
     },
     "SUPER": {
@@ -187,7 +191,11 @@
         "Weight": 10000,
         "Width": 4
       },
-      "Trunk": null
+      "Trunk": {
+        "Height": 6,
+        "Weight": 100000,
+        "Width": 8
+      }
     },
     "SUV": {
       "Glovebox": {

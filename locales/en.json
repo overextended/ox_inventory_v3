@@ -2,6 +2,5 @@
   "access": "Access",
   "inventory": "Inventory",
   "trunk": "Trunk",
-  "access_inventory": "${access} ${inventory}",
-  "access_trunk": "${access} ${trunk}"
+  "access_inventory": "${access} ${inventory}"
 }
