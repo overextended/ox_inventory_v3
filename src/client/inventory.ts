@@ -91,7 +91,7 @@ export function CloseInventory(data?: { inventoryId: string; inventoryCount: num
   if (cb) cb(1);
 }
 
-export function RequestOpenInventory(inventories: (string | number)[] = []) {
+export async function RequestOpenInventory(inventories: (string | number)[] = []) {
   if (!CanAccessInventory()) return false;
 
   inventories = [...inventories, ...GetNearbyInventories()];
@@ -108,7 +108,7 @@ export function RequestOpenInventory(inventories: (string | number)[] = []) {
     }
   }
 
-  emitNet('ox_inventory:requestOpenInventory', inventories);
+  await triggerServerCallback('ox_inventory:requestOpenInventory', 100, inventories);
 
   return true;
 }

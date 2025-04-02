@@ -1,19 +1,18 @@
 import { GetInventoryItem, type ItemProperties, type Weapon } from '@common/item';
-import { onClientCallback } from '@overextended/ox_lib/server';
+import { onClientCallback, sleep } from '@overextended/ox_lib/server';
 import { GetInventory } from './inventory';
 import { Inventory } from './inventory/class';
 import './commands';
 import Config from '@common/config';
 
-onNet('ox_inventory:requestOpenInventory', async (inventories?: string[]) => {
-  const playerId = source;
+onClientCallback('ox_inventory:requestOpenInventory', async (playerId, inventories?: string[]) => {
   const inventory = await GetInventory(playerId, 'player');
 
-  if (!inventory) return;
+  if (!inventory) return false;
 
   inventory.open(playerId);
 
-  if (!inventories || !inventories.length) return;
+  if (!inventories || !inventories.length) return true;
 
   for (const inventoryId of inventories) {
     const secondary = await GetInventory(inventoryId);
@@ -21,6 +20,8 @@ onNet('ox_inventory:requestOpenInventory', async (inventories?: string[]) => {
     // todo: validation
     if (secondary) secondary.open(playerId);
   }
+
+  return true;
 });
 
 onNet('ox_inventory:closeInventory', async (inventoryId?: string) => {
