@@ -204,7 +204,7 @@ export abstract class BaseItem {
   }
 
   public clone(): this {
-    const clone = structuredClone(this);
+    const clone = structuredClone(this.toJSON());
     delete clone.uniqueId;
     // @ts-expect-error
     return new this.constructor(clone);
