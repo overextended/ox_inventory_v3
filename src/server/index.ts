@@ -4,23 +4,43 @@ import { GetInventory } from './inventory';
 import { Inventory } from './inventory/class';
 import './commands';
 import Config from '@common/config';
+import { TriggerEventHooks } from '@common/hooks';
 
-onNet('ox_inventory:requestOpenInventory', async (inventories?: string[]) => {
-  const playerId = source;
+onClientCallback('ox_inventory:requestOpenInventory', async (playerId, inventories?: string[]) => {
   const inventory = await GetInventory(playerId, 'player');
 
-  if (!inventory) return;
+  if (!inventory) return false;
+
+  using hook = await TriggerEventHooks('openInventory', {
+    playerId,
+    inventoryId: inventory.inventoryId,
+    inventoryType: inventory.type,
+  });
+
+  if (!hook.success) return console.error('Cannot open inventory');
 
   inventory.open(playerId);
 
-  if (!inventories || !inventories.length) return;
+  if (!inventories || !inventories.length) return true;
+
+  if (inventories.length > 5) inventories.length = 5;
 
   for (const inventoryId of inventories) {
     const secondary = await GetInventory(inventoryId);
 
     // todo: validation
-    if (secondary) secondary.open(playerId);
+    if (secondary) {
+      using secondaryHook = await TriggerEventHooks('openInventory', {
+        playerId,
+        inventoryId: secondary.inventoryId,
+        inventoryType: secondary.type,
+      });
+
+      if (secondaryHook.success) secondary.open(playerId);
+    }
   }
+
+  return true;
 });
 
 onNet('ox_inventory:closeInventory', async (inventoryId?: string) => {
@@ -48,14 +68,31 @@ onClientCallback('ox_inventory:requestMoveItem', async (playerId, data: MoveItem
 
   if (data.quantity > item.quantity) return console.error('Invalid item or item count');
 
-  item.tempRotate = data.rotate;
+  const canHoldItem = toInventory.canHoldItem(item, data.toSlot, data.quantity);
 
-  const success =
-    data.quantity !== item.quantity
-      ? item.split(toInventory, data.quantity, data.toSlot)
-      : item.move(toInventory, data.toSlot);
+  if (!canHoldItem) return console.error('Cannot hold item');
 
-  if (success) toInventory.open(playerId);
+  const splitStack = data.quantity !== item.quantity;
+
+  using hook = await TriggerEventHooks('moveItem', {
+    item,
+    playerId,
+    splitStack,
+    toSlot: data.toSlot,
+    quantity: data.quantity,
+    inventoryId: fromInventory.inventoryId,
+    inventoryType: fromInventory.type,
+    toInventoryId: toInventory.inventoryId,
+    toInventoryType: toInventory.type,
+  });
+
+  if (!hook.success) return console.error('Cannot move item');
+
+  const success = splitStack
+    ? item.split(toInventory, data.quantity, data.toSlot, data.rotate)
+    : item.move(toInventory, data.toSlot, data.rotate);
+
+  hook.success = !!success;
 
   return !!success;
 });

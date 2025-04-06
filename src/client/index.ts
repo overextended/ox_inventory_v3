@@ -8,8 +8,13 @@ import { InventoryState, inventoryState } from './inventory';
 import { isUsingItem } from './item';
 import { currentWeapon, weaponWheelEnabled } from './weapon';
 import './clothing';
+import { Vector3 } from '@nativewrappers/fivem';
 
 onServerCallback('ox_inventory:getVehicleClass', (netId) => GetVehicleClass(NetworkGetEntityFromNetworkId(netId)));
+
+setInterval(() => {
+  cache.coords = Vector3.fromArray(GetEntityCoords(cache.ped, true));
+}, 500);
 
 setTick(() => {
   DisablePlayerVehicleRewards(cache.playerId);

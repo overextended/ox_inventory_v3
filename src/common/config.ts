@@ -1,4 +1,4 @@
-import type StaticConfig from '~/static/config.json';
+import type StaticConfig from '@static/config.json';
 import { LoadJsonFile } from './utils';
 
 // https://www.raygesualdo.com/posts/flattening-object-keys-with-typescript-types/

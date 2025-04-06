@@ -9,7 +9,6 @@ const web = await exists('./web');
 createBuilder(
   watch,
   {
-    dropLabels: ['$BROWSER'],
   },
   [
     {
@@ -18,6 +17,7 @@ createBuilder(
         platform: 'node',
         target: ['node22'],
         format: 'cjs',
+        dropLabels: ['$BROWSER', '$CLIENT'],
       },
     },
     {
@@ -26,13 +26,14 @@ createBuilder(
         platform: 'browser',
         target: ['es2023'],
         format: 'iife',
+        dropLabels: ['$BROWSER', '$SERVER'],
       },
     },
   ],
   async (outfiles) => {
     const files = await getFiles('dist/web', 'static', 'locales');
     await createFxmanifest({
-      client_scripts: [outfiles.client, '@ox_lib/init.lua', 'src/client/main.lua'],
+      client_scripts: [outfiles.client],
       server_scripts: [outfiles.server],
       files: ['locales/*.json', ...files],
       dependencies: ['/server:13019', '/onesync', 'oxmysql', 'ox_lib', 'ox_target'],

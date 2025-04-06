@@ -1,7 +1,7 @@
 import Config from '@common/config';
 import { GetPlayer } from '@overextended/ox_core/server';
 import { triggerClientCallback } from '@overextended/ox_lib/server';
-import vehicleClasses from '~/static/vehicleClasses.json';
+import vehicleClasses from '@static/vehicleClasses.json';
 import db from '../db';
 import { Inventory } from './class';
 
@@ -54,6 +54,7 @@ export async function GetInventory(inventoryId: string | number, data?: string |
       data.width = Config[`${configKey}_Width` as any];
       data.weight = Config[`${configKey}_Weight` as any];
       data.label = `${label} - ${GetVehicleNumberPlateText(entityId).trim()}`;
+      data.netId = netId;
       break;
     }
     case 'drop':

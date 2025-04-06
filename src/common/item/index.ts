@@ -41,7 +41,6 @@ const excludeKeysForComparison: Record<string, true> = {
   quantity: true,
   anchorSlot: true,
   inventoryId: true,
-  tempRotate: true,
 };
 
 export function GetItemData(name: string) {
@@ -204,7 +203,7 @@ export abstract class BaseItem {
   }
 
   public clone(): this {
-    const clone = structuredClone(this);
+    const clone = structuredClone(this.toJSON());
     delete clone.uniqueId;
     // @ts-expect-error
     return new this.constructor(clone);
@@ -240,7 +239,7 @@ export abstract class BaseItem {
     return true;
   }
 
-  public move(inventory: BaseInventory, startSlot?: number): boolean {
+  public move(inventory: BaseInventory, startSlot?: number, tempRotate?: boolean): boolean {
     startSlot = startSlot ?? inventory.findAvailableSlot(this);
     const existingItem = inventory.getItemInSlot(startSlot);
     const currentInventory = this.inventoryId && BaseInventory.FromId(this.inventoryId);
@@ -269,13 +268,12 @@ export abstract class BaseItem {
     const currentSlots = currentInventory && this.removeFromInventory(currentInventory);
     const quantity = existingItem === this ? this.quantity : this.quantity + (existingItem?.quantity ?? 0);
 
-    [this.rotate, this.tempRotate] = [(this.tempRotate as boolean) ?? this.rotate, this.rotate];
+    [this.rotate, tempRotate] = [(tempRotate as boolean) ?? this.rotate, this.rotate];
 
     const slots = inventory.canHoldItem(this, startSlot, quantity);
 
     if (!slots) {
-      this.tempRotate ? (this.rotate = true) : delete this.rotate;
-      delete this.tempRotate;
+      tempRotate ? (this.rotate = true) : delete this.rotate;
 
       if (currentSlots) this.addToInventory(currentInventory, currentSlots);
 
@@ -283,20 +281,23 @@ export abstract class BaseItem {
     }
 
     this.rotate ? (this.rotate = true) : delete this.rotate;
-    delete this.tempRotate;
 
     return this.addToInventory(inventory, slots);
   }
 
-  public split(inventory: BaseInventory, quantity: number, startSlot?: number): InventoryItem | null {
+  public split(
+    inventory: BaseInventory,
+    quantity: number,
+    startSlot?: number,
+    tempRotate?: boolean,
+  ): InventoryItem | null {
     const existingItem = inventory.getItemInSlot(startSlot);
     const currentInventory = BaseInventory.FromId(this.inventoryId);
     quantity = Math.max(1, Math.ceil(quantity));
     startSlot = startSlot ?? inventory.findAvailableSlot(this);
 
     if (existingItem?.anchorSlot === startSlot && currentInventory?.inventoryId === inventory.inventoryId) {
-      this.tempRotate ? (this.rotate = true) : delete this.rotate;
-      delete this.tempRotate;
+      tempRotate ? (this.rotate = true) : delete this.rotate;
       const canHoldItem = inventory.canHoldItem(this, startSlot, this.quantity + (existingItem?.quantity ?? 0));
 
       if (!canHoldItem) return null;
@@ -309,9 +310,6 @@ export abstract class BaseItem {
 
     const clone = this.clone();
     clone.quantity = quantity;
-
-    delete this.tempRotate;
-    delete clone.tempRotate;
 
     if (!clone.rotate) delete clone.rotate;
 
