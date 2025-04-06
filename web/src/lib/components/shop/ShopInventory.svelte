@@ -1,7 +1,10 @@
 <script lang="ts">
 import { itemTooltip } from '$lib/actions/itemTooltip';
+import CheckoutModal from '$lib/components/shop/CheckoutModal.svelte';
+import { Button } from '$lib/components/ui/button';
 import { Input } from '$lib/components/ui/input';
 import type { InventoryState } from '$lib/state/inventory';
+import { modal } from '$lib/state/modal.svelte';
 import type { InventoryItem } from '@common/item';
 import Icon from '@iconify/svelte';
 
@@ -45,6 +48,17 @@ function handleAmountChange(value: string, itemId: string) {
 
 function handleRemoveItem(itemId: string) {
   checkoutItems = checkoutItems.filter(({ item }) => item.uniqueId !== itemId);
+}
+
+function openCheckout() {
+  modal.open({
+    title: 'Checkout',
+    description: 'Checkout the items in your cart',
+    children: CheckoutModal,
+    childrenProps: {
+      title: 'PROP!!!',
+    },
+  });
 }
 </script>
 
@@ -113,17 +127,11 @@ function handleRemoveItem(itemId: string) {
         </div>
         <div class="flex flex-col">
           <p>Total: <span class="text-primary-foreground">${total}</span></p>
-          <div class="flex items-center">
 <!--            TODO: Create button component-->
-            <button class="h-9 flex-1 bg-primary/40 text-primary-foreground flex items-center gap-2 justify-center hover:bg-primary/50">
-              <Icon icon="heroicons-outline:cash" width="20" height="20" />
-              Pay With Cash
-            </button>
-            <button class="h-9 flex-1 bg-secondary text-secondary-foreground flex items-center gap-2 justify-center hover:bg-secondary/50">
-              <Icon icon="heroicons:credit-card" width="20" height="20" />
-              Pay With Card
-            </button>
-          </div>
+          <Button class="flex items-center gap-2" onclick={openCheckout}>
+            <Icon icon="hugeicons:shopping-cart-check-out-02" width="20" height="20" />
+            Checkout
+          </Button>
         </div>
       </div>
     </div>

@@ -7,6 +7,7 @@ import Tooltip from '$lib/components/tooltip/Tooltip.svelte';
 import { SLOT_SIZE } from '$lib/constants/inventory';
 import { CreateItem } from '$lib/helpers/create-item';
 import { useNuiEvent } from '$lib/hooks/useNuiEvents';
+import ModalsProvider from '$lib/providers/ModalsProvider.svelte';
 import { contextMenu } from '$lib/state/context-menu.svelte';
 import { type DragItemType, InventoryState } from '$lib/state/inventory';
 import { tooltip } from '$lib/state/tooltip.svelte';
@@ -489,32 +490,34 @@ function getSpecialInventory(data: OpenInventories | InventoryState) {
 
 <svelte:window onmouseup={onMouseUp} onkeydown={onKeyDown} onkeyup={onKeyUp} ondragstart={preventDefault} />
 
-<Tooltip />
-<DragPreview bind:dragImg bind:dropIndicator {dragItem} />
-<ContextMenu />
+<ModalsProvider>
+  <Tooltip />
+  <DragPreview bind:dragImg bind:dropIndicator {dragItem} />
+  <ContextMenu />
 
 
-{#if getSpecialInventory(openInventories)}
-  {@const inventory = getSpecialInventory(openInventories)}
+  {#if getSpecialInventory(openInventories)}
+    {@const inventory = getSpecialInventory(openInventories)}
 
-  {#if inventory}
-    {@const Component = SPECIAL_INVENTORIES[inventory.type]};
-    <Component {inventory} itemState={inventory.itemState}/>
+    {#if inventory}
+      {@const Component = SPECIAL_INVENTORIES[inventory.type]};
+      <Component {inventory} itemState={inventory.itemState}/>
+    {/if}
+  {:else}
+    {#each openInventories as { inventory }}
+      <InventoryWindow
+        visible
+        {isDragging}
+        {dragItem}
+        {inventory}
+        itemState={inventory.itemState}
+        {onMouseDown}
+        {inventoryCount}
+        {playerId}
+      />
+    {/each}
   {/if}
-{:else}
-  {#each openInventories as { inventory }}
-    <InventoryWindow
-      visible
-      {isDragging}
-      {dragItem}
-      {inventory}
-      itemState={inventory.itemState}
-      {onMouseDown}
-      {inventoryCount}
-      {playerId}
-    />
-  {/each}
-{/if}
+</ModalsProvider>
 
 
 
