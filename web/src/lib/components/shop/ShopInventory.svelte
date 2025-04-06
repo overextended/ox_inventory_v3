@@ -1,10 +1,11 @@
 <script lang="ts">
 import { itemTooltip } from '$lib/actions/itemTooltip';
-import CheckoutModal from '$lib/components/shop/CheckoutModal.svelte';
+import CheckoutModal from '$lib/components/shop/checkout/CheckoutModal.svelte';
 import { Button } from '$lib/components/ui/button';
 import { Input } from '$lib/components/ui/input';
 import type { InventoryState } from '$lib/state/inventory';
 import { modal } from '$lib/state/modal.svelte';
+import { formatNumber } from '$lib/utils/number';
 import type { InventoryItem } from '@common/item';
 import Icon from '@iconify/svelte';
 
@@ -53,10 +54,11 @@ function handleRemoveItem(itemId: string) {
 function openCheckout() {
   modal.open({
     title: 'Checkout',
-    description: 'Checkout the items in your cart',
+    description: `Cart total: ${formatNumber(total)}`,
     children: CheckoutModal,
     childrenProps: {
-      title: 'PROP!!!',
+      total,
+      checkoutItems,
     },
   });
 }
@@ -86,7 +88,7 @@ function openCheckout() {
               ></div>
               <div class="flex flex-col justify-between text-sm w-full h-full items-end px-1 text-muted-foreground">
                 <p>{item.label}</p>
-                <p class="text-primary-foreground">${item.price}</p>
+                <p class="text-primary-foreground">{formatNumber(item.price)}</p>
               </div>
             </div>
           {/if}
@@ -111,7 +113,7 @@ function openCheckout() {
                 <img class="w-[60px]" alt={item.name} src={item.icon}/>
                 <div class="flex flex-col">
                   <p>{item.label}</p>
-                  <p class="text-sm text-primary-foreground">${item.price * +buyCount}</p>
+                  <p class="text-sm text-primary-foreground">{formatNumber(item.price * +buyCount)}</p>
                 </div>
               </div>
               <div class="flex items-center gap-2">
@@ -126,9 +128,9 @@ function openCheckout() {
           {/each}
         </div>
         <div class="flex flex-col">
-          <p>Total: <span class="text-primary-foreground">${total}</span></p>
+          <p>Total: <span class="text-primary-foreground">{formatNumber(total)}</span></p>
 <!--            TODO: Create button component-->
-          <Button class="flex items-center gap-2" onclick={openCheckout}>
+          <Button class="flex items-center gap-2" onclick={openCheckout} disabled={total === 0}>
             <Icon icon="hugeicons:shopping-cart-check-out-02" width="20" height="20" />
             Checkout
           </Button>

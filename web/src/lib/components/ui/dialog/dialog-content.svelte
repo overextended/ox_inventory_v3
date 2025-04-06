@@ -1,7 +1,8 @@
 <script lang="ts">
 import { cn } from '$lib/utils.js';
 import Icon from '@iconify/svelte';
-import type { Dialog as DialogPrimitive, WithoutChildrenOrChild } from 'bits-ui';
+// biome-ignore lint/style/useImportType: <explanation>
+import { Dialog as DialogPrimitive, type WithoutChildrenOrChild } from 'bits-ui';
 import type { Snippet } from 'svelte';
 import * as Dialog from './index.js';
 
