@@ -1,5 +1,5 @@
-import { GetInventoryItem, UseItem } from './item';
 import { CloseInventory } from './inventory';
+import { GetInventoryItem, UseItem } from './item';
 
 interface ContextMenuAction {
   buttonId: string;
@@ -31,8 +31,6 @@ RegisterNuiCallback(
 
     switch (buttonId) {
       case 'use':
-        CloseInventory(null, cb);
-
         return UseItem(itemId);
       case 'give':
         return; //todo
