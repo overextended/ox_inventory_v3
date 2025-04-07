@@ -371,3 +371,12 @@ if (GetResourceState('ox_target') === 'started') {
     distance: 3,
   });
 }
+
+function SetDisplayMetadata(data: Record<string, string>) {
+  SendNUIMessage({
+    action: 'displayMetadata',
+    data: data,
+  });
+}
+
+exports('displayMetadata', SetDisplayMetadata);
