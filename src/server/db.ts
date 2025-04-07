@@ -6,7 +6,7 @@ import { Inventory } from './inventory/class';
 const sqlite = new DatabaseSync(`${GetResourcePath(cache.resource)}/db.sqlite`);
 
 if (!sqlite.prepare(`SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'items'`).get()) {
-  const statement = LoadResourceFile(cache.resource, 'db.sql');
+  const statement = LoadResourceFile(cache.resource, 'sql/schema.sql');
 
   sqlite.exec(statement);
 }
