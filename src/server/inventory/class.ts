@@ -10,9 +10,12 @@ on('playerJoining', () => drops.length && emitNet('ox_inventory:addInventoryGrid
 export class Inventory extends BaseInventory {
   #openedBy: Set<number>;
 
-  constructor(data: Partial<BaseInventory>) {
+  public entityId?: number;
+
+  constructor(data: Partial<Inventory>) {
     super(data);
     this.#openedBy = new Set();
+    this.entityId = data.entityId;
 
     if (data.type === 'drop') {
       drops.push(this.inventoryId);
@@ -31,6 +34,31 @@ export class Inventory extends BaseInventory {
         console.error(`Invalid item '${data.name}' in inventory '${this.inventoryId}' was deleted.`);
       }
     }
+  }
+
+  /**
+   * Get a cached inventory from its unique inventory id.
+   */
+  static FromId(inventoryId: string) {
+    const inventory = BaseInventory.FromId(inventoryId) as Inventory;
+
+    if (!inventory) return;
+
+    if (inventory.entityId) {
+      const isValid =
+        DoesEntityExist(inventory.entityId) && NetworkGetNetworkIdFromEntity(inventory.entityId) === inventory.netId;
+
+      const state = isValid && Entity(inventory.entityId).state;
+
+      if (!state || state?.inventoryId !== inventory.inventoryId) {
+        if (state) state.inventoryId = undefined;
+
+        inventory.remove(true);
+        return;
+      }
+    }
+
+    return inventory;
   }
 
   static GetInventories(playerId?: number) {

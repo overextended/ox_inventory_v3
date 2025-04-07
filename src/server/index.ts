@@ -7,7 +7,7 @@ import Config from '@common/config';
 import { TriggerEventHooks } from '@common/hooks';
 
 onClientCallback('ox_inventory:requestOpenInventory', async (playerId, inventories?: string[]) => {
-  const inventory = await GetInventory(playerId, 'player');
+  const inventory = await GetInventory(playerId);
 
   if (!inventory) return false;
 
@@ -52,11 +52,11 @@ onNet('ox_inventory:closeInventory', async (inventoryId?: string) => {
 });
 
 onClientCallback('ox_inventory:requestMoveItem', async (playerId, data: MoveItem) => {
-  const fromInventory = await GetInventory(data.fromId, data.fromType);
+  const fromInventory = await GetInventory(data.fromId);
   const toInventory =
     data.fromId === data.toId
       ? fromInventory
-      : await GetInventory(data.toId ?? Date.now().toString(), { type: data.toType, coords: data.coords });
+      : await GetInventory(data.toId ?? Date.now().toString(), { coords: data.coords });
 
   if (!fromInventory || !toInventory) return console.error('Invalid·inventory');
 

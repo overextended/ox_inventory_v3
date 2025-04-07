@@ -29,6 +29,8 @@ export class BaseInventory {
   #itemCache: number[] = [];
   #mapCache: InventoryItem[] = [];
 
+  [key: string]: unknown;
+
   constructor(data: Partial<BaseInventory>) {
     this.inventoryId = data.inventoryId;
     this.type = data.type ?? 'player';
@@ -42,6 +44,8 @@ export class BaseInventory {
     this.ownerId = data.ownerId;
     this.coords = data.coords;
     this.playerId = data.playerId;
+    this.isTemporary = data.isTemporary;
+    this.radius = data.radius;
 
     BaseInventory.instances[this.inventoryId] = this;
   }
@@ -49,8 +53,8 @@ export class BaseInventory {
   /**
    * Get a cached inventory from its unique inventory id.
    */
-  static FromId<T extends BaseInventory>(this: new (...args: any[]) => T, inventoryId: string) {
-    return BaseInventory.instances[inventoryId] as T;
+  static FromId(inventoryId: string) {
+    return BaseInventory.instances[inventoryId];
   }
 
   static Remove(inventoryId: string) {
