@@ -121,7 +121,6 @@ export async function OpenVehicleTrunk({ entity }: { entity: number }) {
 
   if (!hasTrunk) return false;
 
-  const inventoryId = `trunk:${netId}`;
   const { doorIndex, isRearEngine } = GetVehicleTrunkData(entity) || {};
 
   if (!doorIndex) return false;
@@ -136,8 +135,6 @@ export async function OpenVehicleTrunk({ entity }: { entity: number }) {
     .multiply(new Vector3(0.5, isRearEngine ? 1.1 : -0.1, 0.5))
     .add(min);
 
-  const anim = await requestAnimDict('anim@heists@prison_heiststation@cop_reactions');
-  const anim2 = await requestAnimDict('anim@heists@fleeca_bank@scope_out@return_case');
   const goto = Vector2.fromArray(GetOffsetFromEntityInWorldCoords(entity, offset.x, offset.y, offset.z));
 
   TaskGotoEntityOffsetXy(cache.ped, entity, 4000, 0, offset.x, offset.y, 2.0, 1);
@@ -153,14 +150,21 @@ export async function OpenVehicleTrunk({ entity }: { entity: number }) {
     4000,
   ).catch(() => false);
 
-  RemoveAnimDict(anim);
-
   if (!success) return false;
+
+  const state = Entity(entity).state;
+  let inventoryId = state.inventoryId || `trunk:${netId}`;
 
   await RequestOpenInventory([inventoryId]);
 
+  inventoryId = Entity(entity).state.inventoryId;
+
   if (!openInventories.has(inventoryId)) return false;
 
+  const anim = await requestAnimDict('anim@heists@prison_heiststation@cop_reactions');
+  const anim2 = await requestAnimDict('anim@heists@fleeca_bank@scope_out@return_case');
+
+  RemoveAnimDict(anim);
   TaskPlayAnim(cache.ped, anim, 'cop_b_idle', 3, 3, -1, 49, 0, false, false, false);
   SetVehicleDoorOpen(entity, doorIndex, false, false);
 
@@ -363,7 +367,7 @@ if (GetResourceState('ox_target') === 'started') {
     label: locale('access_inventory'),
     icon: 'fas fa-truck-ramp-box',
     export: 'openVehicleTrunk',
-    canInteract: (entity: number) => !!GetVehicleTrunkData(entity),
+    canInteract: (entity: number) => Entity(entity).state.inventoryId || !!GetVehicleTrunkData(entity),
     distance: 3,
   });
 }
