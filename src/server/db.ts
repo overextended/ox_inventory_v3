@@ -1,7 +1,7 @@
-import type { InventoryItem, ItemProperties } from '@common/item';
 import { DatabaseSync } from 'node:sqlite';
-import type { Inventory } from './inventory/class';
+import type { InventoryItem, ItemProperties } from '@common/item';
 import { cache } from '@overextended/ox_lib';
+import type { Inventory } from './inventory/class';
 
 const sqlite = new DatabaseSync(`${GetResourcePath(cache.resource)}/db.sqlite`);
 
@@ -41,12 +41,6 @@ const db = new (class Database {
   private _getItems = sqlite.prepare('SELECT name, category, JSON(data) as data FROM items');
   private _getItemByName = sqlite.prepare('SELECT name, category, json(data) as data FROM items WHERE name LIKE ?');
   private _getItemsByCategory = sqlite.prepare('SELECT name, json(data) as data FROM items WHERE category LIKE ?');
-  private _getInventory = sqlite.prepare(
-    'SELECT inventoryId, type, json(data) as data FROM inventories WHERE inventoryId = ?',
-  );
-  private _insertInventory = sqlite.prepare(
-    'INSERT INTO inventories (inventoryId, type, data) VALUES (?, ?, jsonb(?))',
-  );
   private _getInventoryItems = sqlite.prepare(
     'SELECT uniqueId, inventoryId, json(data) as data FROM inventory_items WHERE inventoryId = ?',
   );
@@ -54,7 +48,6 @@ const db = new (class Database {
   private _updateInventoryItem = sqlite.prepare(
     'INSERT INTO inventory_items (uniqueId, inventoryId, data) VALUES (?, ?, jsonb(?)) ON CONFLICT(uniqueId) DO UPDATE SET inventoryId = excluded.inventoryId, data = excluded.data',
   );
-  private _deleteInventory = sqlite.prepare('DELETE FROM inventories WHERE inventoryId = ?');
   private _deleteInventoryItems = sqlite.prepare('DELETE FROM inventory_items WHERE inventoryId = ?');
 
   getItems(category?: string): ItemProperties[] {
@@ -73,20 +66,6 @@ const db = new (class Database {
     const result = this._getItemByName.get(name) as DbItem;
 
     if (result) return { name: result.name, category: result.category, ...JSON.parse(result.data) };
-  }
-
-  getInventory(inventoryId: string): Partial<Inventory> {
-    const result = this._getInventory.get(inventoryId) as DbInventory;
-
-    if (result) return { inventoryId, type: result.type, ...JSON.parse(result.data) };
-  }
-
-  insertInventory(inventory: Partial<Inventory>) {
-    const data = { ...inventory };
-    delete data.inventoryId;
-    delete data.type;
-
-    return this._insertInventory.run(inventory.inventoryId, inventory.type, JSON.stringify(data)).changes === 1;
   }
 
   getInventoryItems(inventoryId: string): ItemProperties[] {
@@ -119,14 +98,8 @@ const db = new (class Database {
     return item.uniqueId;
   }
 
-  deleteInventory(inventoryId: string, deleteItems = false) {
-    const success = this._deleteInventory.run(inventoryId).changes;
-
-    if (success && deleteItems) {
-      this._deleteInventoryItems.run(inventoryId);
-    }
-
-    return success;
+  deleteInventory(inventoryId: string) {
+    return this._deleteInventoryItems.run(inventoryId).changes;
   }
 })();
 

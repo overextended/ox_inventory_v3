@@ -65,12 +65,12 @@ export class Inventory extends BaseInventory {
   }
 
   /**
-   * Unloads this inventory from the server and deletes it from the database.
+   * Unloads this inventory from the server and optionally deletes its items from the database.
    */
   public delete(removeItems = false) {
-    const success = db.deleteInventory(this.inventoryId, removeItems);
+    if (removeItems) db.deleteInventory(this.inventoryId);
 
-    if (success) Inventory.Remove(this.inventoryId);
+    Inventory.Remove(this.inventoryId);
   }
 
   /**
