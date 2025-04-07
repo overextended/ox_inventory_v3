@@ -57,8 +57,13 @@ onClientCallback('ox_inventory:requestMoveItem', async (playerId, data: MoveItem
     data.fromId === data.toId
       ? fromInventory
       : await GetInventory(data.toId ?? Date.now().toString(), { coords: data.coords });
+  const isValidInventory =
+    fromInventory &&
+    toInventory &&
+    fromInventory.getOpenState(playerId) === 'open' &&
+    toInventory.getOpenState(playerId) === 'open';
 
-  if (!fromInventory || !toInventory) return console.error('Invalid·inventory');
+  if (!isValidInventory) return console.error('Invalid inventory');
 
   const item = GetInventoryItem(fromInventory.items[data.fromSlot]);
 

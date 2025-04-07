@@ -8,13 +8,12 @@ const drops: string[] = [];
 on('playerJoining', () => drops.length && emitNet('ox_inventory:addInventoryGrid', -1, drops));
 
 export class Inventory extends BaseInventory {
-  #openedBy: Set<number>;
+  #openedBy: Map<number, string> = new Map();
 
   public entityId?: number;
 
   constructor(data: Partial<Inventory>) {
     super(data);
-    this.#openedBy = new Set();
     this.entityId = data.entityId;
 
     if (data.type === 'drop') {
@@ -105,9 +104,9 @@ export class Inventory extends BaseInventory {
    * Opens this inventory for a player.
    */
   public open(playerId: number) {
-    if (this.isOpen(playerId)) return;
+    if (this.getOpenState(playerId)) return;
 
-    this.#openedBy.add(playerId);
+    this.#openedBy.set(playerId, 'open');
     emitNet('ox_inventory:openInventory', playerId, { inventory: this, items: this.mapItems() });
   }
 
@@ -115,9 +114,8 @@ export class Inventory extends BaseInventory {
    * Opens this inventory for a player in view-only-mode.
    */
   public view(playerId: number) {
-    this.#openedBy.add(playerId);
-    emitNet('ox_inventory:openInventory', playerId, { inventory: this, items: this.mapItems() });
-    // todo: make it actually view-only
+    this.#openedBy.set(playerId, 'view');
+    emitNet('ox_inventory:openInventory', playerId, { inventory: this, items: this.mapItems(), viewOnly: true });
   }
 
   /**
@@ -144,8 +142,8 @@ export class Inventory extends BaseInventory {
   /**
    * Checks if the inventory is open for the given player.
    */
-  public isOpen(playerId: number) {
-    return this.#openedBy.has(playerId);
+  public getOpenState(playerId: number) {
+    return this.#openedBy.get(playerId);
   }
 
   /**
