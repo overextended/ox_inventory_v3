@@ -277,7 +277,7 @@ function onMouseDown(event: MouseEvent) {
 
   const sourceInventory = getInventoryById(parent.dataset.inventoryid as string);
 
-  if (!sourceInventory) return;
+  if (!sourceInventory || sourceInventory.viewOnly) return;
 
   const slot = +target.dataset.slot;
   const item = slot !== null && sourceInventory.getItemInSlot(slot);
