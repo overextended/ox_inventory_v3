@@ -1,4 +1,4 @@
-import { GetInventoryItem, type ItemProperties, type Weapon } from '@common/item';
+import { GetInventoryItem, GetItemData, type ItemProperties, type Weapon } from '@common/item';
 import { onClientCallback } from '@overextended/ox_lib/server';
 import { GetInventory } from './inventory';
 import { Inventory } from './inventory/class';
@@ -175,4 +175,27 @@ onNet('ox_inventory:loadWeaponAmmo', async (addAmmo: number) => {
   // placeholder for syncing ammo count
   weapon.move(inventory, weapon.anchorSlot);
   emitNet('ox_inventory:updateCurrentWeapon', playerId, weapon);
+});
+
+exports('getInventory', (id: string) => Inventory.FromId(id));
+exports('getInventoryItems', (id: string) => Inventory.FromId(id)?.mapItems());
+exports('getInventoryItemIds', (id: string) => Inventory.FromId(id)?.itemIds());
+exports('removeInventory', (id: string) => Inventory.FromId(id)?.remove(true));
+exports('getItemInSlot', (id: string, slot: number) => Inventory.FromId(id)?.getItemInSlot(slot));
+exports('getCurrentWeapon', (id: string) => Inventory.FromId(id)?.currentWeapon);
+exports('setInventoryMetadata', (id: string, key: string, value: any) => {
+  const inventory = Inventory.FromId(id);
+
+  if (inventory) inventory[key] = value;
+});
+exports('addItem', (id: string, data: ItemProperties) => Inventory.FromId(id)?.addItem(data));
+exports('removeItem', (id: string, data: ItemProperties) => Inventory.FromId(id)?.removeItem(data));
+exports('clearInventory', (id: string, keepItems?: number[]) => Inventory.FromId(id)?.clear(keepItems));
+
+exports('getItemData', (itemName: string) => GetItemData(itemName));
+exports('getItem', (id: number) => GetInventoryItem(id));
+exports('setItemMetadata', (id: number, key: string, value: any) => {
+  const item = GetInventoryItem(id);
+
+  if (item) item[key] = value;
 });
