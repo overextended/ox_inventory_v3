@@ -1,4 +1,5 @@
 import Config from '@common/config';
+import { GetInventoryItem } from '@common/item';
 import { triggerClientCallback } from '@overextended/ox_lib/server';
 import vehicleClasses from '@static/vehicleClasses.json';
 import { GetPlayerInventoryId, GetVehicleFromInventoryId } from '../bridge';
@@ -18,6 +19,17 @@ export async function GetInventory(inventoryId: string | number, data: Partial<I
   switch (inventoryType) {
     case 'player':
       break;
+    case 'container': {
+      const itemId = +inventoryId.slice(inventoryId.indexOf(':') + 1);
+      const item = GetInventoryItem(itemId);
+
+      data.width = item.inventory.width;
+      data.height = item.inventory.height;
+      data.weight = item.inventory.weight;
+      data.label = `${item.label} - ${item.uniqueId}`;
+
+      break;
+    }
     case 'trunk':
     case 'glovebox': {
       const [netId, entityId, vin, isTemporary] = GetVehicleFromInventoryId(inventoryId);

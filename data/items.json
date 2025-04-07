@@ -935,5 +935,15 @@
   },
   "ped_prop": {
     "category": "clothing"
+  },
+  "paperbag": {
+    "category": "container",
+    "label": "Paper bag",
+    "weight": 1,
+    "inventory": {
+      "weight": 1000,
+      "height": 2,
+      "width": 2
+    }
   }
 }

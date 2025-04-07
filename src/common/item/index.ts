@@ -86,7 +86,7 @@ export abstract class BaseItem {
   public quantity: number;
 
   /** The item's type, defaulting to miscellaneous. */
-  public category: 'ammo' | 'weapon' | 'weapon_attachment' | 'throwable' | 'clothing' | 'miscellaneous';
+  public category: 'ammo' | 'weapon' | 'weapon_attachment' | 'throwable' | 'clothing' | 'miscellaneous' | 'container';
 
   /** A unique identifier used to reference the item and save it in the database. */
   public uniqueId?: number;
