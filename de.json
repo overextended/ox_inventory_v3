@@ -1,0 +1,6 @@
+{
+  "access": "Zugriff",
+  "inventory": "Inventar",
+  "trunk": "Kofferraum",
+  "access_inventory": "${access} ${inventory}"
+}
