@@ -72,7 +72,7 @@ export class Inventory extends BaseInventory {
    * Emits an event to all players who are using this inventory.
    */
   public emit(event: string, ...args: any) {
-    this.#openedBy.forEach((playerId) => emitNet(event, playerId, ...args));
+    this.#openedBy.forEach((_, playerId) => emitNet(event, playerId, ...args));
   }
 
   /**
@@ -133,7 +133,7 @@ export class Inventory extends BaseInventory {
    * Closes this inventory for all players.
    */
   public closeAll() {
-    this.#openedBy.forEach((playerId) => emitNet('ox_inventory:closeInventory', playerId));
+    this.emit('ox_inventory:closeInventory');
     this.#openedBy.clear();
 
     if (this.type === 'drop' && Object.keys(this.items).length === 0) this.remove(false);
