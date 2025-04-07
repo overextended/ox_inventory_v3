@@ -78,6 +78,9 @@ const db = new (class Database {
     if (item.quantity < 1) return this._deleteInventoryItem.run(item.uniqueId)?.changes ? 0 : item.uniqueId;
 
     const inventory = Inventory.FromId(item.inventoryId);
+
+    if (!inventory) return;
+
     const data = { ...item };
     delete data.uniqueId;
     delete data.inventoryId;
