@@ -104,18 +104,24 @@ export class Inventory extends BaseInventory {
    * Opens this inventory for a player.
    */
   public open(playerId: number) {
-    if (this.getOpenState(playerId)) return;
+    if (this.getOpenState(playerId) === 'open') return false;
 
     this.#openedBy.set(playerId, 'open');
     emitNet('ox_inventory:openInventory', playerId, { inventory: this, items: this.mapItems() });
+
+    return true;
   }
 
   /**
    * Opens this inventory for a player in view-only-mode.
    */
   public view(playerId: number) {
+    if (this.getOpenState(playerId) === 'view') return false;
+
     this.#openedBy.set(playerId, 'view');
     emitNet('ox_inventory:openInventory', playerId, { inventory: this, items: this.mapItems(), viewOnly: true });
+
+    return true;
   }
 
   /**
