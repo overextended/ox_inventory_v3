@@ -1,7 +1,7 @@
 import { DatabaseSync } from 'node:sqlite';
 import type { InventoryItem, ItemProperties } from '@common/item';
 import { cache } from '@overextended/ox_lib';
-import type { Inventory } from './inventory/class';
+import { Inventory } from './inventory/class';
 
 const sqlite = new DatabaseSync(`${GetResourcePath(cache.resource)}/db.sqlite`);
 
@@ -23,12 +23,6 @@ interface DbItem {
   name: string;
   data: string;
   category?: string;
-}
-
-interface DbInventory {
-  inventoryId: string;
-  type: string;
-  data: string;
 }
 
 interface DbInventoryItem {
@@ -83,13 +77,14 @@ const db = new (class Database {
   updateInventoryItem(item: Partial<InventoryItem>): number {
     if (item.quantity < 1) return this._deleteInventoryItem.run(item.uniqueId)?.changes ? 0 : item.uniqueId;
 
+    const inventory = Inventory.FromId(item.inventoryId);
     const data = { ...item };
     delete data.uniqueId;
     delete data.inventoryId;
 
     const rowId = this._updateInventoryItem.run(
       item.uniqueId || null,
-      item.inventoryId || null,
+      (!inventory.isTemporary && item.inventoryId) || null,
       JSON.stringify(data),
     )?.lastInsertRowid;
 
