@@ -1,0 +1,6 @@
+{
+  "access": "Acceso",
+  "inventory": "Inventario",
+  "trunk": "Maletero",
+  "access_inventory": "${access} ${inventory}"
+}
