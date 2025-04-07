@@ -183,19 +183,17 @@ useNuiEvent('updateItem', async (items: InventoryItem[]) => {
       continue;
     }
 
-    if (item.inventoryId !== data.inventoryId || item.rotate !== data.rotate || item.anchorSlot !== data.anchorSlot) {
-      const oldInventory = InventoryState.FromId(item.inventoryId);
+    const oldInventory = InventoryState.FromId(item.inventoryId);
 
-      if (oldInventory) inventories.add(oldInventory);
+    if (oldInventory) inventories.add(oldInventory);
 
-      item.delete();
+    item.delete();
 
-      if (!inventory) continue;
+    if (!inventory) continue;
 
-      // todo: figure out why we can't reuse the existing item :sadge:
-      const newItem: InventoryItem = await CreateItem(data);
-      newItem.move(inventory, newItem.anchorSlot);
-    }
+    // todo: figure out why we can't reuse the existing item :sadge:
+    const newItem: InventoryItem = await CreateItem(data);
+    newItem.move(inventory, newItem.anchorSlot);
   }
 
   for (const inventory of inventories) inventory.refreshSlots();
