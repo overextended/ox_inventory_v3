@@ -1,0 +1,6 @@
+{
+  "access": "アクセス",
+  "inventory": "インベントリ",
+  "trunk": "トランク",
+  "access_inventory": "${access} ${inventory}"
+}
