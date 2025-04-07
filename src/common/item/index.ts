@@ -328,7 +328,7 @@ export function ItemFactory(item: ItemProperties) {
 
   item.category = item.category ?? 'miscellaneous';
   item.itemLimit = clamp(item.itemLimit);
-  item.stackSize = clamp(item.category === 'weapon' ? 1 : item.stackSize);
+  item.stackSize = item.category === 'weapon' || item.category === 'container' ? 1 : clamp(item.stackSize);
   item.durability = (item.durability || item.decay || item.degrade) && 100;
   item.rarity = item.rarity ?? 'common';
   item.decay = item.decay ?? false;
