@@ -173,6 +173,7 @@ export class BaseInventory {
 
     // todo: totalQuantity > itemLimit
     // todo: weight checks
+
     if (quantity > item.stackSize) return false;
 
     if (
@@ -180,6 +181,7 @@ export class BaseInventory {
       existingItem.anchorSlot === startSlot &&
       this.inventoryId === (existingItem.inventoryId ?? this.inventoryId)
     ) {
+      if (existingItem.quantity + quantity > item.stackSize) return false;
       if (!item.match(existingItem)) return false;
 
       return this.getItemSlots(existingItem);
