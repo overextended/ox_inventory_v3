@@ -1,7 +1,7 @@
 import { cache } from '@overextended/ox_lib';
 import type { ItemProperties } from './item';
 
-type EventHooks = OpenInventoryHook | MoveItemHook;
+type EventHooks = OpenInventoryHook | MoveItemHook | AddItemHook;
 
 export interface OpenInventoryHook {
   playerId: number;
@@ -19,6 +19,13 @@ export interface MoveItemHook {
   inventoryType: string;
   toInventoryId: string;
   toInventoryType: string;
+}
+
+export interface AddItemHook {
+  item: ItemProperties;
+  toSlot: number;
+  inventoryId: string;
+  inventoryType: string;
 }
 
 interface EventHookProperties {

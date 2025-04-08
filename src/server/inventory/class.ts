@@ -1,3 +1,4 @@
+import { TriggerEventHooks } from '@common/hooks';
 import { BaseInventory } from '@common/inventory/class';
 import type { InventoryItem, ItemProperties } from '@common/item';
 import db from '../db';
@@ -155,7 +156,7 @@ export class Inventory extends BaseInventory {
   /**
    * Create an item and add it to this inventory, optionally merging with an existing item if requirements are met.
    */
-  public addItem(data: ItemProperties): InventoryItem {
+  public async addItem(data: ItemProperties) {
     const Item = GetItemClass(data.name);
     const item = new Item(data);
     item.inventoryId = this.inventoryId;
@@ -164,9 +165,19 @@ export class Inventory extends BaseInventory {
 
     if (!slots) throw new Error(`Cannot add item '${data.name}' to inventory '${this.inventoryId}'`);
 
-    item.move(this, slots[0]);
+    using hook = await TriggerEventHooks('addItem', {
+      item,
+      toSlot: slots[0],
+      inventoryId: this.inventoryId,
+      inventoryType: this.type,
+    });
 
-    return item;
+    if (!hook.success) return;
+
+    const success = item.move(this, slots[0]);
+    hook.success = !!success;
+
+    return success ? item : null;
   }
 
   /**
