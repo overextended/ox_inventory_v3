@@ -80,15 +80,13 @@ function CreateItemClass(data: ItemProperties) {
 }
 
 export function GetItemClass(name: string) {
-  const Item = GetItemData(name) ?? CreateItemClass(db.getItem(name));
-
-  if (!Item) throw new Error(`Attempted to create invalid item ${name}`);
-
-  return Item;
+  return GetItemData(name) ?? CreateItemClass(db.getItem(name));
 }
 
-export function CreateItem(data = {} as Partial<ItemProperties>) {
+export function CreateItem(data: ItemProperties) {
   const Item = GetItemClass(data.name);
+
+  if (!Item) throw new Error(`Attempted to create invalid item ${data.name}`);
 
   if (!data.uniqueId) db.updateInventoryItem(data);
 

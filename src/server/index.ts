@@ -5,6 +5,7 @@ import { Inventory } from './inventory/class';
 import './commands';
 import Config from '@common/config';
 import { TriggerEventHooks } from '@common/hooks';
+import { GetItemClass } from './item';
 
 onClientCallback('ox_inventory:requestOpenInventory', async (playerId, inventories?: string[]) => {
   const inventory = await GetInventory(playerId);
@@ -192,6 +193,7 @@ exports('addItem', (id: string, data: ItemProperties) => Inventory.FromId(id)?.a
 exports('removeItem', (id: string, data: ItemProperties) => Inventory.FromId(id)?.removeItem(data));
 exports('clearInventory', (id: string, keepItems?: number[]) => Inventory.FromId(id)?.clear(keepItems));
 
+exports('doesItemExist', (itemName: string) => !!GetItemClass(itemName));
 exports('getItemData', (itemName: string) => GetItemData(itemName));
 exports('getItem', (id: number) => GetInventoryItem(id));
 exports('setItemMetadata', (id: number, key: string, value: any) => {
