@@ -1,9 +1,11 @@
 import Config from '@common/config';
 import { BaseInventory } from '@common/inventory/class';
 import fetch from 'sync-fetch';
-import { isBrowser, resourceContext, resourceName } from '..';
+import { resourceContext, resourceName } from '..';
 
-export interface WeaponProperties extends BaseItem {
+export type BaseItemProperties = ClassProperties<BaseItem>;
+
+export interface WeaponProperties extends BaseItemProperties {
   category: 'weapon';
   ammoName: string;
   ammoCount: number;
@@ -12,18 +14,17 @@ export interface WeaponProperties extends BaseItem {
   components?: string[];
 }
 
-export interface WeaponAttachmentProperties extends BaseItem {
+export interface WeaponAttachmentProperties extends BaseItemProperties {
   category: 'weapon_attachment';
   components: string[];
 }
 
 export type ItemProperties = {
   name: string;
-  quantity: number;
-} & (Partial<BaseItem> | WeaponProperties | WeaponAttachmentProperties);
+} & (Partial<BaseItemProperties> | WeaponProperties | WeaponAttachmentProperties);
 
 export type Item = ReturnType<typeof ItemFactory>;
-export type InventoryItem = InstanceType<Item> | WeaponProperties;
+export type InventoryItem = InstanceType<Item>;
 export type Weapon = InventoryItem & WeaponProperties;
 export type Clothing = InventoryItem & {
   componentId: number;
