@@ -102,3 +102,21 @@ const db = new (class Database {
 })();
 
 export default db;
+
+const createItemQuery = sqlite.prepare(`
+  INSERT INTO items
+    (name, category, data)
+  VALUES
+    (?, ?, jsonb(?))
+  ON CONFLICT(name) DO UPDATE SET
+    data = excluded.data
+`);
+
+exports('createItem', ({ name, category = null, ...data }: ItemProperties) => {
+  try {
+    return createItemQuery.run(name, category, JSON.stringify(data)).changes === 1;
+  } catch (err) {
+    console.error(`Failed to create new item '${name}.\n`, err);
+    return false;
+  }
+});
